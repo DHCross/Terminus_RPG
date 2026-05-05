@@ -1,0 +1,21 @@
+{
+  "name": "@silhouette-rpg/engine",
+  "version": "0.1.0",
+  "description": "Silhouette RPG — state engine for scene cards, character frames, and combat exchange resolution",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "check": "tsc --noEmit",
+    "test": "node --experimental-vm-modules ../../../node_modules/.bin/vitest run"
+  },
+  "files": ["dist", "src"],
+  "license": "UNLICENSED"
+}
