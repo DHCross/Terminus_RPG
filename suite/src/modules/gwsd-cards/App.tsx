@@ -21,10 +21,12 @@ import DiagnosticsViewer from './components/DiagnosticsViewer';
 import CharacterStudio from './components/CharacterStudio';
 import MonsterStudio from './components/MonsterStudio';
 import { parseDiagnosticsReport, type ParsedDiagnosticsReport } from './diagnosticsParser';
+import { SceneCardBuilder } from '../terminus/scene/SceneCardBuilder';
 
 type View = 'deck' | 'print';
 type DeckOrganize = 'scene-order' | 'scene-type';
 type Workspace = 'cards' | 'characters' | 'monsters';
+type CardsMode = 'parse' | 'builder';
 
 const WORKSPACE_META: Record<Workspace, { title: string; subtitle: string }> = {
   cards: {
@@ -132,6 +134,7 @@ export default function App() {
   const [sourceText, setSourceText] = useState('');
   const [promptCopied, setPromptCopied] = useState(false);
   const [parsedDiagnostics, setParsedDiagnostics] = useState<ParsedDiagnosticsReport | null>(null);
+  const [cardsMode, setCardsMode] = useState<CardsMode>('parse');
 
   const workspaceMeta = WORKSPACE_META[workspace];
   const isCardsWorkspace = workspace === 'cards';
@@ -259,6 +262,12 @@ export default function App() {
     },
     [],
   );
+
+  const handleAddScene = useCallback((scene: Scene) => {
+    setScenes((prev) => [...prev, scene]);
+    setCardsMode('parse');
+    setSelectedSceneId(scene.id);
+  }, []);
 
   const handleExportJSON = useCallback(() => {
     const data = {
@@ -395,9 +404,9 @@ export default function App() {
             ))}
           </div>
 
-          {isCardsWorkspace && scenes.length > 0 && (
+          {isCardsWorkspace && (
             <>
-              {/* View toggle */}
+              {/* Mode toggle for cards workspace */}
               <div
                 style={{
                   display: 'flex',
@@ -407,106 +416,155 @@ export default function App() {
                 }}
               >
                 <button
-                  onClick={() => setView('deck')}
+                  onClick={() => setCardsMode('parse')}
                   style={{
                     padding: '6px 14px',
                     fontSize: 13,
                     border: 'none',
                     cursor: 'pointer',
-                    background: view === 'deck' ? '#374151' : 'transparent',
-                    color: view === 'deck' ? 'white' : '#9CA3AF',
-                    fontWeight: view === 'deck' ? 600 : 400,
+                    background: cardsMode === 'parse' ? '#374151' : 'transparent',
+                    color: cardsMode === 'parse' ? 'white' : '#9CA3AF',
+                    fontWeight: cardsMode === 'parse' ? 600 : 400,
                   }}
                 >
-                  🃏 Deck
+                  📝 Parse
                 </button>
                 <button
-                  onClick={() => setView('print')}
+                  onClick={() => setCardsMode('builder')}
                   style={{
                     padding: '6px 14px',
                     fontSize: 13,
                     border: 'none',
                     cursor: 'pointer',
-                    background: view === 'print' ? '#374151' : 'transparent',
-                    color: view === 'print' ? 'white' : '#9CA3AF',
-                    fontWeight: view === 'print' ? 600 : 400,
+                    background: cardsMode === 'builder' ? '#374151' : 'transparent',
+                    color: cardsMode === 'builder' ? 'white' : '#9CA3AF',
+                    fontWeight: cardsMode === 'builder' ? 600 : 400,
                   }}
                 >
-                  🖨 Print
+                  ✨ Builder
                 </button>
               </div>
 
-              <label
-                style={{
-                  fontSize: 12,
-                  color: '#9CA3AF',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 4,
-                }}
-              >
-                <input
-                  type="checkbox"
-                  checked={editable}
-                  onChange={(e) => setEditable(e.target.checked)}
-                />
-                Edit
-              </label>
+              {scenes.length > 0 && cardsMode === 'parse' && (
+                <>
+                  {/* View toggle */}
+                  <div
+                    style={{
+                      display: 'flex',
+                      background: '#1E293B',
+                      borderRadius: 6,
+                      overflow: 'hidden',
+                    }}
+                  >
+                    <button
+                      onClick={() => setView('deck')}
+                      style={{
+                        padding: '6px 14px',
+                        fontSize: 13,
+                        border: 'none',
+                        cursor: 'pointer',
+                        background: view === 'deck' ? '#374151' : 'transparent',
+                        color: view === 'deck' ? 'white' : '#9CA3AF',
+                        fontWeight: view === 'deck' ? 600 : 400,
+                      }}
+                    >
+                      🃏 Deck
+                    </button>
+                    <button
+                      onClick={() => setView('print')}
+                      style={{
+                        padding: '6px 14px',
+                        fontSize: 13,
+                        border: 'none',
+                        cursor: 'pointer',
+                        background: view === 'print' ? '#374151' : 'transparent',
+                        color: view === 'print' ? 'white' : '#9CA3AF',
+                        fontWeight: view === 'print' ? 600 : 400,
+                      }}
+                    >
+                      🖨 Print
+                    </button>
+                  </div>
 
-              <button
-                onClick={() => window.print()}
-                style={{
-                  padding: '6px 14px',
-                  fontSize: 13,
-                  background: '#374151',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: 6,
-                  cursor: 'pointer',
-                }}
-              >
-                Print Cards
-              </button>
+              {scenes.length > 0 && cardsMode === 'parse' && (
+                <>
+                  <label
+                    style={{
+                      fontSize: 12,
+                      color: '#9CA3AF',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 4,
+                    }}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={editable}
+                      onChange={(e) => setEditable(e.target.checked)}
+                    />
+                    Edit
+                  </label>
 
-              <button onClick={handleExportJSON} style={exportBtnStyle}>
-                JSON
-              </button>
-              <button onClick={handleExportMarkdown} style={exportBtnStyle}>
-                MD
-              </button>
-              <button
-                onClick={handleExportLintReport}
-                style={exportBtnStyle}
-                title="Export narrative diagnostics as a markdown report"
-              >
-                Diagnostics
-              </button>
-              <button
-                onClick={() => {
-                  // Build AI prompts for all detected scenes and copy to clipboard
-                  const chunks = detectScenes(sourceText);
-                  const prompts = chunks.map((c) =>
-                    buildExtractionPrompt(
-                      c.sidebars.length > 0 ? c.sidebars.join('\n\n') : c.prose,
-                      c.title,
-                    ),
-                  );
-                  navigator.clipboard.writeText(prompts.join('\n\n---\n\n'));
-                  setPromptCopied(true);
-                  setTimeout(() => setPromptCopied(false), 2000);
-                }}
-                style={aiBtnStyle}
-                title="Copy AI extraction prompts for all scenes to clipboard"
-              >
-                {promptCopied ? '✓ Copied' : '🤖 AI Prompt'}
-              </button>
+                  <button
+                    onClick={() => window.print()}
+                    style={{
+                      padding: '6px 14px',
+                      fontSize: 13,
+                      background: '#374151',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: 6,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Print Cards
+                  </button>
+                </>
+              )}
+
+              {scenes.length > 0 && cardsMode === 'parse' && (
+                <>
+                  <button onClick={handleExportJSON} style={exportBtnStyle}>
+                    JSON
+                  </button>
+                  <button onClick={handleExportMarkdown} style={exportBtnStyle}>
+                    MD
+                  </button>
+                  <button
+                    onClick={handleExportLintReport}
+                    style={exportBtnStyle}
+                    title="Export narrative diagnostics as a markdown report"
+                  >
+                    Diagnostics
+                  </button>
+                  <button
+                    onClick={() => {
+                      // Build AI prompts for all detected scenes and copy to clipboard
+                      const chunks = detectScenes(sourceText);
+                      const prompts = chunks.map((c) =>
+                        buildExtractionPrompt(
+                          c.sidebars.length > 0 ? c.sidebars.join('\n\n') : c.prose,
+                          c.title,
+                        ),
+                      );
+                      navigator.clipboard.writeText(prompts.join('\n\n---\n\n'));
+                      setPromptCopied(true);
+                      setTimeout(() => setPromptCopied(false), 2000);
+                    }}
+                    style={aiBtnStyle}
+                    title="Copy AI extraction prompts for all scenes to clipboard"
+                  >
+                    {promptCopied ? '✓ Copied' : '🤖 AI Prompt'}
+                  </button>
+                </>
+              )}
             </>
           )}
         </div>
       </header>
 
       {/* Stats bar */}
-      {isCardsWorkspace && scenes.length > 0 && (
+      {isCardsWorkspace && scenes.length > 0 && cardsMode === 'parse' && (
         <div
           className="no-print"
           style={{
@@ -553,7 +611,7 @@ export default function App() {
         </div>
       )}
 
-      {isCardsWorkspace && scenes.length > 0 && (
+      {isCardsWorkspace && scenes.length > 0 && cardsMode === 'parse' && (
         <div
           className="no-print"
           style={{
@@ -583,6 +641,11 @@ export default function App() {
           <CharacterStudio />
         ) : workspace === 'monsters' ? (
           <MonsterStudio />
+        ) : workspace === 'cards' && cardsMode === 'builder' ? (
+          <SceneCardBuilder
+            onAddScene={handleAddScene}
+            onCancel={() => setCardsMode('parse')}
+          />
         ) : (
           <>
             {/* Input area (always visible unless printing) */}

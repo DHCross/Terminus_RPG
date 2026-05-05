@@ -1,122 +1,72 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { useNavigate } from 'react-router-dom';
+import './App.css';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const navigate = useNavigate();
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
+    <div className="landing-page">
+      <div className="hero-section">
+        <h1 className="title">Terminus RPG Suite</h1>
+        <p className="subtitle">Alpha 0.1 — Dark Fantasy Tabletop Tools</p>
+        <p className="description">
+          A comprehensive software suite for the Terminus RPG, featuring character builders,
+          scene card generators, and playtest tools.
+        </p>
+        <div className="cta-buttons">
+          <button className="btn btn-primary" onClick={() => navigate('/characters')}>
+            Create Character
+          </button>
+          <button className="btn btn-secondary" onClick={() => navigate('/scene-cards')}>
+            Scene Cards
+          </button>
         </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+      </div>
 
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
+      <div className="features-section">
+        <h2>Features</h2>
+        <div className="feature-grid">
+          <div className="feature-card">
+            <h3>Character Builder</h3>
+            <p>Create and manage characters with paired Skill/Threshold dice mechanics, species traits, and Order abilities.</p>
+          </div>
+          <div className="feature-card">
+            <h3>Scene Cards</h3>
+            <p>Generate GWSD scene cards with narrative diagnostics and redundancy detection for live Guide use.</p>
+          </div>
+          <div className="feature-card">
+            <h3>Orders Reference</h3>
+            <p>Browse all Orders with their approaches, signatures, and abilities for quick reference during play.</p>
+          </div>
+          <div className="feature-card">
+            <h3>Lineages</h3>
+            <p>Explore species options with their unique traits and characteristics for character creation.</p>
+          </div>
+          <div className="feature-card">
+            <h3>Playtest Tools</h3>
+            <p>Utilities for playtesting the Terminus alpha rules and tracking feedback.</p>
+          </div>
+          <div className="feature-card">
+            <h3>Persistent Storage</h3>
+            <p>Your characters and data are saved locally, so you can pick up where you left off.</p>
+          </div>
         </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+      </div>
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+      <div className="info-section">
+        <h2>About Terminus</h2>
+        <p>
+          Terminus is a dark fantasy tabletop roleplaying game with high fantasy overtones.
+          Characters are trained, marked, licensed, or forced to respond when stable reality begins to fail.
+          The game is built around three linked ideas: routine stabilizes reality, rupture is systemic failure,
+          and Orders exist because ordinary institutions cannot respond fast enough.
+        </p>
+        <p className="alpha-notice">
+          This is an alpha release for playtesting. Rules and features may change as the system evolves.
+        </p>
+      </div>
+    </div>
+  );
 }
 
 export default App

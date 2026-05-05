@@ -56,25 +56,40 @@ export const ORDERS_LIST: OrderInfo[] = [
     id: 'rival',
     name: 'Rival',
     fieldFunction: 'wins contests of timing, leverage, and momentum',
-    approaches: ['Challenge', 'Redirect', 'Intercept', 'Disarm'],
-    signatures: ['dueling blade', 'paired knives', 'hook', 'whip', 'glove'],
-    abilities: []
+    approaches: ['Challenge', 'Outpace', 'Answer', 'Match', 'Humiliate'],
+    signatures: ['dueling blade', 'marked glove', 'racing token', 'trophy', 'challenge writ', 'mirrored charm'],
+    abilities: [
+      { name: 'Call the Contest', description: 'Name the terms of a contest clearly. If the other side accepts or answers, both sides are bound to those terms until someone breaks them.' },
+      { name: 'Outpace', description: 'When timing matters, you may force a direct contest before the other side completes its move.' },
+      { name: 'Turnabout', description: 'When an opponent fails against you, you may immediately change position, claim leverage, or put them under pressure.' },
+      { name: 'Public Measure', description: 'When others are watching, your victory or failure changes how the crowd, faction, or witness treats the scene.' }
+    ]
   },
   {
     id: 'broker',
     name: 'Broker',
     fieldFunction: 'turns agreement, obligation, and faction pressure into action',
-    approaches: ['Negotiate', 'Demand', 'Bind', 'Trade'],
-    signatures: ['ledger', 'seal', 'writ', 'contract', 'scale'],
-    abilities: []
+    approaches: ['Bind', 'Trade', 'Pressure', 'Reframe', 'Collect'],
+    signatures: ['contract case', 'seal ring', 'ledger', 'marked scales', 'debt chain', 'witness token'],
+    abilities: [
+      { name: 'Call in Favor', description: 'Introduce one plausible contact, owed service, minor resource, or old arrangement into the scene.' },
+      { name: 'Make Terms', description: 'When two sides can hear you, you may propose terms that change what each side is willing to risk.' },
+      { name: 'Hold the Debt', description: 'When someone accepts your help, mark the obligation. Later, you may ask for repayment in a related scene.' },
+      { name: 'Turn the Room', description: 'When you reveal leverage, you may shift one neutral, hesitant, or self-interested NPC toward action.' }
+    ]
   },
   {
     id: 'shade',
     name: 'Shade',
     fieldFunction: 'moves through secrecy, misdirection, and reversal',
-    approaches: ['Slip', 'Deceive', 'Misdirect', 'Vanish'],
-    signatures: ['cloak', 'mask', 'smoke bomb', 'wire', 'poison'],
-    abilities: []
+    approaches: ['Slip', 'Veil', 'Misdirect', 'Reverse', 'Vanish'],
+    signatures: ['mask', 'cloak', 'lockpick set', 'black knife', 'false papers', 'mirrored pin'],
+    abilities: [
+      { name: 'Unmarked Entry', description: 'If no one is directly watching the point of entry, you may enter without immediately becoming the scene\'s focus.' },
+      { name: 'False Trail', description: 'Leave evidence that points attention, suspicion, or pursuit somewhere else.' },
+      { name: 'Slip the Boundary', description: 'You may pass through a guarded, watched, or socially restricted space if you can name the gap in attention.' },
+      { name: 'Turn It Back', description: 'When someone uses deception, concealment, or misdirection against you, you may redirect part of that confusion toward them.' }
+    ]
   }
 ];
 
