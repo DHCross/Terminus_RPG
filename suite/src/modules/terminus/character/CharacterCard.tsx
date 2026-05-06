@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 import { SKILLS, DIE_LADDER, CIRCLE_MAPPING, type Die } from '../../../data/terminus/skills';
 import { SKILL_TO_THRESHOLD_MAP } from '../../../data/terminus/thresholds';
+import { ORDERS_LIST } from '../../../data/terminus/orders';
+import { WEAPONS, SIGNATURE_ITEMS } from '../../../data/terminus/weapons';
+import { ARMOR_TYPES } from '../../../data/terminus/armor';
 import { useCharacterStorage, type CharacterData } from './useCharacterStorage';
 import { useToast } from '../../../components/Toast';
 
@@ -18,6 +21,11 @@ export function CharacterCard() {
   const [name, setName] = useState('New Character');
   const [species, setSpecies] = useState('');
   const [order, setOrder] = useState('');
+  const [approach, setApproach] = useState('');
+  const [signature, setSignature] = useState('');
+  const [primaryWeapon, setPrimaryWeapon] = useState('unarmed');
+  const [secondaryWeapon, setSecondaryWeapon] = useState('');
+  const [armor, setArmor] = useState('none');
   const [isDirty, setIsDirty] = useState(false);
 
   // Base skill levels default to d4
@@ -33,12 +41,22 @@ export function CharacterCard() {
       setName(selectedCharacter.name);
       setSpecies(selectedCharacter.species || '');
       setOrder(selectedCharacter.order || '');
+      setApproach(selectedCharacter.approach || '');
+      setSignature(selectedCharacter.signature || '');
+      setPrimaryWeapon(selectedCharacter.primaryWeapon || 'unarmed');
+      setSecondaryWeapon(selectedCharacter.secondaryWeapon || '');
+      setArmor(selectedCharacter.armor || 'none');
       setSkills(selectedCharacter.skills);
       setIsDirty(false);
     } else {
       setName('New Character');
       setSpecies('');
       setOrder('');
+      setApproach('');
+      setSignature('');
+      setPrimaryWeapon('unarmed');
+      setSecondaryWeapon('');
+      setArmor('none');
       setSkills({
         [SKILLS.FORCE]: 'd4',
         [SKILLS.AGILITY]: 'd4',
@@ -53,12 +71,37 @@ export function CharacterCard() {
     setIsDirty(true);
   };
 
+  // Get approaches for selected order
+  const selectedOrderData = ORDERS_LIST.find(o => o.id === order);
+  const availableApproaches = selectedOrderData?.approaches || [];
+  const availableSignatures = selectedOrderData?.signatures || [];
+
   const handleSave = () => {
     if (selectedCharacter) {
-      updateCharacter(selectedCharacter.id, { name, species, order, skills });
+      updateCharacter(selectedCharacter.id, {
+        name,
+        species,
+        order,
+        approach,
+        signature,
+        primaryWeapon,
+        secondaryWeapon,
+        armor,
+        skills,
+      });
       addToast('success', `Character "${name}" updated successfully`);
     } else {
-      saveCharacter({ name, species, order, skills });
+      saveCharacter({
+        name,
+        species,
+        order,
+        approach,
+        signature,
+        primaryWeapon,
+        secondaryWeapon,
+        armor,
+        skills,
+      });
       addToast('success', `Character "${name}" created successfully`);
     }
     setIsDirty(false);
@@ -69,6 +112,11 @@ export function CharacterCard() {
     setName('New Character');
     setSpecies('');
     setOrder('');
+    setApproach('');
+    setSignature('');
+    setPrimaryWeapon('unarmed');
+    setSecondaryWeapon('');
+    setArmor('none');
     setSkills({
       [SKILLS.FORCE]: 'd4',
       [SKILLS.AGILITY]: 'd4',
@@ -147,12 +195,164 @@ export function CharacterCard() {
         </div>
         <div className="detail-row">
           <label>Order:</label>
-          <input
-            type="text"
+          <select
             value={order}
-            onChange={(e) => { setOrder(e.target.value); setIsDirty(true); }}
-            placeholder="e.g., Seeker, Breaker, Warden"
-          />
+            onChange={(e) => {
+              setOrder(e.target.value);
+              setApproach('');
+              setSignature('');
+              setIsDirty(true);
+            }}
+            style={{
+              flex: 1,
+              backgroundColor: '#0f172a',
+              color: '#f8fafc',
+              border: '1px solid #334155',
+              padding: '0.5rem',
+              borderRadius: '0.25rem',
+              outline: 'none',
+            }}
+          >
+            <option value="">Select Order</option>
+            {ORDERS_LIST.map((o) => (
+              <option key={o.id} value={o.id}>{o.name}</option>
+            ))}
+          </select>
+        </div>
+        {order && (
+          <>
+            <div className="detail-row">
+              <label>Approach:</label>
+              <select
+                value={approach}
+                onChange={(e) => { setApproach(e.target.value); setIsDirty(true); }}
+                disabled={!order}
+                style={{
+                  flex: 1,
+                  backgroundColor: '#0f172a',
+                  color: '#f8fafc',
+                  border: '1px solid #334155',
+                  padding: '0.5rem',
+                  borderRadius: '0.25rem',
+                  outline: 'none',
+                }}
+              >
+                <option value="">Select Approach</option>
+                {availableApproaches.map((a) => (
+                  <option key={a} value={a}>{a}</option>
+                ))}
+              </select>
+            </div>
+            <div className="detail-row">
+              <label>Signature:</label>
+              <select
+                value={signature}
+                onChange={(e) => { setSignature(e.target.value); setIsDirty(true); }}
+                disabled={!order}
+                style={{
+                  flex: 1,
+                  backgroundColor: '#0f172a',
+                  color: '#f8fafc',
+                  border: '1px solid #334155',
+                  padding: '0.5rem',
+                  borderRadius: '0.25rem',
+                  outline: 'none',
+                }}
+              >
+                <option value="">Select Signature</option>
+                {availableSignatures.map((s) => (
+                  <option key={s} value={s}>{s}</option>
+                ))}
+                <option value="custom">Custom...</option>
+              </select>
+            </div>
+            {signature === 'custom' && (
+              <div className="detail-row">
+                <label>Custom Signature:</label>
+                <input
+                  type="text"
+                  value={signature === 'custom' ? '' : signature}
+                  onChange={(e) => { setSignature(e.target.value); setIsDirty(true); }}
+                  placeholder="Enter custom signature item"
+                  style={{
+                    flex: 1,
+                    backgroundColor: '#0f172a',
+                    color: '#f8fafc',
+                    border: '1px solid #334155',
+                    padding: '0.5rem',
+                    borderRadius: '0.25rem',
+                    outline: 'none',
+                  }}
+                />
+              </div>
+            )}
+          </>
+        )}
+      </section>
+
+      {/* Equipment section */}
+      <section className="card-details" style={{ borderTop: '1px solid #334155', paddingTop: '1.5rem' }}>
+        <h3 style={{ margin: '0 0 1rem 0', fontSize: '1rem', color: '#3b82f6' }}>Equipment</h3>
+        <div className="detail-row">
+          <label>Primary Weapon:</label>
+          <select
+            value={primaryWeapon}
+            onChange={(e) => { setPrimaryWeapon(e.target.value); setIsDirty(true); }}
+            style={{
+              flex: 1,
+              backgroundColor: '#0f172a',
+              color: '#f8fafc',
+              border: '1px solid #334155',
+              padding: '0.5rem',
+              borderRadius: '0.25rem',
+              outline: 'none',
+            }}
+          >
+            {WEAPONS.map((w) => (
+              <option key={w.id} value={w.id}>{w.name} (Impact: {w.impact})</option>
+            ))}
+          </select>
+        </div>
+        <div className="detail-row">
+          <label>Secondary Weapon:</label>
+          <select
+            value={secondaryWeapon}
+            onChange={(e) => { setSecondaryWeapon(e.target.value); setIsDirty(true); }}
+            style={{
+              flex: 1,
+              backgroundColor: '#0f172a',
+              color: '#f8fafc',
+              border: '1px solid #334155',
+              padding: '0.5rem',
+              borderRadius: '0.25rem',
+              outline: 'none',
+            }}
+          >
+            <option value="">None</option>
+            {WEAPONS.map((w) => (
+              <option key={w.id} value={w.id}>{w.name} (Impact: {w.impact})</option>
+            ))}
+          </select>
+        </div>
+        <div className="detail-row">
+          <label>Armor:</label>
+          <select
+            value={armor}
+            onChange={(e) => { setArmor(e.target.value); setIsDirty(true); }}
+            style={{
+              flex: 1,
+              backgroundColor: '#0f172a',
+              color: '#f8fafc',
+              border: '1px solid #334155',
+              padding: '0.5rem',
+              borderRadius: '0.25rem',
+              outline: 'none',
+            }}
+          >
+            {ARMOR_TYPES.map((a) => (
+              <option key={a.id} value={a.id}>{a.name} (Reduction: {a.reduction})</option>
+            ))}
+          </select>
         </div>
       </section>
 

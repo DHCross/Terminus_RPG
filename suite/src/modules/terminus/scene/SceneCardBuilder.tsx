@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useToast } from '../../../components/Toast';
 import type { Scene, GWSDCard, ActiveGWSDCard, LatentGWSDCard } from '../../gwsd-cards/types';
+import { ORDERS_LIST } from '../../../data/terminus/orders';
 
 interface SceneCardBuilderProps {
   onAddScene: (scene: Scene) => void;
@@ -40,6 +41,16 @@ export function SceneCardBuilder({ onAddScene, onCancel }: SceneCardBuilderProps
   const [pressureType, setPressureType] = useState<string>('ground');
   const [scenePressure, setScenePressure] = useState<number>(3);
 
+  // Order hooks
+  const [orderHooks, setOrderHooks] = useState<Record<string, string>>({
+    seeker: '',
+    breaker: '',
+    warden: '',
+    rival: '',
+    broker: '',
+    shade: '',
+  });
+
   const handleCreate = () => {
     if (!title.trim()) {
       addToast('error', 'Scene title is required');
@@ -59,6 +70,11 @@ export function SceneCardBuilder({ onAddScene, onCancel }: SceneCardBuilderProps
     if (stateType === 'latent' && (!trigger.trim() || !accumulation.trim())) {
       addToast('error', 'Trigger and Accumulation are required for latent scenes');
       return;
+    }
+
+    const hasOrderHooks = Object.values(orderHooks).some(hook => hook.trim());
+    if (!hasOrderHooks) {
+      addToast('warning', 'No Order hooks defined. Consider adding opportunities for each Order.');
     }
 
     const sceneId = crypto.randomUUID();
@@ -106,6 +122,12 @@ export function SceneCardBuilder({ onAddScene, onCancel }: SceneCardBuilderProps
       scenePressure,
       cards,
       raw: '',
+      terminus: {
+        scenePressure,
+        orderTags: Object.entries(orderHooks)
+          .filter(([_, hook]) => hook.trim())
+          .map(([order, _]) => order as any),
+      },
     };
 
     onAddScene(newScene);
@@ -455,6 +477,41 @@ export function SceneCardBuilder({ onAddScene, onCancel }: SceneCardBuilderProps
               }}
             />
           </div>
+        </div>
+      </div>
+
+      {/* Order Hooks */}
+      <div style={{ marginBottom: '2rem' }}>
+        <h3 style={{ margin: '0 0 1rem 0', fontSize: '1.125rem', color: '#3b82f6' }}>
+          Order Hooks
+          <span style={{ fontSize: '0.875rem', fontWeight: 400, color: '#94a3b8', marginLeft: '0.5rem' }}>
+            — Specific opportunities for each Order in this scene
+          </span>
+        </h3>
+        <div style={{ display: 'grid', gap: '1rem' }}>
+          {ORDERS_LIST.map((order) => (
+            <div key={order.id}>
+              <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', color: '#94a3b8' }}>
+                {order.name} — {order.fieldFunction}
+              </label>
+              <textarea
+                value={orderHooks[order.id] || ''}
+                onChange={(e) => setOrderHooks({ ...orderHooks, [order.id]: e.target.value })}
+                placeholder={`Describe a specific opportunity for ${order.name} in this scene...`}
+                rows={2}
+                style={{
+                  width: '100%',
+                  padding: '0.75rem',
+                  backgroundColor: '#0f172a',
+                  border: '1px solid #334155',
+                  borderRadius: '0.375rem',
+                  color: '#f8fafc',
+                  fontSize: '0.9375rem',
+                  resize: 'vertical',
+                }}
+              />
+            </div>
+          ))}
         </div>
       </div>
 

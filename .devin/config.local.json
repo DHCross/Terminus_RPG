@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "Exec(find suite)",
-      "Exec(find)"
+      "Exec(find)",
+      "Exec(git status)",
+      "Exec(git diff)"
     ]
   }
 }

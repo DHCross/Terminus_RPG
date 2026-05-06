@@ -8,6 +8,9 @@ export interface CharacterData {
   approach?: string;
   signature?: string;
   skills: Record<string, string>;
+  primaryWeapon?: string;
+  secondaryWeapon?: string;
+  armor?: string;
   createdAt: string;
   updatedAt: string;
 }
