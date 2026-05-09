@@ -6,18 +6,20 @@ function App() {
 
   return (
     <div className="landing-page">
-      <div className="hero-banner">
-        <div className="hero-content">
-          <h1 className="title">Terminus RPG Suite</h1>
-          <p className="subtitle">Alpha 0.1 — Dark Fantasy Tabletop Tools</p>
-          <div className="cta-buttons">
-            <button className="btn btn-primary" onClick={() => navigate('/characters')}>
-              Create Character
-            </button>
-            <button className="btn btn-secondary" onClick={() => navigate('/scene-cards')}>
-              Scene Cards
-            </button>
-          </div>
+      <div className="hero-section">
+        <h1 className="title">Terminus RPG Suite</h1>
+        <p className="subtitle">Alpha 0.1 — Dark Fantasy Tabletop Tools</p>
+        <p className="description">
+          A comprehensive software suite for the Terminus RPG, featuring character builders,
+          scene card generators, and playtest tools.
+        </p>
+        <div className="cta-buttons">
+          <button className="btn btn-primary" onClick={() => navigate('/characters')}>
+            Create Character
+          </button>
+          <button className="btn btn-secondary" onClick={() => navigate('/scene-cards')}>
+            Scene Cards
+          </button>
         </div>
       </div>
 

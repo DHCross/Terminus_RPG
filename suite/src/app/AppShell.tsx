@@ -34,7 +34,7 @@ export function AppShell() {
       </aside>
       <main className="main-content">
         <header className="topbar">
-          <h2>Terminus Field Tools</h2>
+          <h2>Terminus Software Suite</h2>
         </header>
         <div className="content-area">
           <Outlet />
