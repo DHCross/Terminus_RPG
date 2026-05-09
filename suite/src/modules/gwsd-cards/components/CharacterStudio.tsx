@@ -82,7 +82,7 @@ export default function CharacterStudio() {
         <>
           <PanelSection
             title="Character Studio"
-            description="Build live Silhouette player frames with actual action dice, defense dice, armor, weapons, and validation from the engine."
+            description="Build live Silhouette player frames with actual action dice, defense dice, armor, weapons, and validation from the engine. Includes simplified NPC starter templates."
           >
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
               {CHARACTER_PRESETS.map((preset) => (

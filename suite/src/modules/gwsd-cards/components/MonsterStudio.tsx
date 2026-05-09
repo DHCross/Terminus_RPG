@@ -6,6 +6,7 @@ import {
   cloneMonsterDraft,
   defaultMonsterDraft,
   downloadJson,
+  MONSTER_ENCOUNTER_PACKS,
   MONSTER_PRESETS,
   type MonsterDraft,
 } from '../silhouetteStudio';
@@ -41,6 +42,7 @@ export default function MonsterStudio() {
   const [draft, setDraft] = useState<MonsterDraft>(() => defaultMonsterDraft());
   const [roster, setRoster] = useState<MonsterRecord[]>([]);
   const preview = useMemo(() => buildMonsterFromDraft(draft), [draft]);
+  const monsterPresetsByKey = useMemo(() => new Map(MONSTER_PRESETS.map((preset) => [preset.key, preset])), []);
 
   const saveCurrent = () => {
     setRoster((current) => [
@@ -75,13 +77,37 @@ export default function MonsterStudio() {
     setRoster((current) => current.filter((item) => item.savedAt !== savedAt));
   };
 
+  const addEncounterPack = (presetKeys: string[]) => {
+    const baseTimestamp = Date.now();
+    const nextEntries = presetKeys
+      .map((presetKey, index) => {
+        const preset = monsterPresetsByKey.get(presetKey);
+        if (!preset) return null;
+        const built = buildMonsterFromDraft(preset.draft);
+
+        return {
+          savedAt: new Date(baseTimestamp + index).toISOString(),
+          draft: cloneMonsterDraft(preset.draft),
+          definition: built.definition,
+          enemy: built.enemy,
+          diagnostics: built.diagnostics,
+        };
+      })
+      .filter((entry): entry is MonsterRecord => entry !== null);
+
+    if (nextEntries.length === 0) return;
+
+    setDraft(cloneMonsterDraft(nextEntries[0].draft));
+    setRoster((current) => [...nextEntries, ...current]);
+  };
+
   return (
     <StudioGrid
       editor={
         <>
           <PanelSection
             title="Monster Studio"
-            description="Generate Silhouette enemy frames that sit beside the scene cards and use the same force, pressure, and rupture vocabulary."
+            description="Generate Silhouette enemy frames that sit beside the scene cards and use the same force, pressure, and rupture vocabulary. Includes a starter bestiary roster to bootstrap encounter design."
           >
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
               {MONSTER_PRESETS.map((preset) => (
@@ -97,6 +123,21 @@ export default function MonsterStudio() {
               <button onClick={() => setDraft(defaultMonsterDraft())} style={secondaryButtonStyle}>
                 Reset Draft
               </button>
+            </div>
+            <div style={{ marginTop: 10, display: 'grid', gap: 8 }}>
+              <div style={{ fontSize: 12, color: '#94A3B8' }}>One-click encounter packs (adds 3 monsters to Saved Monsters)</div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                {MONSTER_ENCOUNTER_PACKS.map((pack) => (
+                  <button
+                    key={pack.key}
+                    onClick={() => addEncounterPack(pack.presetKeys)}
+                    title={pack.description}
+                    style={secondaryButtonStyle}
+                  >
+                    Pack: {pack.label}
+                  </button>
+                ))}
+              </div>
             </div>
           </PanelSection>
 

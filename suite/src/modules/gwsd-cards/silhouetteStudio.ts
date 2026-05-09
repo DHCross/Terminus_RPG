@@ -72,6 +72,13 @@ export interface DraftPreset<TDraft> {
   draft: TDraft;
 }
 
+export interface MonsterEncounterPack {
+  key: string;
+  label: string;
+  description: string;
+  presetKeys: string[];
+}
+
 export const DIE_OPTIONS = DIE_SIZES.map((value) => ({
   value,
   label: `d${value}`,
@@ -292,6 +299,71 @@ export const CHARACTER_PRESETS: DraftPreset<CharacterDraft>[] = [
   createCharacterPreset(
     {
       ...defaultCharacterDraft(),
+      name: 'Checkpoint Clerk',
+      background: 'A local office clerk who knows permits, ledgers, and who signed what.',
+      immediateWant: 'Keep things orderly while avoiding blame from above.',
+      actions: { force: 4, agility: 6, willpower: 8 },
+      defenses: { endure: 6, avoid: 6, exert: 8 },
+      primaryWeapon: defaultWeaponDraft({ name: 'Desk baton', impact: 1 }),
+      secondaryWeapon: defaultWeaponDraft({ name: 'Signal whistle', vectors: ['targets-position'] }),
+      notesText: 'Simple NPC template\nGood for bureaucracy and gatekeeping scenes',
+    },
+    'npc-checkpoint-clerk',
+    'NPC: Checkpoint Clerk',
+    'Simplified support NPC for permits, records, and procedural resistance.',
+  ),
+  createCharacterPreset(
+    {
+      ...defaultCharacterDraft(),
+      name: 'Street Informant',
+      background: 'A low-profile broker who trades secrets for safety and leverage.',
+      immediateWant: 'Sell the right truth without becoming the next warning.',
+      actions: { force: 4, agility: 8, willpower: 8 },
+      defenses: { endure: 6, avoid: 8, exert: 8 },
+      primaryWeapon: defaultWeaponDraft({ name: 'Concealed knife', impact: 1, vectors: ['armor-piercing'] }),
+      secondaryWeapon: defaultWeaponDraft({ name: 'Escape route', vectors: ['targets-position'] }),
+      notesText: 'Simple NPC template\nUseful for clue handoffs and double-cross pressure',
+    },
+    'npc-street-informant',
+    'NPC: Street Informant',
+    'Simplified social-pressure NPC with mobility and information leverage.',
+  ),
+  createCharacterPreset(
+    {
+      ...defaultCharacterDraft(),
+      name: 'Ward Patrol',
+      background: 'A local patrol hand tasked with keeping lanes open and crowds compliant.',
+      immediateWant: 'Reassert control quickly before command arrives.',
+      actions: { force: 8, agility: 6, willpower: 6 },
+      defenses: { endure: 8, avoid: 6, exert: 6 },
+      armor: 'leather',
+      primaryWeapon: defaultWeaponDraft({ name: 'Suppression staff', impact: 1, vectors: ['targets-position'] }),
+      secondaryWeapon: defaultWeaponDraft({ name: 'Restraint cuff', vectors: ['direct-harm'] }),
+      notesText: 'Simple NPC template\nUse as baseline rank-and-file authority presence',
+    },
+    'npc-ward-patrol',
+    'NPC: Ward Patrol',
+    'Simplified frontline authority NPC for confrontations and perimeter scenes.',
+  ),
+  createCharacterPreset(
+    {
+      ...defaultCharacterDraft(),
+      name: 'Ritual Witness',
+      background: 'A civilian witness marked by an unfinished rite and unstable memory.',
+      immediateWant: 'Get protection now, then decide what truth to reveal.',
+      actions: { force: 4, agility: 6, willpower: 10 },
+      defenses: { endure: 6, avoid: 6, exert: 10 },
+      primaryWeapon: defaultWeaponDraft({ name: 'Desperate shove', impact: 1 }),
+      secondaryWeapon: defaultWeaponDraft({ name: 'Panic surge', vectors: ['cannot-be-avoided'] }),
+      notesText: 'Simple NPC template\nGreat for latent-condition and testimony scenes',
+    },
+    'npc-ritual-witness',
+    'NPC: Ritual Witness',
+    'Simplified willpower-heavy NPC for occult testimony and collapse pressure.',
+  ),
+  createCharacterPreset(
+    {
+      ...defaultCharacterDraft(),
       name: 'Boundary Runner',
       background: 'A courier who learned to feel where the simulation snags.',
       immediateWant: 'Move first and keep the exit open.',
@@ -344,6 +416,24 @@ export const MONSTER_PRESETS: DraftPreset<MonsterDraft>[] = [
   createMonsterPreset(
     {
       ...defaultMonsterDraft(),
+      name: 'Needle Hound',
+      background: 'A lean hunter strain engineered to pin targets in open lanes.',
+      immediateWant: 'Tag the fastest responder and force them to ground.',
+      actions: { force: 8, agility: 10, willpower: 4 },
+      defenses: { endure: 6, avoid: 10, exert: 4 },
+      primaryWeapon: defaultWeaponDraft({ name: 'Barbed rake', impact: 1, vectors: ['armor-piercing'] }),
+      secondaryWeapon: defaultWeaponDraft({ name: 'Hamstring snap', impact: 1, vectors: ['targets-position'] }),
+      attack: defaultWeaponDraft({ name: 'Pounce chain', impact: 2, vectors: ['targets-position', 'bonus-impact'] }),
+      behavior: 'Open fast, isolate one runner, and rotate before the group can surround it.',
+      notesText: 'Skirmisher role\nUse in pairs for flanking pressure',
+    },
+    'needle-hound',
+    'Needle Hound',
+    'Fast skirmisher monster that hunts mobility and split formations.',
+  ),
+  createMonsterPreset(
+    {
+      ...defaultMonsterDraft(),
       name: 'Hall Stalker',
       background: 'A corridor predator that pushes isolated targets away from support.',
       immediateWant: 'Split the formation and finish the rear guard.',
@@ -381,6 +471,25 @@ export const MONSTER_PRESETS: DraftPreset<MonsterDraft>[] = [
   createMonsterPreset(
     {
       ...defaultMonsterDraft(),
+      name: 'Clockwork Bailiff',
+      background: 'A sanctioned enforcement frame that executes procedural violence.',
+      immediateWant: 'Mark one target as non-compliant and crush resistance publicly.',
+      actions: { force: 10, agility: 6, willpower: 8 },
+      defenses: { endure: 10, avoid: 6, exert: 8 },
+      armor: 'chain',
+      primaryWeapon: defaultWeaponDraft({ name: 'Judgment maul', impact: 2, vectors: ['bonus-impact'] }),
+      secondaryWeapon: defaultWeaponDraft({ name: 'Compliance hook', impact: 1, vectors: ['targets-position'] }),
+      attack: defaultWeaponDraft({ name: 'Sentence blow', impact: 2, vectors: ['cannot-be-avoided'] }),
+      behavior: 'Declare one target, then make every exchange about that target staying down.',
+      notesText: 'Bruiser role\nExcellent for "hold the line" authority scenes',
+    },
+    'clockwork-bailiff',
+    'Clockwork Bailiff',
+    'Authority bruiser monster for direct confrontation and public intimidation.',
+  ),
+  createMonsterPreset(
+    {
+      ...defaultMonsterDraft(),
       name: 'Glitch Bloom',
       background: 'A fault-line bloom that renders the room hostile in pulses.',
       immediateWant: 'Fill the scene until hesitation becomes impossible.',
@@ -396,6 +505,100 @@ export const MONSTER_PRESETS: DraftPreset<MonsterDraft>[] = [
     'Glitch Bloom',
     'Occult hazard-creature hybrid for simulation-fracture scenes.',
   ),
+  createMonsterPreset(
+    {
+      ...defaultMonsterDraft(),
+      name: 'Lantern Wisp Choir',
+      background: 'A floating cluster that coordinates fear spikes through harmonic pulses.',
+      immediateWant: 'Keep the room noisy enough that commands fail to land.',
+      actions: { force: 4, agility: 8, willpower: 10 },
+      defenses: { endure: 4, avoid: 8, exert: 10 },
+      primaryWeapon: defaultWeaponDraft({ name: 'Static lash', impact: 1, vectors: ['direct-harm'] }),
+      secondaryWeapon: defaultWeaponDraft({ name: 'Dazzle flare', impact: 1, vectors: ['cannot-be-avoided'] }),
+      attack: defaultWeaponDraft({ name: 'Choir pulse', impact: 2, vectors: ['cannot-be-avoided', 'direct-harm'] }),
+      behavior: 'Float at edge range, scramble coordination, and punish grouped targets.',
+      notesText: 'Controller role\nGreat for social collapse into panic',
+    },
+    'lantern-wisp-choir',
+    'Lantern Wisp Choir',
+    'Willpower-focused controller monster that disrupts team coordination.',
+  ),
+  createMonsterPreset(
+    {
+      ...defaultMonsterDraft(),
+      name: 'Mire Ox',
+      background: 'A thick-plated beast that drags itself through flooded terrain and refuses to stop.',
+      immediateWant: 'Claim the center of the scene and deny movement through force.',
+      actions: { force: 10, agility: 4, willpower: 6 },
+      defenses: { endure: 10, avoid: 4, exert: 6 },
+      armor: 'plate',
+      primaryWeapon: defaultWeaponDraft({ name: 'Horn ram', impact: 2, vectors: ['bonus-impact'] }),
+      secondaryWeapon: defaultWeaponDraft({ name: 'Mud kick', impact: 1, vectors: ['targets-position'] }),
+      attack: defaultWeaponDraft({ name: 'Trampling pass', impact: 2, vectors: ['bonus-impact', 'targets-position'] }),
+      behavior: 'Occupy the choke point and force everyone else to play around its lane.',
+      notesText: 'Tank role\nUse to anchor a mixed-monster encounter',
+    },
+    'mire-ox',
+    'Mire Ox',
+    'Heavily armored anchor monster for chokepoints and forced positioning.',
+  ),
+  createMonsterPreset(
+    {
+      ...defaultMonsterDraft(),
+      name: 'Ash Choir Penitent',
+      background: 'A burned remnant that chants fault-lines open with ritual cadence.',
+      immediateWant: 'Escalate scene pressure until every choice has a visible cost.',
+      actions: { force: 6, agility: 6, willpower: 10 },
+      defenses: { endure: 6, avoid: 6, exert: 10 },
+      primaryWeapon: defaultWeaponDraft({ name: 'Cinder lash', impact: 1, vectors: ['direct-harm'] }),
+      secondaryWeapon: defaultWeaponDraft({ name: 'Hex ash', impact: 1, vectors: ['armor-piercing'] }),
+      attack: defaultWeaponDraft({ name: 'Litany rupture', impact: 2, vectors: ['direct-harm', 'cannot-be-avoided'] }),
+      behavior: 'Read the loudest fear, then force that fear to become the scene objective.',
+      notesText: 'Occult pressure role\nWorks with latent conditions and timed drift ladders',
+    },
+    'ash-choir-penitent',
+    'Ash Choir Penitent',
+    'Occult pressure monster tuned for escalating dread and forced choices.',
+  ),
+  createMonsterPreset(
+    {
+      ...defaultMonsterDraft(),
+      name: 'Rift Scavenger',
+      background: 'A scavenger pattern that appears after chaos and preys on wounded stragglers.',
+      immediateWant: 'Harvest exposed targets and retreat before sustained retaliation.',
+      actions: { force: 8, agility: 8, willpower: 6 },
+      defenses: { endure: 6, avoid: 8, exert: 6 },
+      primaryWeapon: defaultWeaponDraft({ name: 'Hooked jaw', impact: 1, vectors: ['bonus-impact'] }),
+      secondaryWeapon: defaultWeaponDraft({ name: 'Backstep bite', impact: 1, vectors: ['targets-position'] }),
+      attack: defaultWeaponDraft({ name: 'Scavenge strike', impact: 2, vectors: ['bonus-impact', 'armor-piercing'] }),
+      behavior: 'Circle outside threat, punish overextension, then vanish into cover.',
+      notesText: 'Ambusher role\nPairs well with terrain hazards and low visibility',
+    },
+    'rift-scavenger',
+    'Rift Scavenger',
+    'Ambush predator monster for cleanup waves and pursuit pressure.',
+  ),
+];
+
+export const MONSTER_ENCOUNTER_PACKS: MonsterEncounterPack[] = [
+  {
+    key: 'containment-sweep',
+    label: 'Containment Sweep',
+    description: 'Authority lockdown mix: anchor, chaser, and cleanup threat.',
+    presetKeys: ['archive-warden', 'needle-hound', 'rift-scavenger'],
+  },
+  {
+    key: 'faultline-choir',
+    label: 'Faultline Choir',
+    description: 'Occult escalation mix that punishes hesitation and stacked positions.',
+    presetKeys: ['ash-choir-penitent', 'lantern-wisp-choir', 'glitch-bloom'],
+  },
+  {
+    key: 'iron-chokepoint',
+    label: 'Iron Chokepoint',
+    description: 'Frontline pressure mix for narrow maps and forced movement lanes.',
+    presetKeys: ['mire-ox', 'hall-stalker', 'clockwork-bailiff'],
+  },
 ];
 
 export function downloadJson(filename: string, data: unknown): void {
