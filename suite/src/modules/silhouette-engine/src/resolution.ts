@@ -1,5 +1,6 @@
 /* ── Silhouette RPG — Resolution Engine ── */
 
+import { getSecureRandom } from '../../../utils/crypto';
 import type { DieSize } from './dice';
 import type {
   ActionStat,
@@ -75,7 +76,7 @@ export interface ExchangeResult {
 }
 
 export function rollDie(die: DieSize): number {
-  return Math.floor(Math.random() * die) + 1;
+  return Math.floor(getSecureRandom() * die) + 1;
 }
 
 export function calculateImpact(weapon: WeaponProfile, bonusImpact: number = 0): number {
