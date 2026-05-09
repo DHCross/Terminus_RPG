@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useToast } from '../../../components/Toast';
 import { SKILLS, DIE_LADDER, type Die } from '../../../data/terminus/skills';
+import { getSecureRandom } from '../../../utils/crypto';
 import { THRESHOLDS, SKILL_TO_THRESHOLD_MAP } from '../../../data/terminus/thresholds';
 
 interface RollResult {
@@ -27,7 +28,7 @@ export function ConflictResolver() {
 
   const rollDie = (die: Die): RollResult => {
     const size = parseInt(die.replace('d', ''));
-    const value = Math.floor(Math.random() * size) + 1;
+    const value = Math.floor(getSecureRandom() * size) + 1;
     return { value, isMax: value === size };
   };
 

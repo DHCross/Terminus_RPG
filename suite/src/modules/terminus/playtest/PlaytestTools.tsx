@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { DIE_LADDER, type Die } from '../../../data/terminus/skills';
+import { getSecureRandom } from '../../../utils/crypto';
 import { ConflictResolver } from '../conflict/ConflictResolver';
 
 type RollResult = {
@@ -16,7 +17,7 @@ export function PlaytestTools() {
 
   const rollDie = (die: Die) => {
     const sides = parseInt(die.substring(1), 10);
-    return Math.floor(Math.random() * sides) + 1;
+    return Math.floor(getSecureRandom() * sides) + 1;
   };
 
   const handleRoll = () => {
@@ -131,7 +132,7 @@ function DiceRoller() {
 
   const rollDie = (die: Die) => {
     const size = parseInt(die.replace('d', ''));
-    return Math.floor(Math.random() * size) + 1;
+    return Math.floor(getSecureRandom() * size) + 1;
   };
 
   const handleRoll = () => {
@@ -285,7 +286,7 @@ function DriftResolver() {
 
   const handleRoll = () => {
     const allOptions = [...driftOptions, ...customOptions];
-    const randomIndex = Math.floor(Math.random() * allOptions.length);
+    const randomIndex = Math.floor(getSecureRandom() * allOptions.length);
     setResult(allOptions[randomIndex]);
   };
 
