@@ -30,8 +30,8 @@ type CardsMode = 'parse' | 'builder';
 
 const WORKSPACE_META: Record<Workspace, { title: string; subtitle: string }> = {
   cards: {
-    title: 'GWSD Card Generator',
-    subtitle: 'Silhouette scene cards projected from GWSD extraction grammar for live Guide use',
+    title: 'Scene Card Forge',
+    subtitle: 'Distill unstable scenes into Ground, Will, Shift, and Drift before the Rupture spreads.',
   },
   characters: {
     title: 'Silhouette Character Studio',
@@ -399,7 +399,7 @@ export default function App() {
                   fontWeight: workspace === entry ? 700 : 500,
                 }}
               >
-                {entry === 'cards' ? 'Cards' : entry === 'characters' ? 'Characters' : 'Monsters'}
+                {entry === 'cards' ? 'Scenes' : entry === 'characters' ? 'Responders' : 'Ruptures'}
               </button>
             ))}
           </div>
@@ -651,8 +651,41 @@ export default function App() {
         ) : (
           <>
             {/* Input area (always visible unless printing) */}
-            <div className="no-print" style={{ marginBottom: 24 }}>
-              <TextInput onParse={handleParse} showEditor={scenes.length === 0 && !parsedDiagnostics} />
+            <div className="no-print" style={{ marginBottom: 24, display: 'flex', gap: 24 }}>
+              {/* Left Status Strip */}
+              <div style={{
+                width: 240, 
+                background: 'rgba(15, 18, 25, 0.7)', 
+                border: '1px solid rgba(205, 164, 94, 0.25)',
+                padding: '1.5rem',
+                borderRadius: 4,
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 16,
+                fontFamily: "'Inter', sans-serif"
+              }}>
+                <h3 style={{ margin: 0, color: '#cda45e', fontSize: 13, textTransform: 'uppercase', letterSpacing: 1, fontFamily: "'Cinzel', serif" }}>Field Status</h3>
+                <div style={{ fontSize: 12, color: '#9CA3AF' }}>
+                  <div style={{ marginBottom: 12 }}><span style={{ color: '#E5E7EB' }}>Ground:</span> {scenes.length ? 'scene active' : 'awaiting manuscript'}</div>
+                  <div style={{ marginBottom: 12 }}><span style={{ color: '#E5E7EB' }}>Will:</span> {scenes.length ? 'pressure detected' : 'no active pressure detected'}</div>
+                  <div style={{ marginBottom: 12 }}><span style={{ color: '#E5E7EB' }}>Shift:</span> {scenes.length ? 'parameters set' : 'parse required'}</div>
+                  <div><span style={{ color: '#E5E7EB' }}>Drift:</span> {scenes.length ? 'tracked' : 'none'}</div>
+                </div>
+              </div>
+
+              {/* Main Text Input */}
+              <div style={{ flex: 1 }}>
+                {scenes.length === 0 && !parsedDiagnostics && (
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 16 }}>
+                    {['Ground', 'Will', 'Shift', 'Drift'].map(col => (
+                      <div key={col} style={{ border: '1px solid rgba(255,255,255,0.05)', background: 'rgba(0,0,0,0.3)', padding: '16px', textAlign: 'center', color: '#cda45e', fontSize: 13, textTransform: 'uppercase', letterSpacing: 2, fontFamily: "'Cinzel', serif" }}>
+                        {col}
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <TextInput onParse={handleParse} showEditor={scenes.length === 0 && !parsedDiagnostics} />
+              </div>
             </div>
 
             {scenes.length === 0 && parsedDiagnostics ? (
@@ -664,16 +697,16 @@ export default function App() {
                 className="no-print"
                 style={{
                   textAlign: 'center',
-                  padding: '60px 24px',
-                  color: '#6B7280',
+                  padding: '40px 24px',
+                  color: '#9CA3AF',
                 }}
               >
-                <p style={{ fontSize: 16 }}>
-                  GWSD distills scene prose into a live Silhouette rules card so the Guide can run agency, pressure, contingency, and consequence at speed.
+                <p style={{ fontSize: 16, fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic' }}>
+                  Distill unstable scenes into Ground, Will, Shift, and Drift before the Rupture spreads.
                 </p>
                 <p style={{ fontSize: 13, lineHeight: 1.6 }}>
-                  Paste or open a manuscript. Supports <code>[gwsd]</code> tagged blocks, <code>[sidebar]</code> blocks,<br/>
-                  and structural detection from headers + prose.
+                  Paste field notes, adventure text, or raw scene prose.<br/>
+                  The Forge reads for <code>[gwsd]</code> tags, <code>[sidebar]</code> blocks, and structural headers.
                 </p>
               </div>
             ) : view === 'deck' ? (
