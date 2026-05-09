@@ -7,40 +7,35 @@
 .hero-banner {
   width: calc(100% + 6rem);
   margin: -3rem -3rem 3rem -3rem;
-  height: 400px;
-  background-image: url('/terminus_hero.png');
+  height: 550px;
+  background-image: url('/terminus rpg image.png');
   background-size: cover;
-  background-position: center;
+  background-position: center top;
   position: relative;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-end;
   align-items: center;
   text-align: center;
-  box-shadow: inset 0 -50px 50px -20px var(--bg-dark);
+  box-shadow: inset 0 -80px 80px -20px var(--bg-dark);
 }
 
 .hero-banner::after {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, var(--bg-dark) 100%);
+  background: linear-gradient(to bottom, transparent 0%, rgba(9, 10, 15, 0.4) 60%, var(--bg-dark) 100%);
 }
 
 .hero-content {
   position: relative;
   z-index: 2;
   padding: 2rem;
+  margin-bottom: 2rem;
 }
 
 .title {
-  font-size: 4.5rem;
-  font-weight: 700;
-  margin: 0 0 1rem 0;
-  color: var(--text-accent);
-  text-shadow: 0 4px 20px rgba(0,0,0,0.8);
-  letter-spacing: 4px;
-  font-family: var(--font-heading);
+  display: none; /* Logo is beautifully baked into the image */
 }
 
 .subtitle {
