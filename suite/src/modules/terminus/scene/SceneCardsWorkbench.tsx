@@ -1,0 +1,52 @@
+import { useState } from 'react';
+import { FileText, Sparkles } from 'lucide-react';
+import { SceneCardForge } from './SceneCardForge';
+import GWSDApp from '../../gwsd-cards/App';
+
+type SceneTab = 'forge' | 'parser';
+
+export function SceneCardsWorkbench() {
+  const [activeTab, setActiveTab] = useState<SceneTab>('forge');
+
+  return (
+    <div className="flex flex-col h-full">
+      {/* Tab Navigation */}
+      <div className="flex gap-1 border-b border-slate-700 bg-slate-950 px-6">
+        <button
+          onClick={() => setActiveTab('forge')}
+          className={`flex items-center gap-2 px-4 py-3 border-b-2 transition-colors ${
+            activeTab === 'forge'
+              ? 'border-b-amber-500 text-amber-400 font-semibold'
+              : 'border-b-transparent text-slate-400 hover:text-slate-200'
+          }`}
+        >
+          <Sparkles size={18} /> AI Forge
+        </button>
+        <button
+          onClick={() => setActiveTab('parser')}
+          className={`flex items-center gap-2 px-4 py-3 border-b-2 transition-colors ${
+            activeTab === 'parser'
+              ? 'border-b-amber-500 text-amber-400 font-semibold'
+              : 'border-b-transparent text-slate-400 hover:text-slate-200'
+          }`}
+        >
+          <FileText size={18} /> Markdown Parser
+        </button>
+      </div>
+
+      {/* Tab Content */}
+      <div className="flex-1 overflow-hidden">
+        {activeTab === 'forge' && (
+          <div className="h-full overflow-y-auto">
+            <SceneCardForge />
+          </div>
+        )}
+        {activeTab === 'parser' && (
+          <div className="h-full overflow-y-auto">
+            <GWSDApp />
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
