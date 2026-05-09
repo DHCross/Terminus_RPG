@@ -75,6 +75,8 @@ export type TerminusConflictData = {
   vector?: TerminusVector;
 };
 
+export type TerminusSceneMode = 'social' | 'kinetic' | 'hazard' | 'confrontation' | 'discovery' | 'puzzle';
+
 export type TerminusSceneMeta = {
   scenePressure?: number;
   pressureTriggers?: Array<{
@@ -85,6 +87,11 @@ export type TerminusSceneMeta = {
   orderTags?: TerminusOrder[];
   zoneId?: string;
   conflict?: TerminusConflictData;
+  location?: string;
+  sceneMode?: TerminusSceneMode;
+  driftLadder?: string;
+  mapHooks?: string;
+  readAloud?: string;
 };
 
 export interface BaseGWSDCard<TStateType extends SceneStateType, TState extends GWSDState> {

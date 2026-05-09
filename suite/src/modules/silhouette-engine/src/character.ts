@@ -63,6 +63,8 @@ export interface WeaponProfile {
 export interface CharacterIdentity {
   background: string;
   immediateWant: string;
+  origin?: string;
+  deity?: string;
 }
 
 export interface CharacterDefinition {

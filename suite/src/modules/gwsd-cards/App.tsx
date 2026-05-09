@@ -427,7 +427,7 @@ export default function App() {
                     fontWeight: cardsMode === 'parse' ? 600 : 400,
                   }}
                 >
-                  📝 Parse
+                  📝 Extract Cards
                 </button>
                 <button
                   onClick={() => setCardsMode('builder')}
@@ -441,7 +441,7 @@ export default function App() {
                     fontWeight: cardsMode === 'builder' ? 600 : 400,
                   }}
                 >
-                  ✨ Builder
+                  ✨ Forge Card
                 </button>
               </div>
 

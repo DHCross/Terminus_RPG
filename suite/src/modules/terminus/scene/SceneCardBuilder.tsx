@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useToast } from '../../../components/Toast';
-import type { Scene, GWSDCard, ActiveGWSDCard, LatentGWSDCard } from '../../gwsd-cards/types';
+import type { Scene, GWSDCard, ActiveGWSDCard, LatentGWSDCard, TerminusSceneMode } from '../../gwsd-cards/types';
 import { ORDERS_LIST } from '../../../data/terminus/orders';
+import { exportCanonicalMarkdown, exportInlineGWSD, exportVisualCard } from './exportScene';
 
 interface SceneCardBuilderProps {
   onAddScene: (scene: Scene) => void;
@@ -21,7 +22,12 @@ export function SceneCardBuilder({ onAddScene, onCancel }: SceneCardBuilderProps
   const [title, setTitle] = useState('');
   const [adventure, setAdventure] = useState('Custom Adventure');
   const [act, setAct] = useState('');
+  const [location, setLocation] = useState('');
+  const [sceneMode, setSceneMode] = useState<TerminusSceneMode>('confrontation');
   const [stateType, setStateType] = useState<'active' | 'latent'>('active');
+  const [driftLadder, setDriftLadder] = useState('');
+  const [mapHooks, setMapHooks] = useState('');
+  const [readAloud, setReadAloud] = useState('');
 
   // GWSD states
   const [ground, setGround] = useState('');
@@ -30,6 +36,7 @@ export function SceneCardBuilder({ onAddScene, onCancel }: SceneCardBuilderProps
   const [drift, setDrift] = useState('');
   const [trigger, setTrigger] = useState('');
   const [accumulation, setAccumulation] = useState('');
+  const [reveal, setReveal] = useState('');
 
   // Silhouette sections
   const [agency, setAgency] = useState('');
@@ -51,6 +58,10 @@ export function SceneCardBuilder({ onAddScene, onCancel }: SceneCardBuilderProps
     shade: '',
   });
 
+  const [showExportPreview, setShowExportPreview] = useState(false);
+  type ExportTab = 'canonical' | 'inline' | 'visual';
+  const [activeExportTab, setActiveExportTab] = useState<ExportTab>('canonical');
+
   const handleCreate = () => {
     if (!title.trim()) {
       addToast('error', 'Scene title is required');
@@ -63,12 +74,12 @@ export function SceneCardBuilder({ onAddScene, onCancel }: SceneCardBuilderProps
     }
 
     if (stateType === 'active' && (!shift.trim() || !drift.trim())) {
-      addToast('error', 'Shift and Drift are required for active scenes');
+      addToast('error', 'Shift and Drift are required for active states');
       return;
     }
 
     if (stateType === 'latent' && (!trigger.trim() || !accumulation.trim())) {
-      addToast('error', 'Trigger and Accumulation are required for latent scenes');
+      addToast('error', 'Trigger and Accumulation are required for latent conditions');
       return;
     }
 
@@ -124,6 +135,11 @@ export function SceneCardBuilder({ onAddScene, onCancel }: SceneCardBuilderProps
       raw: '',
       terminus: {
         scenePressure,
+        location: location.trim(),
+        sceneMode,
+        driftLadder: driftLadder.trim(),
+        mapHooks: mapHooks.trim(),
+        readAloud: readAloud.trim(),
         orderTags: Object.entries(orderHooks)
           .filter(([_, hook]) => hook.trim())
           .map(([order, _]) => order as any),
@@ -131,7 +147,49 @@ export function SceneCardBuilder({ onAddScene, onCancel }: SceneCardBuilderProps
     };
 
     onAddScene(newScene);
-    addToast('success', `Scene "${title}" created successfully`);
+    addToast('success', `Scene "${title}" forged`);
+  };
+
+  /** Build a temporary Scene from form state for export preview */
+  const buildPreviewScene = (): Scene | null => {
+    if (!title.trim() || !ground.trim() || !will.trim()) return null;
+    const sceneId = 'preview';
+    const createCard = (state: string, text: string): GWSDCard => {
+      const base = {
+        id: 'preview-' + state,
+        sceneId,
+        stateType,
+        state: state as any,
+        text,
+        source: 'manual' as const,
+      };
+      return stateType === 'active' ? base as ActiveGWSDCard : base as LatentGWSDCard;
+    };
+    const cards: [GWSDCard, GWSDCard, GWSDCard, GWSDCard] = stateType === 'active'
+      ? [createCard('ground', ground), createCard('will', will), createCard('shift', shift), createCard('drift', drift)]
+      : [createCard('ground', ground), createCard('will', will), createCard('trigger', trigger), createCard('accumulation', accumulation)];
+    return {
+      id: sceneId,
+      title: title.trim(),
+      adventure: adventure.trim(),
+      act: act.trim() || undefined,
+      order: 1,
+      stateType,
+      scenePressure,
+      cards,
+      raw: '',
+      terminus: {
+        scenePressure,
+        location: location.trim(),
+        sceneMode,
+        driftLadder: driftLadder.trim(),
+        mapHooks: mapHooks.trim(),
+        readAloud: readAloud.trim(),
+        orderTags: Object.entries(orderHooks)
+          .filter(([_, hook]) => hook.trim())
+          .map(([order, _]) => order as any),
+      },
+    };
   };
 
   return (
@@ -233,9 +291,56 @@ export function SceneCardBuilder({ onAddScene, onCancel }: SceneCardBuilderProps
               />
             </div>
           </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            <div>
+              <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', color: '#94a3b8' }}>
+                Location / Map Reference
+              </label>
+              <input
+                type="text"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                placeholder="e.g., The Undercrypts (Zone 4)"
+                style={{
+                  width: '100%',
+                  padding: '0.75rem',
+                  backgroundColor: '#0f172a',
+                  border: '1px solid #334155',
+                  borderRadius: '0.375rem',
+                  color: '#f8fafc',
+                  fontSize: '1rem',
+                }}
+              />
+            </div>
+            <div>
+              <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', color: '#94a3b8' }}>
+                Scene Mode / Resolver
+              </label>
+              <select
+                value={sceneMode}
+                onChange={(e) => setSceneMode(e.target.value as TerminusSceneMode)}
+                style={{
+                  width: '100%',
+                  padding: '0.75rem',
+                  backgroundColor: '#0f172a',
+                  border: '1px solid #334155',
+                  borderRadius: '0.375rem',
+                  color: '#f8fafc',
+                  fontSize: '1rem',
+                }}
+              >
+                <option value="confrontation">Confrontation — commitment / possession / force</option>
+                <option value="hazard">Hazard — environment / exposure / endurance</option>
+                <option value="kinetic">Kinetic — movement / distance / routes</option>
+                <option value="social">Social — leverage / persuasion / hierarchy</option>
+                <option value="discovery">Discovery — attention / information</option>
+                <option value="puzzle">Puzzle — inference / system manipulation</option>
+              </select>
+            </div>
+          </div>
           <div>
             <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', color: '#94a3b8' }}>
-              Scene Type *
+              State Type — <em style={{ fontWeight: 400, color: '#64748b' }}>Is this reality currently executable?</em>
             </label>
             <div style={{ display: 'flex', gap: '1rem' }}>
               <button
@@ -252,9 +357,9 @@ export function SceneCardBuilder({ onAddScene, onCancel }: SceneCardBuilderProps
                   fontWeight: 600,
                 }}
               >
-                Active
+                Active Scene
                 <span style={{ display: 'block', fontSize: '0.75rem', fontWeight: 400, marginTop: '0.25rem' }}>
-                  Immediate pressure, ongoing conflict
+                  Pressure is running. Actions resolve now.
                 </span>
               </button>
               <button
@@ -271,9 +376,9 @@ export function SceneCardBuilder({ onAddScene, onCancel }: SceneCardBuilderProps
                   fontWeight: 600,
                 }}
               >
-                Latent
+                Latent Condition
                 <span style={{ display: 'block', fontSize: '0.75rem', fontWeight: 400, marginTop: '0.25rem' }}>
-                  Dormant pressure, waiting for trigger
+                  Pressure is stored. Future instability.
                 </span>
               </button>
             </div>
@@ -284,20 +389,24 @@ export function SceneCardBuilder({ onAddScene, onCancel }: SceneCardBuilderProps
       {/* GWSD States */}
       <div style={{ marginBottom: '2rem' }}>
         <h3 style={{ margin: '0 0 1rem 0', fontSize: '1.125rem', color: '#3b82f6' }}>
-          GWSD States
+          {stateType === 'active' ? 'Scene State' : 'Latent Condition'}
           <span style={{ fontSize: '0.875rem', fontWeight: 400, color: '#94a3b8', marginLeft: '0.5rem' }}>
-            — The four pressures that define the scene
+            {stateType === 'active'
+              ? '— Ground, Will, Shift, Drift'
+              : '— Ground, Hidden Pressure, Trigger, Accumulation'}
           </span>
         </h3>
         <div style={{ display: 'grid', gap: '1rem' }}>
           <div>
             <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', color: '#94a3b8' }}>
-              Ground * — The environment, physical conditions, terrain
+              Ground * — {stateType === 'active' ? 'What is currently reliable' : 'What appears stable on the surface'}
             </label>
             <textarea
               value={ground}
               onChange={(e) => setGround(e.target.value)}
-              placeholder="Describe the physical setting, weather, terrain, lighting, sounds, smells..."
+              placeholder={stateType === 'active'
+                ? 'What is currently reliable? What rules, terrain, access, or social conditions define what can happen here?'
+                : 'What appears stable on the surface?'}
               rows={3}
               style={{
                 width: '100%',
@@ -313,12 +422,16 @@ export function SceneCardBuilder({ onAddScene, onCancel }: SceneCardBuilderProps
           </div>
           <div>
             <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', color: '#94a3b8' }}>
-              Will * — Social pressure, faction influence, NPC intentions
+              {stateType === 'active'
+                ? 'Will * — What pressure is already acting'
+                : 'Hidden Pressure * — What instability is present but not yet active'}
             </label>
             <textarea
               value={will}
               onChange={(e) => setWill(e.target.value)}
-              placeholder="Describe who wants what, social tensions, faction goals, NPC agendas..."
+              placeholder={stateType === 'active'
+                ? 'What pressure is already acting? Who or what is trying to change the situation?'
+                : 'What instability is present but not yet active?'}
               rows={3}
               style={{
                 width: '100%',
@@ -336,12 +449,12 @@ export function SceneCardBuilder({ onAddScene, onCancel }: SceneCardBuilderProps
             <>
               <div>
                 <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', color: '#94a3b8' }}>
-                  Shift * — Changing circumstances, momentum shifts
+                  Shift * — What changes when characters act
                 </label>
                 <textarea
                   value={shift}
                   onChange={(e) => setShift(e.target.value)}
-                  placeholder="Describe how the situation changes, what shifts in momentum, new developments..."
+                  placeholder="What changes immediately when characters act, interfere, or commit?"
                   rows={3}
                   style={{
                     width: '100%',
@@ -357,12 +470,12 @@ export function SceneCardBuilder({ onAddScene, onCancel }: SceneCardBuilderProps
               </div>
               <div>
                 <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', color: '#94a3b8' }}>
-                  Drift * — Gradual erosion, slow decay, accumulation
+                  Drift * — What changes if no one acts
                 </label>
                 <textarea
                   value={drift}
                   onChange={(e) => setDrift(e.target.value)}
-                  placeholder="Describe what happens if nothing changes, gradual consequences, slow buildup..."
+                  placeholder="What changes if no one resolves the situation? What worsens, advances, closes, or breaks?"
                   rows={3}
                   style={{
                     width: '100%',
@@ -381,12 +494,12 @@ export function SceneCardBuilder({ onAddScene, onCancel }: SceneCardBuilderProps
             <>
               <div>
                 <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', color: '#94a3b8' }}>
-                  Trigger * — What activates the latent pressure
+                  Trigger * — What turns this into an active scene
                 </label>
                 <textarea
                   value={trigger}
                   onChange={(e) => setTrigger(e.target.value)}
-                  placeholder="Describe what causes the latent pressure to activate: a specific action, time limit, condition met..."
+                  placeholder="What event, choice, or discovery turns this into an active scene?"
                   rows={3}
                   style={{
                     width: '100%',
@@ -402,13 +515,34 @@ export function SceneCardBuilder({ onAddScene, onCancel }: SceneCardBuilderProps
               </div>
               <div>
                 <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', color: '#94a3b8' }}>
-                  Accumulation * — Pressure buildup before trigger
+                  Accumulation * — How the hidden pressure builds
                 </label>
                 <textarea
                   value={accumulation}
                   onChange={(e) => setAccumulation(e.target.value)}
-                  placeholder="Describe how pressure builds before the trigger: warning signs, escalating tension, visible deterioration..."
+                  placeholder="How does the hidden pressure build while unnoticed?"
                   rows={3}
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem',
+                    backgroundColor: '#0f172a',
+                    border: '1px solid #334155',
+                    borderRadius: '0.375rem',
+                    color: '#f8fafc',
+                    fontSize: '0.9375rem',
+                    resize: 'vertical',
+                  }}
+                />
+              </div>
+              <div>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', color: '#94a3b8' }}>
+                  Reveal Condition — What active state does this become
+                </label>
+                <textarea
+                  value={reveal}
+                  onChange={(e) => setReveal(e.target.value)}
+                  placeholder="What active state does this become when revealed?"
+                  rows={2}
                   style={{
                     width: '100%',
                     padding: '0.75rem',
@@ -480,6 +614,79 @@ export function SceneCardBuilder({ onAddScene, onCancel }: SceneCardBuilderProps
         </div>
       </div>
 
+      {/* Optional Flavor Mechanics */}
+      <div style={{ marginBottom: '2rem' }}>
+        <h3 style={{ margin: '0 0 1rem 0', fontSize: '1.125rem', color: '#3b82f6' }}>
+          Additional Scene Data <span style={{ fontSize: '0.875rem', fontWeight: 400, color: '#94a3b8' }}>(Optional)</span>
+        </h3>
+        <div style={{ display: 'grid', gap: '1rem' }}>
+          <div>
+            <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', color: '#94a3b8' }}>
+              Read-Aloud Box
+            </label>
+            <textarea
+              value={readAloud}
+              onChange={(e) => setReadAloud(e.target.value)}
+              placeholder="Atmospheric prose derived from Ground + a hint of Will. What do the players immediately experience?"
+              rows={3}
+              style={{
+                width: '100%',
+                padding: '0.75rem',
+                backgroundColor: '#0f172a',
+                border: '1px solid #334155',
+                borderRadius: '0.375rem',
+                color: '#f8fafc',
+                fontSize: '0.9375rem',
+                resize: 'vertical',
+                fontStyle: 'italic',
+              }}
+            />
+          </div>
+          <div>
+            <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', color: '#94a3b8' }}>
+              Drift Ladder / Transition State
+            </label>
+            <textarea
+              value={driftLadder}
+              onChange={(e) => setDriftLadder(e.target.value)}
+              placeholder="If Drift occurs sequentially (e.g. 1. Shadows lengthen -> 2. Torches extinguish -> 3. The Beast arrives), list the ladder steps here."
+              rows={2}
+              style={{
+                width: '100%',
+                padding: '0.75rem',
+                backgroundColor: '#0f172a',
+                border: '1px solid #334155',
+                borderRadius: '0.375rem',
+                color: '#f8fafc',
+                fontSize: '0.9375rem',
+                resize: 'vertical',
+              }}
+            />
+          </div>
+          <div>
+            <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', color: '#94a3b8' }}>
+              Map Hooks / Nouns
+            </label>
+            <textarea
+              value={mapHooks}
+              onChange={(e) => setMapHooks(e.target.value)}
+              placeholder="List nouns the card reinterprets or specific hooks to the map (e.g. The crumbling pillar, the iron grate)."
+              rows={2}
+              style={{
+                width: '100%',
+                padding: '0.75rem',
+                backgroundColor: '#0f172a',
+                border: '1px solid #334155',
+                borderRadius: '0.375rem',
+                color: '#f8fafc',
+                fontSize: '0.9375rem',
+                resize: 'vertical',
+              }}
+            />
+          </div>
+        </div>
+      </div>
+
       {/* Order Hooks */}
       <div style={{ marginBottom: '2rem' }}>
         <h3 style={{ margin: '0 0 1rem 0', fontSize: '1.125rem', color: '#3b82f6' }}>
@@ -515,6 +722,83 @@ export function SceneCardBuilder({ onAddScene, onCancel }: SceneCardBuilderProps
         </div>
       </div>
 
+      {/* Export Preview */}
+      {showExportPreview && (() => {
+        const preview = buildPreviewScene();
+        if (!preview) return (
+          <div style={{ padding: '1rem', marginBottom: '1rem', backgroundColor: '#0f172a', border: '1px solid #334155', borderRadius: '0.375rem', color: '#f87171' }}>
+            Fill in at least Title, Ground, and {stateType === 'active' ? 'Will' : 'Hidden Pressure'} to preview export.
+          </div>
+        );
+        const exports: Record<ExportTab, { label: string; content: string }> = {
+          canonical: { label: 'Canonical Markdown', content: exportCanonicalMarkdown(preview) },
+          inline: { label: 'Inline [gwsd]', content: exportInlineGWSD(preview) },
+          visual: { label: 'Visual Card', content: exportVisualCard(preview) },
+        };
+        return (
+          <div style={{ marginBottom: '1.5rem', border: '1px solid #334155', borderRadius: '0.5rem', overflow: 'hidden' }}>
+            <div style={{ display: 'flex', backgroundColor: '#0f172a' }}>
+              {(Object.keys(exports) as ExportTab[]).map(tab => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveExportTab(tab)}
+                  style={{
+                    flex: 1,
+                    padding: '0.5rem',
+                    fontSize: '0.8125rem',
+                    border: 'none',
+                    cursor: 'pointer',
+                    backgroundColor: activeExportTab === tab ? '#1e293b' : 'transparent',
+                    color: activeExportTab === tab ? '#f8fafc' : '#64748b',
+                    fontWeight: activeExportTab === tab ? 600 : 400,
+                    borderBottom: activeExportTab === tab ? '2px solid #3b82f6' : '2px solid transparent',
+                  }}
+                >
+                  {exports[tab].label}
+                </button>
+              ))}
+            </div>
+            <div style={{ position: 'relative' }}>
+              <pre style={{
+                padding: '1rem',
+                margin: 0,
+                backgroundColor: '#0f172a',
+                color: '#e2e8f0',
+                fontSize: '0.8125rem',
+                lineHeight: 1.6,
+                whiteSpace: 'pre-wrap',
+                wordBreak: 'break-word',
+                maxHeight: '300px',
+                overflow: 'auto',
+                fontFamily: activeExportTab === 'visual' ? "'SF Mono', 'Fira Code', monospace" : 'inherit',
+              }}>
+                {exports[activeExportTab].content}
+              </pre>
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(exports[activeExportTab].content);
+                  addToast('success', `${exports[activeExportTab].label} copied to clipboard`);
+                }}
+                style={{
+                  position: 'absolute',
+                  top: '0.5rem',
+                  right: '0.5rem',
+                  padding: '0.25rem 0.75rem',
+                  fontSize: '0.75rem',
+                  backgroundColor: '#334155',
+                  color: '#e2e8f0',
+                  border: 'none',
+                  borderRadius: '0.25rem',
+                  cursor: 'pointer',
+                }}
+              >
+                Copy
+              </button>
+            </div>
+          </div>
+        );
+      })()}
+
       {/* Actions */}
       <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end', paddingTop: '1rem', borderTop: '1px solid #334155' }}>
         <button
@@ -533,6 +817,21 @@ export function SceneCardBuilder({ onAddScene, onCancel }: SceneCardBuilderProps
           Cancel
         </button>
         <button
+          onClick={() => setShowExportPreview(!showExportPreview)}
+          style={{
+            padding: '0.75rem 1.5rem',
+            backgroundColor: '#1e293b',
+            color: '#94a3b8',
+            border: '1px solid #475569',
+            borderRadius: '0.375rem',
+            cursor: 'pointer',
+            fontWeight: 600,
+            fontSize: '0.9375rem',
+          }}
+        >
+          {showExportPreview ? 'Hide Preview' : 'Preview Export'}
+        </button>
+        <button
           onClick={handleCreate}
           style={{
             padding: '0.75rem 1.5rem',
@@ -545,7 +844,7 @@ export function SceneCardBuilder({ onAddScene, onCancel }: SceneCardBuilderProps
             fontSize: '0.9375rem',
           }}
         >
-          Create Scene
+          Forge Scene Card
         </button>
       </div>
     </div>

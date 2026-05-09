@@ -34,6 +34,8 @@ export interface CharacterDraft {
   name: string;
   background: string;
   immediateWant: string;
+  origin: string;
+  deity: string;
   actions: ActionDice;
   defenses: DefenseDice;
   armor: ArmorType;
@@ -94,6 +96,8 @@ export function cloneCharacterDraft(draft: CharacterDraft): CharacterDraft {
     name: draft.name,
     background: draft.background,
     immediateWant: draft.immediateWant,
+    origin: draft.origin || '',
+    deity: draft.deity || '',
     actions: { ...draft.actions },
     defenses: { ...draft.defenses },
     armor: draft.armor,
@@ -127,6 +131,8 @@ export function defaultCharacterDraft(): CharacterDraft {
     name: 'New Character',
     background: 'A denizen shaped by the hidden machine.',
     immediateWant: 'Get through the next scene intact.',
+    origin: '',
+    deity: '',
     actions: {
       force: 6,
       agility: 8,
@@ -215,6 +221,8 @@ export function characterDefinitionFromDraft(draft: CharacterDraft): CharacterDe
     identity: {
       background: draft.background.trim() || 'No background entered.',
       immediateWant: draft.immediateWant.trim() || 'No immediate want entered.',
+      origin: draft.origin.trim() || undefined,
+      deity: draft.deity.trim() || undefined,
     },
     actions: { ...draft.actions },
     defenses: { ...draft.defenses },

@@ -1,0 +1,154 @@
+title:	Redesign GWSD Card Generator into bidirectional Scene Card Forge
+state:	OPEN
+author:	DHCross
+labels:	enhancement, gwsd, terminus, tooling
+comments:	0
+assignees:	
+projects:	
+milestone:	
+number:	2
+--
+## Goal
+Redesign the existing GWSD Card Generator so it is no longer only an extractor for latent cards in markdown. It must become a **Scene Card Forge** that can both:
+
+1. ingest an adventure markdown file and find existing GWSD / scene-state cards, and
+2. create new GWSD cards from scratch using the adventure framework.
+
+Start with the GWSD generator before building Responders, Ruptures, or other workspaces.
+
+## Product distinction
+The generator currently behaves mostly like an extraction / diagnostics tool. That remains useful, but it is not the core creative workflow.
+
+The new workflow should treat GWSD as the **runtime scene-state layer** for Terminus:
+
+- A Scene is not a room.
+- A Scene is an active state.
+- A new Scene begins only when permissions or pressures change.
+- The map tells where things are.
+- The Scene Card tells the Guide what an action is allowed to change.
+
+## Required modes
+
+### 1. Import / Extract Mode
+Existing behavior, but cleaner:
+
+- Upload or paste markdown.
+- Detect existing `[gwsd]...[/gwsd]` blocks.
+- Detect explicit Scene Card sections with `Ground / Will / Shift / Drift`.
+- Preserve source location / heading context.
+- Do **not** turn tables, stat blocks, bestiary entries, or lore sidebars into GWSD cards unless they contain an actual active state.
+
+### 2. Create / Forge Mode
+New behavior:
+
+The user should be able to create a card from prompts based on the adventure framework:
+
+- Adventure / Act / Scene title
+- Location or map reference
+- Current mode / resolver type
+- What is currently possible here? → Ground
+- What pressure is already acting? → Will
+- What changes when characters act? → Shift
+- What changes if they do nothing? → Drift
+- Optional: Drift ladder / transition state
+- Optional: map hooks / nouns that the card reinterprets
+- Optional: read-aloud box derived from Ground + a hint of Will
+- Optional: in-book `[gwsd]` paragraph export
+
+## Card output structure
+A created card should support multiple renderings from the same canonical data:
+
+### Canonical kernel
+```md
+# Scene Name
+
+## Ground
+...
+
+## Will
+...
+
+## Shift
+...
+
+## Drift
+...
+```
+
+### In-book inline paragraph
+```md
+[gwsd] {Ground sentence}. {Will sentence}. {Shift sentence}. {Drift sentence}. [/gwsd]
+```
+
+### Physical / visual card
+Use a compact layout:
+
+- Header: Act / Scene / Location / Mode
+- GROUND
+- WILL
+- SHIFT
+- DRIFT
+- Optional bottom band for Mode / Resolver
+- Optional Drift Ladder for transition states
+
+## Scene modes / resolver metadata
+Scene mode is metadata, not a replacement for GWSD. It tells the author and diagnostics engine what kind of decision currently resolves pressure.
+
+Suggested modes:
+
+- Social — leverage / persuasion / hierarchy
+- Kinetic — movement / distance / routes
+- Hazard — environment / exposure / endurance
+- Confrontation — commitment / possession / force
+- Discovery — attention / information
+- Puzzle — inference / system manipulation
+
+The mode should not change how the card functions. Every card still uses Ground / Will / Shift / Drift.
+
+## Important design rule
+The app must not treat every heading as a card. A card exists only when there is an active state:
+
+- permissions change,
+- pressure is acting,
+- player action can trigger a Shift,
+- inaction can trigger Drift.
+
+If a block is reference material, table data, lore, stat block, or slow-burn latent setup, route it away from card generation.
+
+## Latent state support
+Some narrative elements are not active GWSD cards yet. Example: a hidden betrayal or future ambush setup.
+
+Add a classification for:
+
+- Active Scene State
+- Latent Condition
+- Reference Material
+- Diagnostic Finding
+
+Latent Conditions may be stored and linked to later cards, but should not be forced into Shift / Drift unless they are currently actionable.
+
+## Diagnostics separation
+Diagnostics should remain separate from cards.
+
+Cards are playable runtime states.
+Diagnostics are compile warnings / authoring feedback.
+
+Do not render diagnostics as cards.
+
+## Acceptance criteria
+
+- User can create a new Scene Card from scratch without uploading a document.
+- User can import markdown and extract existing `[gwsd]` blocks.
+- User can edit Ground / Will / Shift / Drift manually.
+- User can export the card as canonical markdown, inline `[gwsd]`, and visual card.
+- Tables/stat blocks/lore are not incorrectly converted into cards.
+- Latent narrative setup can be marked as latent instead of producing fake Shift/Drift.
+- Diagnostics output is visually and structurally separate from card output.
+
+## First implementation target
+Start with the existing GWSD generator UI and refactor it into two tabs:
+
+1. **Extract Cards**
+2. **Forge Card**
+
+Do this before adding broader Terminus workspaces.

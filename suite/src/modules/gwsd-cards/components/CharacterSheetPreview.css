@@ -1,0 +1,304 @@
+/* Terminus Civic Record - Character Sheet Styling */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;600&display=swap');
+
+.terminus-sheet {
+  background-color: #EFEBE0; /* Parchment base */
+  color: #2D2A26;
+  font-family: 'Cormorant Garamond', serif;
+  padding: 12px;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5), inset 0 0 40px rgba(160, 140, 110, 0.2);
+  position: relative;
+  max-width: 650px;
+  margin: 0 auto;
+  border: 1px solid #C4B9A3;
+}
+
+/* Double inner border effect */
+.ts-inner-border {
+  border: 2px solid #5C5549;
+  border-radius: 8px;
+  padding: 24px;
+  position: relative;
+}
+
+.ts-inner-border::before {
+  content: '';
+  position: absolute;
+  top: 4px; left: 4px; right: 4px; bottom: 4px;
+  border: 1px solid rgba(92, 85, 73, 0.4);
+  border-radius: 6px;
+  pointer-events: none;
+}
+
+/* Header */
+.ts-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #5C5549;
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+}
+
+.ts-title-block {
+  flex-grow: 1;
+}
+
+.ts-name {
+  font-family: 'Cinzel', serif;
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  margin: 0 0 4px 0;
+  color: #1A1816;
+}
+
+.ts-subtitle {
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #4A453A;
+  font-weight: 600;
+}
+
+.ts-seal-placeholder {
+  width: 60px;
+  height: 60px;
+  flex-shrink: 0;
+  margin-left: 20px;
+}
+
+.ts-seal-circle {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 2px dashed #7A7261;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Cinzel', serif;
+  font-size: 24px;
+  color: #7A7261;
+  transform: rotate(-15deg);
+}
+
+/* Body Layout */
+.ts-body-grid {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 24px;
+}
+
+/* Left Column */
+.ts-col-left {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ts-portrait-area {
+  width: 100%;
+  height: 380px;
+  background-color: #DCD5C4;
+  border: 1px solid #A8A08D;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.ts-portrait-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  color: #7A7261;
+  background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0,0,0,0.03) 10px, rgba(0,0,0,0.03) 20px);
+}
+
+/* Origin Block */
+.ts-origin-block {
+  background-color: rgba(255,255,255,0.3);
+  border: 1px solid #C4B9A3;
+  border-radius: 4px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ts-field-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 14px;
+  line-height: 1.3;
+}
+
+.ts-icon-placeholder {
+  font-size: 12px;
+  filter: grayscale(100%) opacity(0.7);
+  margin-top: 2px;
+}
+
+.ts-field-label {
+  font-weight: 600;
+  color: #1A1816;
+}
+
+.ts-field-val {
+  color: #333;
+}
+
+/* Right Column */
+.ts-col-right {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ts-rules-block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ts-section-title {
+  font-family: 'Cinzel', serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: #2D2A26;
+  display: flex;
+  align-items: center;
+}
+
+.ts-section-title.ts-center {
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.ts-section-title::before, .ts-section-title::after {
+  content: '';
+  flex-grow: 1;
+  height: 1px;
+  background-color: #A8A08D;
+  margin: 0 10px;
+}
+.ts-section-title.ts-center::before, .ts-section-title.ts-center::after {
+  max-width: 40px;
+}
+
+.ts-text-body {
+  font-size: 15px;
+  line-height: 1.4;
+  color: #333;
+}
+
+.ts-divider {
+  height: 1px;
+  background-color: #DCD5C4;
+  margin: 4px 0;
+}
+
+.ts-divider-subtle {
+  height: 1px;
+  background-image: linear-gradient(to right, transparent, #DCD5C4, transparent);
+  margin: 6px 0;
+}
+
+.ts-abilities-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ts-abilities-list li {
+  font-size: 15px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Mechanics Grid */
+.ts-mechanics-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: auto;
+}
+
+.ts-mechanics-box {
+  border: 1px solid #A8A08D;
+  border-radius: 4px;
+  padding: 12px;
+  background-color: rgba(255,255,255,0.2);
+}
+
+.ts-stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.ts-die-hex {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 36px;
+  background-color: #2D2A26;
+  color: #EFEBE0;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+}
+
+.ts-threshold-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.ts-threshold-circles {
+  display: flex;
+  gap: 4px;
+}
+
+.ts-circle {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1px solid #2D2A26;
+}
+
+.ts-circle-filled {
+  background-color: #2D2A26;
+}
+
+.ts-circle-empty {
+  background-color: transparent;
+}
+
+.ts-gear-placeholder {
+  text-align: center;
+  font-family: 'Cinzel', serif;
+  font-size: 12px;
+  color: #5C5549;
+  border-top: 1px dashed #A8A08D;
+  padding-top: 12px;
+  margin-top: 8px;
+}

@@ -24,6 +24,7 @@ import {
   textAreaStyle,
   WeaponEditor,
 } from './SilhouetteStudioCommon';
+import CharacterSheetPreview from './CharacterSheetPreview';
 
 interface CharacterRecord {
   savedAt: string;
@@ -114,6 +115,12 @@ export default function CharacterStudio() {
                   ))}
                 </select>
               </Field>
+              <Field label="Nation / Origin">
+                <input value={draft.origin} onChange={(event) => setDraft({ ...draft, origin: event.target.value })} style={inputStyle} placeholder="e.g. The Pinder Traverse" />
+              </Field>
+              <Field label="Old Office (Deity)">
+                <input value={draft.deity} onChange={(event) => setDraft({ ...draft, deity: event.target.value })} style={inputStyle} placeholder="e.g. The Arch-Sumner" />
+              </Field>
             </div>
             <Field label="Background">
               <textarea value={draft.background} onChange={(event) => setDraft({ ...draft, background: event.target.value })} style={textAreaStyle} />
@@ -155,34 +162,8 @@ export default function CharacterStudio() {
       sidebar={
         <>
           <PanelSection title="Generated Character" description="Live engine output from the current draft.">
-            <div style={{ display: 'grid', gap: 10 }}>
-              <div style={{ fontSize: 18, fontWeight: 700, color: '#F8FAFC' }}>{preview.character.name}</div>
-              <div style={{ fontSize: 13, lineHeight: 1.55, color: '#CBD5E1' }}>{preview.character.identity.background}</div>
-              <div style={{ fontSize: 13, lineHeight: 1.55, color: '#E2E8F0' }}>
-                Immediate want: {preview.character.identity.immediateWant}
-              </div>
-            </div>
-            <div style={{ display: 'grid', gap: 8, gridTemplateColumns: 'repeat(2, minmax(0, 1fr))' }}>
-              {summaryChip('Initiative', `Phase ${preview.character.initiativePhase}`)}
-              {summaryChip('Armor', `${preview.character.armor} · -${ARMOR_REDUCTION[preview.character.armor]}`)}
-              {summaryChip('Force', statLine(preview.character.actions.force))}
-              {summaryChip('Agility', statLine(preview.character.actions.agility))}
-              {summaryChip('Willpower', statLine(preview.character.actions.willpower))}
-              {summaryChip('Endure', `${preview.character.tracks.endure.current}/${preview.character.tracks.endure.max}`)}
-              {summaryChip('Vitality', `${preview.character.tracks.vitality.current}/${preview.character.tracks.vitality.max}`)}
-              {summaryChip('Avoid', `${preview.character.tracks.avoid.current}/${preview.character.tracks.avoid.max}`)}
-              {summaryChip('Exert', `${preview.character.tracks.exert.current}/${preview.character.tracks.exert.max}`)}
-            </div>
-            <div style={{ display: 'grid', gap: 8 }}>
-              <div style={{ fontSize: 12, fontWeight: 700, color: '#F8FAFC' }}>Weapons</div>
-              <div style={{ fontSize: 12, color: '#CBD5E1', lineHeight: 1.5 }}>
-                {preview.character.weapons.primary.name}: {preview.character.weapons.primary.impact} impact
-              </div>
-              <div style={{ fontSize: 12, color: '#CBD5E1', lineHeight: 1.5 }}>
-                {preview.character.weapons.secondary.name}: {preview.character.weapons.secondary.impact} impact
-              </div>
-            </div>
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+            <CharacterSheetPreview character={preview.character} />
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 16 }}>
               <button onClick={saveCurrent} style={primaryButtonStyle}>Save to Roster</button>
               <button onClick={exportRoster} style={secondaryButtonStyle} disabled={roster.length === 0}>
                 Export Roster

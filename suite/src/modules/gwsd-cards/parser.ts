@@ -758,6 +758,71 @@ export function parseFromStructure(
  * SMART PARSE — cascading: tagged → structural
  * ════════════════════════════════════════════════════════ */
 
+/**
+ * Extract scenes from the Canonical Markdown export format.
+ */
+export function parseCanonicalMarkdown(text: string, adventureName = 'Adventure'): Scene[] {
+  const scenes: Scene[] = [];
+  const sceneBlocks = text.split(/(?=^# [^\n]+$)/m).filter(b => b.trim().length > 0);
+
+  let order = 0;
+  for (const block of sceneBlocks) {
+    const titleMatch = block.match(/^# ([^\n]+)/m);
+    if (!titleMatch) continue;
+    const title = titleMatch[1].trim();
+
+    const isLatent = block.includes('## Hidden Pressure') || block.includes('## Trigger');
+    
+    // Check if it has at least ## Ground to be considered a GWSD block
+    if (!block.includes('## Ground')) continue;
+
+    const extractSection = (header: RegExp) => {
+      const parts = block.split(header);
+      if (parts.length < 2) return '';
+      let section = parts[1];
+      // Splitting by the next header H2
+      section = section.split(/^## /m)[0];
+      return section.trim();
+    };
+
+    let parsedBody: GWSDBody;
+    if (isLatent) {
+      parsedBody = qualifyGWSD({
+        stateType: 'latent',
+        ground: extractSection(/^## Ground\s*$/m),
+        will: extractSection(/^## (?:Will \| )?Hidden Pressure\s*$/m),
+        trigger: extractSection(/^## Trigger\s*$/m),
+        accumulation: extractSection(/^## Accumulation\s*$/m),
+        reveal: extractSection(/^## Reveal Condition\s*$/m) || undefined,
+      }, block);
+    } else {
+      parsedBody = qualifyGWSD({
+        stateType: 'active',
+        ground: extractSection(/^## Ground\s*$/m),
+        will: extractSection(/^## Will\s*$/m),
+        shift: extractSection(/^## Shift\s*$/m),
+        drift: extractSection(/^## Drift\s*$/m),
+      }, block);
+    }
+
+    const sceneId = uid();
+    const cards = createCardsFromBody(sceneId, parsedBody, 'parsed');
+    const validation = validateGWSDBody(parsedBody);
+
+    scenes.push(createSceneRecord({
+      sceneId,
+      title,
+      adventure: adventureName,
+      order: order++,
+      body: parsedBody,
+      cards,
+      raw: block.trim(),
+      validationWarnings: validation.warnings,
+    }));
+  }
+  return scenes;
+}
+
 export type DetectedMode = 'tagged' | 'structural';
 
 export interface SmartParseOptions {
@@ -775,7 +840,13 @@ export function smartParse(
   adventureName = 'Adventure',
   options?: SmartParseOptions,
 ): { scenes: Scene[]; mode: DetectedMode } {
-  // First attempt: explicit [gwsd] tags
+  // First attempt: Canonical Markdown Export
+  const canonical = parseCanonicalMarkdown(text, adventureName);
+  if (canonical.length > 0) {
+    return { scenes: canonical, mode: 'tagged' };
+  }
+
+  // Second attempt: explicit [gwsd] tags
   const tagged = parseGWSDFromMarkdown(text, adventureName);
   if (tagged.length > 0) {
     return { scenes: tagged, mode: 'tagged' };
