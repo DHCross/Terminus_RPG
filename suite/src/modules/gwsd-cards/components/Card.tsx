@@ -60,29 +60,28 @@ export default function Card({
         terminus: card.terminus,
       }));
 
-  const headerBadges = [
-    scene.scenePressure !== undefined
-      ? {
-          key: 'scene-pressure',
-          label: `PRESSURE: ${scene.scenePressure}`,
-          title: `Current Scene Pressure Level: ${scene.scenePressure}`,
-        }
-      : null,
-    sceneMode
-      ? {
-          key: 'scene-mode',
-          label: sceneMode.label,
-          title: `${sceneMode.label} mode — primary verb: ${sceneMode.verb}`,
-        }
-      : null,
-    useSilhouetteRules && scene.silhouette
-      ? {
-          key: 'pressure-type',
-          label: `PRESSURE: ${scene.silhouette.pressureType.toUpperCase()}`,
-          title: `Silhouette pressure type: ${scene.silhouette.pressureType}`,
-        }
-      : null,
-  ].filter(Boolean) as Array<{ key: string; label: string; title: string }>;
+  const headerBadges: Array<{ key: string; label: string; title: string }> = [];
+  if (scene.scenePressure !== undefined) {
+    headerBadges.push({
+      key: 'scene-pressure',
+      label: `PRESSURE: ${scene.scenePressure}`,
+      title: `Current Scene Pressure Level: ${scene.scenePressure}`,
+    });
+  }
+  if (sceneMode) {
+    headerBadges.push({
+      key: 'scene-mode',
+      label: sceneMode.label,
+      title: `${sceneMode.label} mode — primary verb: ${sceneMode.verb}`,
+    });
+  }
+  if (useSilhouetteRules && scene.silhouette) {
+    headerBadges.push({
+      key: 'pressure-type',
+      label: `PRESSURE: ${scene.silhouette.pressureType.toUpperCase()}`,
+      title: `Silhouette pressure type: ${scene.silhouette.pressureType}`,
+    });
+  }
 
   return (
       <div

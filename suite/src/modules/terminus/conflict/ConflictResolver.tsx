@@ -232,7 +232,7 @@ export function ConflictResolver() {
           backgroundColor: winner === 'attacker' ? '#064e3b' : winner === 'defender' ? '#1e3a8a' : '#78350f',
           borderRadius: '0.5rem',
           marginBottom: '2rem',
-          border: `2px solid ${winner === 'attacker' ? '#10b981' : winner === 'defender' ? '#3b82f6' : '#f59e0b'}`,
+          border: '2px solid winner === 'attacker' ? '#10b981' : winner === 'defender' ? '#3b82f6' : '#f59e0b',
         }}>
           <div style={{ fontSize: '1.5rem', fontWeight: 700, color: 'white' }}>
             {winner === 'attacker' ? '🎯 Acting Side Takes Control' : winner === 'defender' ? '🛡️ Responding Side Holds' : '⚖️ Tie (Defender Wins)'}
