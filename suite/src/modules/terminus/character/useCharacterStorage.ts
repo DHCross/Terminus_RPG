@@ -7,6 +7,14 @@ export interface CharacterData {
   order?: string;
   approach?: string;
   signature?: string;
+  frame?: string;
+  edge?: string;
+  orderAbilities?: string;
+  region?: string;
+  localOrigin?: string;
+  oldOffice?: string;
+  localRite?: string;
+  accordRelationship?: string;
   skills: Record<string, string>;
   primaryWeapon?: string;
   secondaryWeapon?: string;
@@ -59,9 +67,17 @@ export function useCharacterStorage() {
 
   const saveCharacter = (character: Omit<CharacterData, 'id' | 'createdAt' | 'updatedAt'>) => {
     const now = new Date().toISOString();
+    const generateId = () => {
+      try {
+        return crypto.randomUUID();
+      } catch {
+        return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+      }
+    };
+    
     const newCharacter: CharacterData = {
       ...character,
-      id: crypto.randomUUID(),
+      id: generateId(),
       createdAt: now,
       updatedAt: now,
     };

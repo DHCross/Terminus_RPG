@@ -23,6 +23,14 @@ export function CharacterCard() {
   const [order, setOrder] = useState('');
   const [approach, setApproach] = useState('');
   const [signature, setSignature] = useState('');
+  const [frame, setFrame] = useState('');
+  const [edge, setEdge] = useState('');
+  const [orderAbilities, setOrderAbilities] = useState('');
+  const [region, setRegion] = useState('');
+  const [localOrigin, setLocalOrigin] = useState('');
+  const [oldOffice, setOldOffice] = useState('');
+  const [localRite, setLocalRite] = useState('');
+  const [accordRelationship, setAccordRelationship] = useState('');
   const [primaryWeapon, setPrimaryWeapon] = useState('unarmed');
   const [secondaryWeapon, setSecondaryWeapon] = useState('');
   const [armor, setArmor] = useState('none');
@@ -38,15 +46,27 @@ export function CharacterCard() {
   // Load selected character
   useEffect(() => {
     if (selectedCharacter) {
-      setName(selectedCharacter.name);
+      setName(selectedCharacter.name || 'New Character');
       setSpecies(selectedCharacter.species || '');
       setOrder(selectedCharacter.order || '');
       setApproach(selectedCharacter.approach || '');
       setSignature(selectedCharacter.signature || '');
+      setFrame(selectedCharacter.frame || '');
+      setEdge(selectedCharacter.edge || '');
+      setOrderAbilities(selectedCharacter.orderAbilities || '');
+      setRegion(selectedCharacter.region || '');
+      setLocalOrigin(selectedCharacter.localOrigin || '');
+      setOldOffice(selectedCharacter.oldOffice || '');
+      setLocalRite(selectedCharacter.localRite || '');
+      setAccordRelationship(selectedCharacter.accordRelationship || '');
       setPrimaryWeapon(selectedCharacter.primaryWeapon || 'unarmed');
       setSecondaryWeapon(selectedCharacter.secondaryWeapon || '');
       setArmor(selectedCharacter.armor || 'none');
-      setSkills(selectedCharacter.skills);
+      setSkills((selectedCharacter.skills as Record<string, Die>) || {
+        [SKILLS.FORCE]: 'd4',
+        [SKILLS.AGILITY]: 'd4',
+        [SKILLS.WILLPOWER]: 'd4'
+      });
       setIsDirty(false);
     } else {
       setName('New Character');
@@ -54,6 +74,14 @@ export function CharacterCard() {
       setOrder('');
       setApproach('');
       setSignature('');
+      setFrame('');
+      setEdge('');
+      setOrderAbilities('');
+      setRegion('');
+      setLocalOrigin('');
+      setOldOffice('');
+      setLocalRite('');
+      setAccordRelationship('');
       setPrimaryWeapon('unarmed');
       setSecondaryWeapon('');
       setArmor('none');
@@ -77,31 +105,31 @@ export function CharacterCard() {
   const availableSignatures = selectedOrderData?.signatures || [];
 
   const handleSave = () => {
+    const characterPayload = {
+      name,
+      species,
+      order,
+      approach,
+      signature,
+      frame,
+      edge,
+      orderAbilities,
+      region,
+      localOrigin,
+      oldOffice,
+      localRite,
+      accordRelationship,
+      primaryWeapon,
+      secondaryWeapon,
+      armor,
+      skills,
+    };
+
     if (selectedCharacter) {
-      updateCharacter(selectedCharacter.id, {
-        name,
-        species,
-        order,
-        approach,
-        signature,
-        primaryWeapon,
-        secondaryWeapon,
-        armor,
-        skills,
-      });
+      updateCharacter(selectedCharacter.id, characterPayload);
       addToast('success', `Character "${name}" updated successfully`);
     } else {
-      saveCharacter({
-        name,
-        species,
-        order,
-        approach,
-        signature,
-        primaryWeapon,
-        secondaryWeapon,
-        armor,
-        skills,
-      });
+      saveCharacter(characterPayload);
       addToast('success', `Character "${name}" created successfully`);
     }
     setIsDirty(false);
@@ -114,6 +142,14 @@ export function CharacterCard() {
     setOrder('');
     setApproach('');
     setSignature('');
+    setFrame('');
+    setEdge('');
+    setOrderAbilities('');
+    setRegion('');
+    setLocalOrigin('');
+    setOldOffice('');
+    setLocalRite('');
+    setAccordRelationship('');
     setPrimaryWeapon('unarmed');
     setSecondaryWeapon('');
     setArmor('none');
@@ -191,6 +227,78 @@ export function CharacterCard() {
             value={species}
             onChange={(e) => { setSpecies(e.target.value); setIsDirty(true); }}
             placeholder="e.g., Human, High Alfar"
+          />
+        </div>
+        <div className="detail-row">
+          <label>Region:</label>
+          <input
+            type="text"
+            value={region}
+            onChange={(e) => { setRegion(e.target.value); setIsDirty(true); }}
+            placeholder="e.g., Black Ward Coast"
+          />
+        </div>
+        <div className="detail-row">
+          <label>Local Origin:</label>
+          <input
+            type="text"
+            value={localOrigin}
+            onChange={(e) => { setLocalOrigin(e.target.value); setIsDirty(true); }}
+            placeholder="e.g., Saint Orra's Gate"
+          />
+        </div>
+        <div className="detail-row">
+          <label>Old Office:</label>
+          <input
+            type="text"
+            value={oldOffice}
+            onChange={(e) => { setOldOffice(e.target.value); setIsDirty(true); }}
+            placeholder="e.g., Saint Latimer"
+          />
+        </div>
+        <div className="detail-row">
+          <label>Local Rite:</label>
+          <input
+            type="text"
+            value={localRite}
+            onChange={(e) => { setLocalRite(e.target.value); setIsDirty(true); }}
+            placeholder="e.g., Keeps ink on her fingers..."
+          />
+        </div>
+        <div className="detail-row">
+          <label>Accord Relationship:</label>
+          <input
+            type="text"
+            value={accordRelationship}
+            onChange={(e) => { setAccordRelationship(e.target.value); setIsDirty(true); }}
+            placeholder="e.g., Provisional Responder"
+          />
+        </div>
+        <div className="detail-row">
+          <label>Frame:</label>
+          <input
+            type="text"
+            value={frame}
+            onChange={(e) => { setFrame(e.target.value); setIsDirty(true); }}
+            placeholder="e.g., Seeker Frame"
+          />
+        </div>
+        <div className="detail-row">
+          <label>Edge:</label>
+          <textarea
+            value={edge}
+            onChange={(e) => { setEdge(e.target.value); setIsDirty(true); }}
+            placeholder="Describe your Edge..."
+            style={{ flex: 1, backgroundColor: '#0f172a', color: '#f8fafc', border: '1px solid #334155', padding: '0.5rem', borderRadius: '0.25rem', minHeight: '60px' }}
+          />
+        </div>
+        <div className="detail-row">
+          <label>Order Abilities:</label>
+          <textarea
+            value={orderAbilities}
+            onChange={(e) => { setOrderAbilities(e.target.value); setIsDirty(true); }}
+            placeholder="e.g., Weak Point, Trace Source"
+            style={{ flex: 1, backgroundColor: '#0f172a', color: '#f8fafc', border: '1px solid #334155', padding: '0.5rem', borderRadius: '0.25rem', minHeight: '60px' }}
           />
         </div>
         <div className="detail-row">
