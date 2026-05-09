@@ -38,7 +38,7 @@ export default function TextInput({ onParse, showEditor = true }: Props) {
             fontWeight: 500,
           }}
         >
-          📂 Open Markdown
+          📂 Open Manuscript
         </button>
         <input
           ref={fileRef}
@@ -62,17 +62,17 @@ export default function TextInput({ onParse, showEditor = true }: Props) {
             fontWeight: 500,
           }}
         >
-          {canParse ? 'Re-Parse GWSD' : 'Parse GWSD'}
+          {canParse ? 'Re-Distill Cards' : 'Distill Scene Cards'}
         </button>
         <span style={{ fontSize: 11, color: '#6B7280' }}>
-          Opening a file parses immediately; use Re-Parse after edits
+          Opening a manuscript distills immediately; use Re-Distill after field edits
         </span>
       </div>
       {showEditor && (
         <textarea
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder="Paste adventure manuscript here — supports [gwsd] tags, [sidebar] blocks, and scene headers..."
+          placeholder="Paste field notes, adventure text, or raw scene prose. Mark known structures with [gwsd], [sidebar], or scene headers."
           style={{
             width: '100%',
             height: 180,
