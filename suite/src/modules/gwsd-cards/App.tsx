@@ -485,6 +485,8 @@ export default function App() {
                       🖨 Print
                     </button>
                   </div>
+                </>
+              )}
 
               {scenes.length > 0 && cardsMode === 'parse' && (
                 <>
