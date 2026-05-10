@@ -1,111 +1,128 @@
-@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,700;1,400&family=Fira+Code:wght@400;600&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
 
 :root {
-  --bg-dark: #000000;
-  --bg-panel: #050505;
-  --bg-hover: #111111;
-  --text-lore: #d4d4cd;
-  --text-data: #00ffff; /* hyper-saturated cyan */
-  --text-alert: #ffb000; /* amber */
-  --border-color: #ffffff;
-  --border-muted: #333333;
+  /* --- Design system tokens --- */
+  --color-background: #0f172a;
+  --color-surface: #1e293b;
+  --color-surface-hover: #334155;
+  --color-primary: #3b82f6;
+  --color-primary-hover: #2563eb;
+  --color-text: #f8fafc;
+  --color-text-muted: #94a3b8;
+  --color-border: #334155;
+  --color-accent: #fbbf24;
+
+  /* --- Legacy aliases (keep old class selectors working) --- */
+  --bg-dark: var(--color-background);
+  --bg-panel: #0c1524;
+  --bg-hover: var(--color-surface-hover);
+  --text-lore: #cbd5e1;
+  --text-data: var(--color-primary);
+  --text-alert: var(--color-accent);
+  --border-color: var(--color-border);
+  --border-muted: #1e293b;
+}
+
+/* --- Base --- */
+*, *::before, *::after {
+  box-sizing: border-box;
 }
 
 body {
   margin: 0;
-  background-color: var(--bg-dark);
-  color: var(--text-data);
-  -webkit-font-smoothing: none; /* Harsh rendering */
-  font-family: 'Space Mono', 'Fira Code', monospace;
+  background-color: var(--color-background);
+  color: var(--color-text);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
+  line-height: 1.5;
 }
 
-/* Brutalist Grid */
+/* --- App shell --- */
 .app-layout {
   display: grid;
   height: 100vh;
   grid-template-columns: 260px 1fr;
   grid-template-rows: auto 1fr;
-  border-collapse: collapse;
-}
-
-/* Weaponized Whitespace & Missing Data */
-.app-layout::before {
-  content: "// 404: ASSET NOT FOUND";
-  position: fixed;
-  bottom: 2rem;
-  right: 2rem;
-  color: var(--text-alert);
-  font-family: 'Space Mono', monospace;
-  font-size: 0.8rem;
-  opacity: 0.5;
-  pointer-events: none;
-  z-index: 9999;
-}
-
-/* Strict Borders everywhere */
-* {
-  box-sizing: border-box;
 }
 
 .sidebar {
   grid-row: 1 / -1;
-  border-right: 1px solid var(--border-color);
+  border-right: 1px solid var(--color-border);
   background-color: var(--bg-panel);
   display: flex;
   flex-direction: column;
 }
 
 .sidebar-header {
-  padding: 2rem;
-  border-bottom: 1px solid var(--border-color);
+  padding: 1.5rem 1.5rem;
+  border-bottom: 1px solid var(--color-border);
 }
 
 .sidebar-header h1 {
-  margin: 0 0 1rem 0;
-  font-size: 1rem;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  color: var(--border-color);
-  font-family: 'Space Mono', monospace;
+  margin: 0 0 0.75rem 0;
+  font-size: 1.125rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--color-text);
+  font-family: 'Inter', sans-serif;
 }
 
 .badge {
-  background-color: transparent;
-  color: var(--text-data);
-  padding: 0.25rem 0;
-  border: 1px solid var(--text-data);
-  font-family: 'Space Mono', monospace;
-  font-size: 0.70rem;
-  text-transform: uppercase;
   display: inline-block;
-  text-align: center;
-  width: 100%;
+  padding: 0.2rem 0.6rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--color-accent);
+  border: 1px solid var(--color-accent);
+  border-radius: 4px;
+  font-family: 'JetBrains Mono', monospace;
 }
 
 .nav-menu {
   display: flex;
   flex-direction: column;
-  padding: 2rem 0;
+  padding: 1rem 0;
+  gap: 2px;
 }
 
 .nav-item {
   display: flex;
   align-items: center;
-  padding: 1rem 2rem;
-  color: var(--text-muted);
+  gap: 0.75rem;
+  padding: 0.75rem 1.5rem;
+  color: var(--color-text-muted);
   text-decoration: none;
-  font-size: 0.85rem;
-  border-bottom: 1px solid var(--border-muted);
-  text-transform: uppercase;
-  transition: none;
-  font-family: 'Space Mono', monospace;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 0;
+  transition: background 0.15s ease, color 0.15s ease;
 }
 
-.nav-item:hover, .nav-item.active {
-  background-color: var(--text-data);
-  color: var(--bg-dark);
-  border-bottom: 1px solid var(--border-color);
+.nav-item .icon {
+  width: 18px;
+  height: 18px;
+  opacity: 0.7;
+}
+
+.nav-item:hover {
+  background-color: var(--color-surface);
+  color: var(--color-text);
+}
+
+.nav-item.active {
+  background-color: var(--color-surface);
+  color: var(--color-primary);
+  border-left: 3px solid var(--color-primary);
+  padding-left: calc(1.5rem - 3px);
+}
+
+.nav-item.active .icon {
+  opacity: 1;
+  color: var(--color-primary);
 }
 
 .main-content {
@@ -116,9 +133,9 @@ body {
 
 .topbar {
   height: auto;
-  min-height: 80px;
-  border-bottom: 1px solid var(--border-color);
-  padding: 2rem;
+  min-height: 64px;
+  border-bottom: 1px solid var(--color-border);
+  padding: 1rem 2rem;
   display: flex;
   align-items: center;
   background: var(--bg-panel);
@@ -126,132 +143,143 @@ body {
 
 .topbar h2 {
   margin: 0;
-  font-size: 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
   text-transform: uppercase;
-  color: var(--text-alert);
-  font-family: 'Space Mono', monospace;
+  letter-spacing: 1px;
+  color: var(--color-text-muted);
+  font-family: 'Inter', sans-serif;
 }
 
 .content-area {
   flex: 1;
   overflow-y: auto;
-  padding: 4rem; /* Weaponized whitespace */
+  padding: 2rem;
 }
 
-/* Narrative / Lore typography */
-p, h2, h3, h4, h5, h6 {
+/* --- Typography --- */
+h2, h3, h4, h5, h6 {
   font-family: 'EB Garamond', serif;
+  color: var(--color-text);
+  line-height: 1.4;
+}
+
+p {
+  font-family: 'Inter', sans-serif;
   color: var(--text-lore);
-  line-height: 1.6;
+  line-height: 1.65;
 }
 
-/* Mechanics / Metadata override */
-.mechanics-text, .meta, .btn, label, select, input, .nav-item {
-  font-family: 'Space Mono', monospace !important;
-  color: var(--text-data) !important;
+/* --- Buttons --- */
+.btn {
+  padding: 0.6rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
-/* Character Card - Terminal Brutalism */
+.btn-primary {
+  background: var(--color-primary);
+  color: white;
+  border: 1px solid var(--color-primary);
+}
+
+.btn-primary:hover {
+  background: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+}
+
+.btn-secondary:hover {
+  background: var(--color-surface);
+  border-color: var(--color-text-muted);
+}
+
+/* --- Form elements --- */
+select, input, textarea {
+  background-color: var(--color-background);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.875rem;
+}
+
+select:focus, input:focus, textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
+}
+
+/* --- Cards --- */
 .character-card {
-  background-color: transparent;
-  border: 1px solid var(--border-color);
-  border-radius: 0;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
   max-width: 100%;
-  margin-bottom: 4rem;
+  margin-bottom: 2rem;
+  overflow: hidden;
 }
 
 .card-header {
-  padding: 2rem;
-  border-bottom: 1px solid var(--border-color);
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--color-border);
   display: flex;
   justify-content: space-between;
-  background: repeating-linear-gradient(
-    45deg,
-    #000,
-    #000 10px,
-    #111 10px,
-    #111 20px
-  );
+  align-items: center;
+  background: var(--color-surface);
 }
 
-.status-badges { display: flex; gap: 1rem; }
+.status-badges { display: flex; gap: 0.75rem; }
 
 .card-actions {
-  padding: 2rem;
-  border-bottom: 1px solid var(--border-color);
-  display: flex; gap: 2rem; align-items: center;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  gap: 1rem;
+  align-items: center;
 }
 
-.btn {
-  padding: 0.5rem 1rem;
-  border: 1px solid var(--text-data);
-  background: transparent;
-  color: var(--text-data) !important;
-  text-transform: uppercase;
-  cursor: pointer;
-  border-radius: 0;
-  font-size: 0.8rem;
+/* --- Scrollbar --- */
+::-webkit-scrollbar {
+  width: 8px;
 }
 
-.btn:hover {
-  background: var(--text-data);
-  color: var(--bg-dark) !important;
+::-webkit-scrollbar-track {
+  background: var(--color-background);
 }
 
-select {
-  background-color: var(--bg-dark);
-  border: 1px solid var(--text-data);
-  padding: 0.5rem;
-  color: var(--text-data) !important;
-  border-radius: 0;
+::-webkit-scrollbar-thumb {
+  background: var(--color-surface-hover);
+  border-radius: 4px;
 }
 
-/* Asset Degration Effect */
-.degradable-asset {
-  display: block;
-  border: 1px solid var(--border-color);
-  width: 100%;
-  height: auto;
-  background-color: var(--bg-panel);
-  position: relative;
-  overflow: hidden;
-  transition: all 0.1s steps(2);
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-muted);
 }
 
-.degradable-asset:hover {
-  filter: grayscale(100%) contrast(200%) invert(100%);
-  animation: glitch-anim 0.2s linear infinite;
-  background: repeating-conic-gradient(#00f 0% 25%, #000 25% 50%) 50% / 20px 20px;
-}
-
-.degradable-asset:hover img {
-  opacity: 0.1;
-}
-
-.degradable-asset::before {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-family: 'Space Mono', monospace;
-  color: var(--text-alert);
-  background: transparent;
-  z-index: 10;
-  opacity: 0;
-}
-
-.degradable-asset:hover::before {
-  content: "DECOMPILING ASSET...\A" "ADDR: 0x00FF88\A" "ERR: CORRUPTION DETECTED";
-  white-space: pre-wrap;
-  opacity: 1;
-}
-
-@keyframes glitch-anim {
-  0% { transform: translate(0) }
-  20% { transform: translate(-2px, 2px) }
-  40% { transform: translate(-2px, -2px) }
-  60% { transform: translate(2px, 2px) }
-  80% { transform: translate(2px, -2px) }
-  100% { transform: translate(0) }
+/* --- Responsive --- */
+@media (max-width: 768px) {
+  .app-layout {
+    grid-template-columns: 1fr;
+  }
+  .sidebar {
+    display: none;
+  }
+  .content-area {
+    padding: 1rem;
+  }
 }
