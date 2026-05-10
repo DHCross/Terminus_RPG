@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import heroImg from './assets/hero.png';
 import './App.css';
 
 function App() {
@@ -6,20 +7,18 @@ function App() {
 
   return (
     <div className="landing-page">
-      <div className="hero-section">
-        <h1 className="title">Terminus RPG Suite</h1>
-        <p className="subtitle">Alpha 0.1 — Dark Fantasy Tabletop Tools</p>
-        <p className="description">
-          A comprehensive software suite for the Terminus RPG, featuring character builders,
-          scene card generators, and playtest tools.
-        </p>
-        <div className="cta-buttons">
-          <button className="btn btn-primary" onClick={() => navigate('/characters')}>
-            Create Character
-          </button>
-          <button className="btn btn-secondary" onClick={() => navigate('/scene-cards')}>
-            Scene Cards
-          </button>
+      <div className="hero-banner" style={{ backgroundImage: `url(${heroImg})` }}>
+        <div className="hero-content">
+          <h1 className="title">Terminus RPG Suite</h1>
+          <p className="subtitle">Alpha 0.1 — Dark Fantasy Tabletop Tools</p>
+          <div className="cta-buttons">
+            <button className="btn btn-primary" onClick={() => navigate('/characters')}>
+              Create Character
+            </button>
+            <button className="btn btn-secondary" onClick={() => navigate('/scene-cards')}>
+              Scene Cards
+            </button>
+          </div>
         </div>
       </div>
 
@@ -64,6 +63,15 @@ function App() {
         <p className="alpha-notice">
           This is an alpha release for playtesting. Rules and features may change as the system evolves.
         </p>
+      </div>
+
+      <div className="map-section">
+        <h2>The World of Tringad</h2>
+        <img
+          src="/tringad_political_map.png"
+          alt="Political map of Tringad"
+          className="world-map"
+        />
       </div>
     </div>
   );
