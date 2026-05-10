@@ -11,11 +11,12 @@ export function AppShell() {
           <div className="brand-lockup">
             <img
               className="brand-crest"
-              src="/recovered-art/terminus_hero_no_text_1778300537719.png"
+              src="/favicon.svg"
               alt="Terminus crest"
             />
-            <div>
+            <div className="brand-copy">
               <h1>Terminus RPG</h1>
+              <p className="brand-subtitle">Civic Archive Suite</p>
               <span className="badge">Alpha 0.1</span>
             </div>
           </div>
