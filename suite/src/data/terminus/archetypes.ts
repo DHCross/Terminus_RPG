@@ -70,15 +70,15 @@ export function generateArchetype(orderId: string, originId: OriginId): Archetyp
 
   // Order archetypal shapes
   const orderArchetypes: Record<string, { primary: 'Force' | 'Agility' | 'Willpower'; secondary: 'Force' | 'Agility' | 'Willpower'; fallback: 'Force' | 'Agility' | 'Willpower' }> = {
-    'Seeker': { primary: 'Willpower', secondary: 'Agility', fallback: 'Force' },
-    'Breaker': { primary: 'Force', secondary: 'Agility', fallback: 'Willpower' },
-    'Warden': { primary: 'Force', secondary: 'Willpower', fallback: 'Agility' },
-    'Rival': { primary: 'Agility', secondary: 'Force', fallback: 'Willpower' },
-    'Broker': { primary: 'Willpower', secondary: 'Force', fallback: 'Agility' },
-    'Shade': { primary: 'Agility', secondary: 'Willpower', fallback: 'Force' },
+    'seeker': { primary: 'Willpower', secondary: 'Agility', fallback: 'Force' },
+    'breaker': { primary: 'Force', secondary: 'Agility', fallback: 'Willpower' },
+    'warden': { primary: 'Force', secondary: 'Willpower', fallback: 'Agility' },
+    'rival': { primary: 'Agility', secondary: 'Force', fallback: 'Willpower' },
+    'broker': { primary: 'Willpower', secondary: 'Force', fallback: 'Agility' },
+    'shade': { primary: 'Agility', secondary: 'Willpower', fallback: 'Force' },
   };
 
-  const orderShape = orderArchetypes[orderId];
+  const orderShape = orderArchetypes[orderId.toLowerCase()];
   if (!orderShape) throw new Error(`Unknown order: ${orderId}`);
 
   return {
