@@ -486,8 +486,6 @@ export default function App() {
                     </button>
                   </div>
 
-              {scenes.length > 0 && cardsMode === 'parse' && (
-                <>
                   <label
                     style={{
                       fontSize: 12,
@@ -519,11 +517,7 @@ export default function App() {
                   >
                     Print Cards
                   </button>
-                </>
-              )}
 
-              {scenes.length > 0 && cardsMode === 'parse' && (
-                <>
                   <button onClick={handleExportJSON} style={exportBtnStyle}>
                     JSON
                   </button>
@@ -556,8 +550,8 @@ export default function App() {
                   >
                     {promptCopied ? '✓ Copied' : '🤖 AI Prompt'}
                   </button>
-                </>
-              )}
+            </>
+          )}
             </>
           )}
         </div>

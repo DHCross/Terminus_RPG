@@ -24,6 +24,10 @@ export function CharacterGenerator() {
     completedOperations: 0,
   });
 
+  const [unassignedUpgrades, setUnassignedUpgrades] = useState<Set<'d10' | 'd8' | 'd6'>>(
+    new Set(['d10', 'd8', 'd6'])
+  );
+
   const handleSelectOrder = (orderId: string) => {
     setSelectedOrder(orderId);
     setStep('origin-select');
@@ -66,6 +70,35 @@ export function CharacterGenerator() {
     setStep('review');
   };
 
+  const handleAssignUpgrade = (skill: 'Force' | 'Agility' | 'Willpower', upgradeDie: Die) => {
+    setCharacter(prev => ({
+      ...prev,
+      [skill]: upgradeDie,
+    }));
+    
+    setUnassignedUpgrades(prev => {
+      const newSet = new Set(prev);
+      newSet.delete(upgradeDie);
+      return newSet;
+    });
+  };
+
+  const handleSaveCharacter = () => {
+    const thresholds = deriveThresholds({
+      Force: character.Force,
+      Agility: character.Agility,
+      Willpower: character.Willpower,
+    });
+    
+    const finalCharacter = {
+      ...character,
+      ...thresholds,
+    };
+    
+    console.log('Saving character:', finalCharacter);
+    // TODO: hook to character storage
+  };
+
   return (
     <div className="max-w-4xl mx-auto p-6 bg-slate-950 rounded-lg border border-slate-800 space-y-6">
       <header>
@@ -75,6 +108,7 @@ export function CharacterGenerator() {
         <p className="text-sm text-slate-400">Build a Terminus responder with controlled advancement</p>
       </header>
 
+      {/* Step 1: Order Selection */}
       {step === 'order-select' && (
         <section className="space-y-4">
           <h3 className="text-lg font-semibold text-slate-200">1. Choose Your Order</h3>
@@ -93,6 +127,7 @@ export function CharacterGenerator() {
         </section>
       )}
 
+      {/* Step 2: Origin Selection */}
       {step === 'origin-select' && (
         <section className="space-y-4">
           <div className="flex items-center gap-4">
@@ -133,6 +168,35 @@ export function CharacterGenerator() {
         </section>
       )}
 
+      {/* Step 3: Upgrade Assignment (only if manual mode) */}
+      {step === 'upgrade-assign' && (
+        <section className="space-y-4">
+          <h3 className="text-lg font-semibold text-slate-200">3. Assign Your Upgrades</h3>
+          <p className="text-sm text-slate-400">You have three upgrades to place: +d10, +d8, +d6</p>
+          
+          <div className="grid grid-cols-3 gap-4">
+            {(['Force', 'Agility', 'Willpower'] as const).map(skill => (
+              <div key={skill} className="space-y-2 p-3 bg-slate-900 border border-slate-700 rounded">
+                <div className="font-semibold text-amber-400">{skill}</div>
+                <div className="text-sm text-slate-300">Current: {character[skill]}</div>
+                <div className="flex gap-1">
+                  {Array.from(unassignedUpgrades).map(die => (
+                    <button
+                      key={die}
+                      onClick={() => handleAssignUpgrade(skill, die)}
+                      className="flex-1 px-2 py-1 text-xs bg-slate-800 text-slate-300 border border-slate-600 rounded hover:border-amber-500 hover:bg-slate-700"
+                    >
+                      {die}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Step 4: Review */}
       {step === 'review' && (
         <section className="space-y-6">
           <div className="flex items-center gap-2 mb-4">
@@ -145,6 +209,7 @@ export function CharacterGenerator() {
             </button>
           </div>
 
+          {/* Character Summary */}
           <div className="bg-slate-900 border border-slate-700 rounded p-4 space-y-4">
             <div className="grid grid-cols-3 gap-4">
               <div>
@@ -155,18 +220,32 @@ export function CharacterGenerator() {
                 <label className="text-xs text-slate-500 uppercase">Origin</label>
                 <div className="text-lg font-semibold text-amber-400">{character.origin || 'Select Origin'}</div>
               </div>
+              <div>
+                <label className="text-xs text-slate-500 uppercase">AP / Operations</label>
+                <div className="text-sm text-slate-300">{character.advancementPoints} AP / {character.completedOperations} ops</div>
+              </div>
             </div>
           </div>
 
+          {/* Skills Grid */}
           <div className="grid grid-cols-3 gap-4">
-            {(['Force', 'Agility', 'Willpower'] as const).map(skill => (
-              <div key={skill} className="bg-slate-900 border border-slate-700 rounded p-3 space-y-2">
-                <div className="text-sm font-semibold text-amber-400">{skill}</div>
-                <div className="text-2xl font-bold text-slate-200">{character[skill]}</div>
-              </div>
-            ))}
+            {(['Force', 'Agility', 'Willpower'] as const).map(skill => {
+              const thresholdMap = { Force: 'Endure', Agility: 'Avoid', Willpower: 'Exert' } as const;
+              const threshold = character[thresholdMap[skill]];
+              
+              return (
+                <div key={skill} className="bg-slate-900 border border-slate-700 rounded p-3 space-y-2">
+                  <div className="text-sm font-semibold text-amber-400">{skill}</div>
+                  <div className="text-2xl font-bold text-slate-200">{character[skill]}</div>
+                  <div className="text-xs text-slate-500">
+                    {thresholdMap[skill]}: <span className="text-slate-300 font-semibold">{threshold}</span>
+                  </div>
+                </div>
+              );
+            })}
           </div>
 
+          {/* Character Name Input */}
           <div className="space-y-2">
             <label className="text-sm text-slate-400">Character Name</label>
             <input
@@ -178,7 +257,9 @@ export function CharacterGenerator() {
             />
           </div>
 
+          {/* Save Button */}
           <button
+            onClick={handleSaveCharacter}
             className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-amber-600 hover:bg-amber-500 text-amber-950 font-bold rounded shadow-lg shadow-amber-900/20 transition-colors"
           >
             <Save size={18} /> Save Character
