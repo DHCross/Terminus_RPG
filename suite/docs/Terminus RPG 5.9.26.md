@@ -141,6 +141,18 @@ Orders respond when law, craft, violence, or scholarship cannot stabilize a situ
 
 Each Threshold contains circles derived from the linked Skill die. Spending or losing circles alters the situation.
 
+## **The Willpower Asymmetry**
+Willpower (and the Exert Threshold) operates differently depending on who is using it. This asymmetry is what makes Exert feel alive rather than just another ablative defense.
+
+- **For Player Characters:** Exert serves a dual function. It is both a spendable resource (Strain) used to fuel abilities and push boundaries, *and* a damage track that absorbs incoming mental pressure.
+- **For Monsters/NPCs:** Exert is **only** an ablative damage track. Monsters do not spend Willpower to fuel their abilities. Their abilities are fueled by their innate traits or active ability slots. This keeps the Guide's cognitive load low at the table.
+
+## **Will Defeat State**
+What happens when a character's Exert Threshold breaks entirely? Physical defeat has a clear state (the body breaks, the threshold fails). Will defeat follows a similar logic.
+
+- **The Default State:** The universal default for Will defeat is **Rout/Flee**. This is clean, universal, and requires no interpretation mid-scene.
+- **The Exception Layer:** Specific monster abilities can override the default state. A fear-projector causes *Rout*. A compulsion-type creature causes *Behavioral Override*. A manipulator-type causes *Forced Disclosure*. The menu exists, but the Guide only touches it when a monster ability explicitly names an exception. The monster's design pre-selects the outcome at the moment of defeat.
+
 | Skill Die | Threshold Circles |
 | :---- | :---- |
 | d4 | 1 |
@@ -217,6 +229,7 @@ Wardens hold the line where collapse is in motion.
 **Hold the Line:** You can take an ally’s Threshold loss if you interpose.  
 **Anchor Point:** Choose a boundary. Until you move, enemies cannot easily force it open.  
 **Brace Against It:** When you Endure, you can protect one nearby person from that same pressure.
+**Absorb the Drift:** When the Scene Drift increases due to a monster's passive escalation, you may suffer a loss to your Exert Threshold to delay or negate the increase for this round. You are holding the room together with your will.
 
 ## **Rival**
 
@@ -233,6 +246,7 @@ Brokers turn obligations and faction pressure into action.
 **Call in Favor:** You can introduce one plausible contact or minor resource into the scene.  
 **Make Terms:** Propose terms that change what sides are willing to risk.  
 **Turn the Room:** Reveal leverage to shift one hesitant NPC toward action.
+**Foreclose:** You may apply Will pressure outward to attack a target's Exert Threshold by explicitly calling in a debt, presenting irrefutable leverage, or invoking a binding obligation.
 
 ## **Shade**
 
@@ -351,3 +365,37 @@ The "unintended name" the token uses should not be random; it exposes pressure:
 
 This immediately tells the table: this world’s bureaucracy is not merely paperwork. It sees through sequence, identity, and obligation in ways people do not control.
 
+
+---
+
+# **13\. Monster Stat Block Template**
+
+Monsters in Terminus are primarily engines of pressure. They do not operate on complex action economies or spell slots. They are designed to run at the table with minimal Guide overhead, answering four fundamental questions: (1) Can I do this at all? (2) Do I succeed? (3) How much does it matter? (4) What does the fiction allow afterward?
+
+## **Target Structure**
+
+*   **Concept:** A single evocative sentence defining what the monster is and how it pressures the scene.
+*   **Passive/Innate Trait:** One defining feature. What makes it distinct? What fictional constraint does it enforce just by existing?
+*   **Active Abilities:** One or two things it actually *does*. These should target physical thresholds (Endure/Avoid) or mental thresholds (Exert), and usually carry an Impact value.
+*   **Defensive Profile:**
+    *   **Threshold (Endure/Avoid/Exert):** The die it rolls to resist PC pressure.
+    *   **Circles:** Its ablative track. For monsters, Exert is purely a damage track (it never spends Strain).
+    *   **Will Defeat State:** The specific consequence if its Exert Threshold breaks (defaults to *Rout/Flee*).
+*   **Scene Drift Contribution:** A passive escalation. What pressure does it generate just by being present? This increments Drift at the end of the round and gives the Warden's *Absorb the Drift* ability an explicit target.
+
+## **Worked Example: The Ash-Walker**
+
+**Concept:** A scorched remnant of a failed civic seal that burns the air and forces panicked retreat.
+
+*   **Innate Trait: Smoldering Presence**
+    *   The air within close range is thick with choking ash. Any character ending their turn here without protection loses an Endure circle (Impact 1).
+*   **Active Ability 1: Searing Lash (Force / Agility)**
+    *   *Can I do this?* Yes, if in reach. *Do I succeed?* Rolls d8 Force. *Impact?* 2. *Afterward?* The target is pushed back, opening their position.
+*   **Active Ability 2: Terror of the Burn (Willpower)**
+    *   *Can I do this?* Yes, if the target can see the Ash-Walker ignite. *Do I succeed?* Rolls d8 Willpower. *Impact?* 1 to Exert. *Afterward?* Overrides Will Defeat State to *Compulsion (Flee the Room)* instead of a generic Rout.
+*   **Defensive Profile:**
+    *   **Avoid:** d6 (2 Circles)
+    *   **Endure:** d8 (3 Circles)
+    *   **Exert:** d6 (2 Circles) — *Will Defeat State: Dissipates into harmless soot (Rout).*
+*   **Scene Drift Contribution:**
+    *   *Passive:* At the end of each round the Ash-Walker is active, add 1 to the Scene Drift. The temperature rises, warping doorframes and weakening stone.
