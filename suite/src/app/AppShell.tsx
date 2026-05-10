@@ -11,7 +11,7 @@ export function AppShell() {
           <div className="brand-lockup">
             <img
               className="brand-crest"
-              src="/favicon.svg"
+              src="/terminus-logo.svg"
               alt="Terminus crest"
             />
             <div className="brand-copy">

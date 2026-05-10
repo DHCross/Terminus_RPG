@@ -11,7 +11,7 @@ function App() {
         style={{ backgroundImage: 'url(/recovered-art/terminus_hero_no_text_1778300537719.png)' }}
       >
         <div className="hero-content">
-          <img className="hero-emblem" src="/favicon.svg" alt="Terminus emblem" />
+          <img className="hero-emblem" src="/terminus-logo.svg" alt="Terminus emblem" />
           <h1 className="title">Terminus RPG Suite</h1>
           <p className="subtitle">Alpha 0.1 — Dark Fantasy Tabletop Tools</p>
           <div className="cta-buttons">

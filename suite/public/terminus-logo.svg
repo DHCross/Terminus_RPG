@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title desc">
+  <title id="title">Terminus RPG Logo</title>
+  <desc id="desc">A dark fantasy emblem with a circular seal and a stylized T sigil.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0b1322"/>
+      <stop offset="100%" stop-color="#111b2f"/>
+    </linearGradient>
+    <linearGradient id="ring" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#7dd3fc"/>
+      <stop offset="55%" stop-color="#60a5fa"/>
+      <stop offset="100%" stop-color="#fbbf24"/>
+    </linearGradient>
+    <linearGradient id="sigil" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f8fafc"/>
+      <stop offset="100%" stop-color="#cbd5e1"/>
+    </linearGradient>
+    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="1.8" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <rect x="4" y="4" width="120" height="120" rx="20" fill="url(#bg)"/>
+  <circle cx="64" cy="64" r="48" fill="none" stroke="#1e293b" stroke-width="8"/>
+  <circle cx="64" cy="64" r="48" fill="none" stroke="url(#ring)" stroke-width="3"/>
+  <circle cx="64" cy="64" r="39" fill="none" stroke="#334155" stroke-width="1.5" stroke-dasharray="2 5"/>
+
+  <g fill="none" stroke="url(#sigil)" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)">
+    <path d="M64 34v60" stroke-width="5"/>
+    <path d="M46 45h36" stroke-width="5"/>
+    <path d="M54 54 64 45 74 54" stroke-width="3"/>
+    <path d="M55 89h18" stroke-width="3"/>
+    <path d="M43 71 51 64 43 57" stroke-width="2.5"/>
+    <path d="M85 57 77 64 85 71" stroke-width="2.5"/>
+  </g>
+
+  <circle cx="64" cy="20" r="2.5" fill="#fbbf24"/>
+  <circle cx="64" cy="108" r="2.5" fill="#fbbf24"/>
+  <circle cx="20" cy="64" r="2.5" fill="#fbbf24"/>
+  <circle cx="108" cy="64" r="2.5" fill="#fbbf24"/>
+</svg>
