@@ -49,7 +49,8 @@ export const ORDERS_LIST: OrderInfo[] = [
       { name: 'Hold the Line', description: 'When a nearby ally would lose a Threshold circle, you may take that loss instead if you can plausibly interpose.' },
       { name: 'Anchor Point', description: 'Choose one position, door, bridge, threshold, or boundary. Until you move, it is harder to force open, cross, or collapse.' },
       { name: 'Brace Against It', description: 'When you choose Endure, you may protect one nearby person or object from the same pressure.' },
-      { name: 'No Further', description: 'When an enemy tries to pass your position, you may force them to deal with you first.' }
+      { name: 'No Further', description: 'When an enemy tries to pass your position, you may force them to deal with you first.' },
+      { name: 'Absorb the Drift', description: 'When the Scene Drift increases due to a monster\'s passive escalation, you may suffer a loss to your Exert Threshold to delay or negate the increase for this round. You are holding the room together with your will.' }
     ]
   },
   {
@@ -75,7 +76,8 @@ export const ORDERS_LIST: OrderInfo[] = [
       { name: 'Call in Favor', description: 'Introduce one plausible contact, owed service, minor resource, or old arrangement into the scene.' },
       { name: 'Make Terms', description: 'When two sides can hear you, you may propose terms that change what each side is willing to risk.' },
       { name: 'Hold the Debt', description: 'When someone accepts your help, mark the obligation. Later, you may ask for repayment in a related scene.' },
-      { name: 'Turn the Room', description: 'When you reveal leverage, you may shift one neutral, hesitant, or self-interested NPC toward action.' }
+      { name: 'Turn the Room', description: 'When you reveal leverage, you may shift one neutral, hesitant, or self-interested NPC toward action.' },
+      { name: 'Foreclose', description: 'You may apply Will pressure outward to attack a target\'s Exert Threshold by explicitly calling in a debt, presenting irrefutable leverage, or invoking a binding obligation.' }
     ]
   },
   {
