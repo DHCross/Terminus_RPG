@@ -18,6 +18,8 @@ const apiKey = import.meta.env.VITE_GEMINI_API_KEY || "";
 export function SceneCardForge() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationMessage, setGenerationMessage] = useState('');
+  const [previewMarkdown, setPreviewMarkdown] = useState('');
+  const [showPreview, setShowPreview] = useState(false);
   
   // Form State
   const [formData, setFormData] = useState({
@@ -54,8 +56,97 @@ export function SceneCardForge() {
         orderHooks: { ...prev.orderHooks, [fieldName]: value }
       }));
     } else {
-      setFormData(prev => ({ ...prev, [name]: value }));
+      setFormData(prev => ({
+        ...prev,
+        [name]: name === 'scenePressure' ? Number(value) : value
+      }));
     }
+  };
+
+  const buildSceneCardMarkdown = () => {
+    const safePressure = Math.max(1, Math.min(5, Number(formData.scenePressure) || 1));
+    const orderLines = Object.entries(formData.orderHooks)
+      .filter(([, hook]) => hook.trim())
+      .map(([order, hook]) => `- **${order}:** ${hook.trim()}`)
+      .join('\n');
+
+    return `# ${formData.sceneTitle.trim() || 'Untitled Scene'}
+
+## Metadata
+- **Adventure:** ${formData.adventure.trim() || 'Custom Adventure'}
+- **Act:** ${formData.act.trim() || '1'}
+- **Location:** ${formData.location.trim() || 'Unknown'}
+- **Scene Mode:** ${formData.sceneMode}
+- **State Type:** ${formData.stateType}
+- **Pressure Type:** ${formData.pressureType}
+- **Scene Pressure:** ${safePressure}/5
+
+## Engine Layer (GWSD)
+- **Ground:** ${formData.ground.trim() || 'TBD'}
+- **Will:** ${formData.will.trim() || 'TBD'}
+- **Shift:** ${formData.shift.trim() || 'TBD'}
+- **Drift:** ${formData.drift.trim() || 'TBD'}
+
+## Read-Aloud
+${formData.readAloud.trim() || 'No read-aloud text provided.'}
+
+## Drift Ladder / Transition State
+${formData.driftLadder.trim() || 'No drift ladder provided.'}
+
+## Map Hooks / Nouns
+${formData.mapHooks.trim() || 'No map hooks provided.'}
+
+## Order Hooks
+${orderLines || '- No order hooks provided.'}
+`;
+  };
+
+  const getMissingRequiredFields = () => {
+    const missing: string[] = [];
+    if (!formData.sceneTitle.trim()) missing.push('Scene Title');
+    if (!formData.location.trim()) missing.push('Location');
+    if (!formData.ground.trim()) missing.push('Ground');
+    if (!formData.will.trim()) missing.push('Will');
+    if (!formData.shift.trim()) missing.push('Shift');
+    if (!formData.drift.trim()) missing.push('Drift');
+    return missing;
+  };
+
+  const handlePreviewExport = () => {
+    const markdown = buildSceneCardMarkdown();
+    setPreviewMarkdown(markdown);
+    setShowPreview(true);
+    setGenerationMessage('✓ Preview generated. Review it below before forging.');
+  };
+
+  const handleForgeSceneCard = () => {
+    const missingFields = getMissingRequiredFields();
+    if (missingFields.length > 0) {
+      setGenerationMessage(`⚠️ Complete required fields before forging: ${missingFields.join(', ')}`);
+      return;
+    }
+
+    const markdown = buildSceneCardMarkdown();
+    setPreviewMarkdown(markdown);
+    setShowPreview(true);
+
+    const slug = (formData.sceneTitle || 'scene-card')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '');
+    const filename = `${slug || 'scene-card'}.md`;
+
+    const blob = new Blob([markdown], { type: 'text/markdown;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+
+    setGenerationMessage(`✓ Scene card forged and downloaded as ${filename}`);
   };
 
   const handleToggleState = (type: string) => {
@@ -358,18 +449,38 @@ export function SceneCardForge() {
             </div>
           </section>
 
+          {showPreview && (
+            <section>
+              <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-4 border-b border-slate-800 pb-2">7. Export Preview</h4>
+              <pre className="w-full bg-slate-950 border border-slate-700 rounded p-3 text-xs text-slate-200 whitespace-pre-wrap overflow-x-auto max-h-80">{previewMarkdown}</pre>
+            </section>
+          )}
+
         </div>
 
-        {/* 7. Action Buttons */}
+        {/* 8. Action Buttons */}
         <div className="bg-slate-950 border-t border-slate-800 p-4 flex justify-between items-center">
-          <button className="px-4 py-2 text-sm text-slate-400 hover:text-slate-200 transition-colors">
+          <button
+            onClick={() => {
+              setGenerationMessage('');
+              setPreviewMarkdown('');
+              setShowPreview(false);
+            }}
+            className="px-4 py-2 text-sm text-slate-400 hover:text-slate-200 transition-colors"
+          >
             Cancel
           </button>
           <div className="flex gap-3">
-            <button className="flex items-center gap-2 px-4 py-2 text-sm bg-slate-800 text-slate-300 border border-slate-700 rounded hover:bg-slate-700 transition-colors">
+            <button
+              onClick={handlePreviewExport}
+              className="flex items-center gap-2 px-4 py-2 text-sm bg-slate-800 text-slate-300 border border-slate-700 rounded hover:bg-slate-700 transition-colors"
+            >
               <Eye size={16} /> Preview Export
             </button>
-            <button className="flex items-center gap-2 px-6 py-2 text-sm bg-amber-600 hover:bg-amber-500 text-amber-950 font-bold rounded shadow-lg shadow-amber-900/20 transition-colors">
+            <button
+              onClick={handleForgeSceneCard}
+              className="flex items-center gap-2 px-6 py-2 text-sm bg-amber-600 hover:bg-amber-500 text-amber-950 font-bold rounded shadow-lg shadow-amber-900/20 transition-colors"
+            >
               <Save size={16} /> Forge Scene Card
             </button>
           </div>
