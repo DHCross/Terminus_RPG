@@ -4,7 +4,27 @@
       "Exec(find suite)",
       "Exec(find)",
       "Exec(git status)",
-      "Exec(git diff)"
+      "Exec(git diff)",
+      "Exec(npx vercel)",
+      "Exec(npm run)",
+      "Exec(npx vite)",
+      "Exec(vercel)",
+      "Exec(cat)",
+      "Exec(git log)",
+      "Exec(git stash)",
+      "Exec(git branch)",
+      "Exec(diff)",
+      "Exec(cp)",
+      "Exec(git pull)",
+      "Exec(git add)",
+      "Exec(git commit)",
+      "Exec(git push)",
+      "Exec(git show)",
+      "Exec(read f)",
+      "Exec(xargs grep)",
+      "Exec(git remote)",
+      "Exec(node)",
+      "Exec(npm install)"
     ]
   }
 }
