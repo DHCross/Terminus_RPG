@@ -1,5 +1,4 @@
 import { useNavigate } from 'react-router-dom';
-import heroImg from './assets/hero.png';
 import './App.css';
 
 function App() {
@@ -7,7 +6,10 @@ function App() {
 
   return (
     <div className="landing-page">
-      <div className="hero-banner" style={{ backgroundImage: `url(${heroImg})` }}>
+      <div
+        className="hero-banner"
+        style={{ backgroundImage: 'url(/recovered-art/terminus_hero_no_text_1778300537719.png)' }}
+      >
         <div className="hero-content">
           <h1 className="title">Terminus RPG Suite</h1>
           <p className="subtitle">Alpha 0.1 — Dark Fantasy Tabletop Tools</p>
@@ -63,6 +65,36 @@ function App() {
         <p className="alpha-notice">
           This is an alpha release for playtesting. Rules and features may change as the system evolves.
         </p>
+      </div>
+
+      <div className="art-section">
+        <h2>Field Archive Art</h2>
+        <div className="art-grid">
+          <figure className="art-card">
+            <img
+              src="/recovered-art/media__1778316491654.jpg"
+              alt="Field dossier concept art"
+              className="art-image"
+            />
+            <figcaption>Terminus Civic Record</figcaption>
+          </figure>
+          <figure className="art-card">
+            <img
+              src="/recovered-art/media__1778316064933.jpg"
+              alt="Character record sheet concept art"
+              className="art-image"
+            />
+            <figcaption>Seeker dossier plate</figcaption>
+          </figure>
+          <figure className="art-card">
+            <img
+              src="/recovered-art/terminus_sealed_instrument_ui_1778367791057.png"
+              alt="Sealed instrument interface concept art"
+              className="art-image"
+            />
+            <figcaption>Sealed instrument interface</figcaption>
+          </figure>
+        </div>
       </div>
 
       <div className="map-section">

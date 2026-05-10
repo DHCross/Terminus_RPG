@@ -8,8 +8,17 @@ export function AppShell() {
     <div className="app-layout">
       <aside className="sidebar">
         <div className="sidebar-header">
-          <h1>Terminus RPG</h1>
-          <span className="badge">Alpha 0.1</span>
+          <div className="brand-lockup">
+            <img
+              className="brand-crest"
+              src="/recovered-art/terminus_hero_no_text_1778300537719.png"
+              alt="Terminus crest"
+            />
+            <div>
+              <h1>Terminus RPG</h1>
+              <span className="badge">Alpha 0.1</span>
+            </div>
+          </div>
         </div>
         <nav className="nav-menu">
           <NavLink to="/" end className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
