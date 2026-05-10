@@ -5,7 +5,11 @@ import { ORIGINS, generateArchetype, applyArchetypeUpgrades, generateRandomChara
 import { CHARACTER_BASELINE, CREATION_UPGRADES, THRESHOLD_MAPPING, deriveThresholds, type CharacterCreationState } from '../../../data/terminus/advancement';
 import type { Die } from '../../../data/terminus/skills';
 
-export function CharacterGenerator() {
+interface CharacterGeneratorProps {
+  onSave?: (character: CharacterCreationState) => void;
+}
+
+export function CharacterGenerator({ onSave }: CharacterGeneratorProps = {}) {
   const [step, setStep] = useState<'order-select' | 'origin-select' | 'upgrade-assign' | 'review'>('order-select');
   const [selectedOrder, setSelectedOrder] = useState<string>('');
   const [selectedOrigin, setSelectedOrigin] = useState<OriginId | ''>('');
@@ -83,6 +87,8 @@ export function CharacterGenerator() {
     });
   };
 
+  const [saved, setSaved] = useState(false);
+
   const handleSaveCharacter = () => {
     const thresholds = deriveThresholds({
       Force: character.Force,
@@ -95,8 +101,9 @@ export function CharacterGenerator() {
       ...thresholds,
     };
     
-    console.log('Saving character:', finalCharacter);
-    // TODO: hook to character storage
+    onSave?.(finalCharacter);
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
   };
 
   return (
@@ -260,9 +267,13 @@ export function CharacterGenerator() {
           {/* Save Button */}
           <button
             onClick={handleSaveCharacter}
-            className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-amber-600 hover:bg-amber-500 text-amber-950 font-bold rounded shadow-lg shadow-amber-900/20 transition-colors"
+            className={`w-full flex items-center justify-center gap-2 px-4 py-3 font-bold rounded shadow-lg transition-colors ${
+              saved
+                ? 'bg-green-600 text-white shadow-green-900/20'
+                : 'bg-amber-600 hover:bg-amber-500 text-amber-950 shadow-amber-900/20'
+            }`}
           >
-            <Save size={18} /> Save Character
+            <Save size={18} /> {saved ? 'Saved to Vault!' : 'Save Character'}
           </button>
         </section>
       )}
