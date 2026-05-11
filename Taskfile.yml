@@ -3,11 +3,23 @@
 version: '3'
 
 vars:
-  GREETING: Hello, world!
+  APP_DIR: suite
+  APP_URL: http://localhost:5173
 
 tasks:
   default:
-    desc: Print a greeting message
+    desc: Launch Terminus web app
+    deps: [web]
+
+  install:
+    desc: Install web app dependencies
+    dir: "{{.APP_DIR}}"
     cmds:
-      - echo "{{.GREETING}}"
-    silent: true
+      - npm install
+
+  web:
+    desc: Open Terminus in browser and start Vite dev server
+    dir: "{{.APP_DIR}}"
+    cmds:
+      - open "{{.APP_URL}}"
+      - npm run dev
