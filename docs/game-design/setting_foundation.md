@@ -138,6 +138,8 @@ People eat, work, love, argue, travel, worship, study, mourn, and sleep without 
 
 The Orders exist because some failures cannot be handled by ordinary institutions quickly enough. They are called when life stops being allowed to continue normally.
 
+The quiet day is what the world wants. Your character may want something else entirely. The Accord doesn't care why you work — only that you do. Play a cynic, a zealot, a debtor, a thrill-seeker, or a true believer. The rupture doesn't ask your opinion.
+
 ---
 
 ## Rupture
@@ -570,6 +572,8 @@ The Orders respond to ruptures, not to metaphysics lectures.
 The Guide may know more about Terminus than the characters do. The setting may slowly imply it through repeated failures, old records, impossible infrastructure, and contradictions in civic memory. But campaigns should not require the players to uncover the cosmic answer in order to matter.
 
 The secret gives the world depth. It does not replace adventure.
+
+For the full cosmological framework explaining *why* the world works this way — the Coherence Engine, the Null-Drag State, Artificial Dissonance, and the Systemic Priority Hierarchy — see [logos_theory.md](logos_theory.md). That document is Guide-facing only and should never be shown to players.
 
 ---
 

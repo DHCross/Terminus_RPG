@@ -128,6 +128,7 @@ Orders exist because ordinary institutions cannot respond fast enough when stabl
 ### The Accord
 
 The field authority, summons structure, or administrative body that issues licenses, deployments, and constraints.
+The quiet day is what the world wants. Your character may want something else entirely. The Accord doesn't care why you work — only that you do. Play a cynic, a zealot, a debtor, a thrill-seeker, or a true believer. The rupture doesn't ask your opinion.
 
 ### Local Offices
 

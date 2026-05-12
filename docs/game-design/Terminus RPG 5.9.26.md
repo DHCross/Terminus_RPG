@@ -63,7 +63,7 @@ The people of the world do not call it Terminus. To them, the world is simply Tr
 Tringad is a dark fantasy world built on the remains of a luminous high-fantasy age. It is not a ruined wasteland. Its cities still ring bells, open markets, register births, hold trials, bless bridges, bury the dead, inspect wards, run transit lines, and keep civic calendars. People still marry, argue, sell bread, forge tools, gossip, worship, and sleep. That ordinary life matters.  
 In Tringad, routine is not just habit. Routine helps stabilize reality. When markets open in the correct order, when trains arrive at the appointed bell, when priests repeat the old civic blessings, when judges speak verdicts in proper form, when burial rites are completed, when lamps are lit at dusk — the world becomes more reliable. When those routines fail, reality begins to slip. That failure is called a Rupture.  
 **The Quiet Day**  
-The central emotional idea of the setting is the quiet day. A quiet day is a day when no one has to become heroic just to survive. The bakery opens. The tram arrives. The child returns from school. The watchman finishes his route. The dead stay buried. The bridge carries people both ways. The bell rings once. The Orders do not exist because the world wants adventure. They exist because sometimes the quiet day breaks.  
+The central emotional idea of the setting is the quiet day. A quiet day is a day when no one has to become heroic just to survive. The bakery opens. The tram arrives. The child returns from school. The watchman finishes his route. The dead stay buried. The bridge carries people both ways. The bell rings once. The Orders do not exist because the world wants adventure. They exist because sometimes the quiet day breaks. The quiet day is what the world wants. Your character may want something else entirely. The Accord doesn't care why you work — only that you do. Play a cynic, a zealot, a debtor, a thrill-seeker, or a true believer. The rupture doesn't ask your opinion.  
 **Rupture**  
 A Rupture is not merely a monster attack or a magical curse. A Rupture is a systemic failure. Something that was supposed to keep reality stable begins misfiring. Examples: A street grows longer the harder one tries to leave. A clerk signs a document dated tomorrow. A court verdict changes depending on who enters the room first. A ferry arrives with passengers who drowned last week. A signal bell rings twice, and the crowd repeats the same motion. A bridge supports only people walking north. A dead transit line accepts passengers. A door opens into the wrong year.  
 Most people experience Rupture as fear, inconvenience, superstition, bureaucracy, or local disaster. They do not know the deeper truth. They only know that something has gone wrong and ordinary institutions are not enough.  
@@ -97,7 +97,7 @@ Tringad should not look like generic dark fantasy parchment. It should look like
 **What Adventures Look Like**  
 A Terminus adventure does not need to reveal the secret of reality. Most adventures should still be clear and playable: Escort a witness. Recover a relic. Clear a barrow. Investigate a repeating street. Survive a broken crossing. Negotiate with a corrupt House. Find a missing child. Stop a bridge from rejecting mourners. Hunt a creature nesting inside an old signal tower. Recover a sealed report from a district that repeats yesterday. The deeper truth gives these adventures shape, but it should not smother them. The secret of Terminus can wait years. The game begins with a quiet day breaking.  
 **The Secret**  
-The hidden truth of the setting is Terminus. Terminus is the final architecture beneath Tringad. It is why routine matters, why Rupture happens, and why reality behaves like it can lose permissions. But this is not the default campaign objective. The characters do not need to “solve Terminus” to matter. They respond to lived failures. They protect people, exploit openings, make bargains, expose lies, hold lines, and survive places where ordinary life has stopped working. The secret gives the world depth. It does not replace adventure.  
+The hidden truth of the setting is Terminus. Terminus is the final architecture beneath Tringad. It is why routine matters, why Rupture happens, and why reality behaves like it can lose permissions. But this is not the default campaign objective. The characters do not need to “solve Terminus” to matter. They respond to lived failures. They protect people, exploit openings, make bargains, expose lies, hold lines, and survive places where ordinary life has stopped working. The secret gives the world depth. It does not replace adventure. *(Guide reference: See [logos_theory.md](logos_theory.md) for the full Coherence Engine cosmology.)*  
 **One-Paragraph Pitch**  
 Tringad is a dark fantasy world where routine keeps reality stable. Markets, bells, transit lines, court rituals, burial customs, ward inspections, and civic prayers are not just culture; they are patterns that hold the world together. When those patterns fail, reality ruptures. Streets repeat, doors open into wrong rooms, signals misfire, and ordinary institutions lose authority. Player characters are members of recognized Orders working through the Sixfold Accord — not adventurers looking for trouble, but field responders sent where the quiet day has broken. The game is called Terminus because beneath all of this lies a deeper truth, but the people of Tringad know only the failures they must survive.
 
@@ -144,8 +144,9 @@ Each Threshold contains circles derived from the linked Skill die. Spending or l
 ## **The Willpower Asymmetry**
 Willpower (and the Exert Threshold) operates differently depending on who is using it. This asymmetry is what makes Exert feel alive rather than just another ablative defense.
 
-- **For Player Characters:** Exert serves a dual function. It is both a spendable resource (Strain) used to fuel abilities and push boundaries, *and* a damage track that absorbs incoming mental pressure.
-- **For Monsters/NPCs:** Exert is **only** an ablative damage track. Monsters do not spend Willpower to fuel their abilities. Their abilities are fueled by their innate traits or active ability slots. This keeps the Guide's cognitive load low at the table.
+- **For Player Characters:** Exert serves a dual function. It is both a spendable resource (Strain)—utilizing an active Order Ability costs **1 Exert Circle** unless otherwise specified—and a damage track that absorbs incoming mental pressure.
+- **Design Intent (The Tension Mechanism):** This creates an intentional friction mechanism. Spending your cool abilities makes you more vulnerable to mental collapse. Stabilizing the world demands a piece of your resolve.
+- **For Monsters/NPCs:** Exert is **only** an ablative damage track. Monsters do not spend Willpower to fuel their abilities. This keeps the Guide's cognitive load low at the table.
 
 ## **Will Defeat State**
 What happens when a character's Exert Threshold breaks entirely? Physical defeat has a clear state (the body breaks, the threshold fails). Will defeat follows a similar logic.
@@ -161,6 +162,21 @@ What happens when a character's Exert Threshold breaks entirely? Physical defeat
 | d10 | 4 |
 | d12 | 5 |
 
+## **Recovery, Impact, and Defeat**
+
+### **Recovery**
+Circles represent immediate resilience. 
+- **The Breather:** Once per scene break, a character may perform a stabilizing routine (a short prayer, a weapon inspection, a quiet moment) to restore **1 Circle** to any single Threshold.
+- **Safe Haven / Accord House:** A night of safety in an authorized location restores **all** Threshold Circles.
+
+### **Impact Math**
+The conversion is direct: **1 point of Impact causes the loss of 1 Threshold Circle.**
+
+### **Physical Defeat States**
+What happens when your body gives out?
+- **Endure Broken (0 Circles):** The body fails. You are incapacitated, bleeding out, or unconscious. 
+- **Avoid Broken (0 Circles):** Tactical collapse. You are pinned down, disarmed, cornered, or overwhelmed.
+
 \---
 
 # **6\. Character Creation**
@@ -175,7 +191,28 @@ What happens when a character's Exert Threshold breaks entirely? Physical defeat
 8\. **Choose Equipment:** Select a primary weapon/tool and secondary item.  
 9\. **Define Background:** Add a name, background sentence, and objective.
 
-# **7\. Species**
+## **Detailed Steps: Approaches & Signatures**
+
+### **Step 3: Choose Your Approach**
+Your Approach dictates *how* you handle pressure. Select one keyword that defines your tactical bias:
+- **Direct:** Forceful, honest, blunt.
+- **Cautious:** Methodical, guarded, steady.
+- **Daring:** Impulsive, spectacular, risky.
+- **Calculating:** Cold, analytical, efficient.
+- **Tenacious:** Relentless, unyielding, stubborn.
+- **Flowing:** Adaptive, swift, responsive.
+
+**Mechanical Benefit:** Once per Scene, when your action perfectly mirrors your Approach, you may **Step Up** your Skill die by one rank.
+
+### **Step 4: Choose Your Signature**
+Your Signature is an evocative item linking your identity to Tringad. It offers narrative permission rather than numeric bonuses. Pick one:
+- *A notched brass gavel from a dead court.*
+- *A compass that points toward the nearest broken seal.*
+- *A heavy cloak lined with fragments of old ledger paper.*
+- *A worn, bloodstained route inspector's whistle.*
+- *A broken blade reforged into a sealing mechanism.*
+
+# **7. Species**
 
 ## **Human**
 
@@ -286,6 +323,9 @@ Acting utilizes a **Skill**; resisting utilizes the linked **Threshold**.
 4\. The higher roll takes control.  
 5\. The loser routes the consequence (Impact) through their chosen Threshold.
 
+> **Designer Note: Tactical Routing**
+> Letting the defender choose which Threshold takes the hit is intentional. It creates tactical depth: Do you soak the impact with your armor (Endure), sacrifice your position (Avoid), or strain your mind (Exert)? True victory requires applying cumulative pressure until the defender is forced to take a hit on a Threshold with zero remaining circles.
+
 ## **Weapon Entries**
 
 | Weapon / Tool | Impact | Vector |
@@ -301,6 +341,25 @@ Acting utilizes a **Skill**; resisting utilizes the linked **Threshold**.
 Armor does not decide whether you are attacked; it decides whether the pressure reaches the body. It acts as a gate for specific vectors.  
 **Chain Shirt:** Weight: Medium. Coverage: Torso. Good Against: Slashing, cutting, bite/claw. Poor Against: Impact, crushing. Gate: Stops riders from reaching flesh.  
 **Shield:** A shield is portable Ground. It changes what part of the scene the wielder can refuse.
+
+# **10\. Scene Drift**
+
+Drift measures how far a scene has detached from stable reality. It functions as an escalating clock of worsening conditions.
+
+## **The Drift Scale**
+
+| Drift | State | Mechanical Effect |
+| :--- | :--- | :--- |
+| **0** | Stable | Routine holds. Normal rules apply. |
+| **1** | Tremor | Minor desync. Sounds loop; physics gets nervous. Purely narrative. |
+| **2** | Fracture | Environmental hazard. Actions risk 1 collateral Impact to Avoid or Endure. |
+| **3** | Desync | Reality loses permissions. All PC Skill dice are **Stepped Down** by one rank. |
+| **4** | Rupture | Systemic collapse. The catalyst performs a scene-ending action, or the PCs must Rout. |
+
+## **Managing Drift**
+- **Increase:** Drift increments at the end of rounds when a monster triggers passive escalation, or when a critical failure occurs.
+- **Reduction:** Standard player actions cannot lower Drift. A Warden may use **Absorb the Drift** to negate an increase.
+- **Reset:** Drift resets to 0 when the Scene ends or the catalyst causing the rupture is neutralized.
 
 # **11\. Scenario: The Timed Crossing**
 
@@ -365,10 +424,17 @@ The "unintended name" the token uses should not be random; it exposes pressure:
 
 This immediately tells the table: this world’s bureaucracy is not merely paperwork. It sees through sequence, identity, and obligation in ways people do not control.
 
+### **Mechanical Resolution**
+To secure the favorable interpretation and launch the adventure, the Guide sets a Resistance of **d6 (The Desk's inertia)**.
+1. A PC volunteers to take the lead based on their **Order Approach** (e.g., The Broker argues for legal passage).
+2. The PC rolls their relevant Skill (e.g., Willpower or Force).
+3. **Success:** Secure the reading and proceed without consequence.
+4. **Failure:** The packet is obtained, but choose a consequence: Either add **1 to Scene Drift** (the desk rejects the signature) OR the lead PC loses **1 Exert Circle** from bureaucratic exhaustion.
+
 
 ---
 
-# **13\. Monster Stat Block Template**
+# **14\. Monster Stat Block Template**
 
 Monsters in Terminus are primarily engines of pressure. They do not operate on complex action economies or spell slots. They are designed to run at the table with minimal Guide overhead, answering four fundamental questions: (1) Can I do this at all? (2) Do I succeed? (3) How much does it matter? (4) What does the fiction allow afterward?
 
@@ -399,3 +465,33 @@ Monsters in Terminus are primarily engines of pressure. They do not operate on c
     *   **Exert:** d6 (2 Circles) — *Will Defeat State: Dissipates into harmless soot (Rout).*
 *   **Scene Drift Contribution:**
     *   *Passive:* At the end of each round the Ash-Walker is active, add 1 to the Scene Drift. The temperature rises, warping doorframes and weakening stone.
+
+---
+
+# **15. Magic & Civic Workings**
+
+Magic in Tringad is not a manipulation of elements; it is a manipulation of civic permission. A "spell" is not a fireball—it is a localized override of the Systemic Priority Hierarchy. The world operates on deep structural laws (e.g., doors open, dead bodies stay still, streets lead where they are supposed to). Magic is the act of enforcing a higher-order constraint to override normal reality.
+
+## **Sanctioned Workings (The Law)**
+
+Sanctioned Workings are authorized overrides of reality, granted by the Old Offices, House seals, or deeply entrenched institutional oaths. They are rigid, powerful, and structural.
+
+*   **Effort (The Cost):** Enacting a Working requires profound focus. The caster must spend **1 or more Exert Circles (Strain)** depending on the scale of the override. This ties magic directly to the character's mental endurance.
+*   **Effect (The Function):** Workings do not inflict damage points. They alter permissions. Different Orders express these verbs in different ways (e.g., a Seeker's Expose reveals a structural flaw, while a Shade's Expose reveals a lie). The core verbs are:
+    *   *Seal:* Imposes a locked state, preventing change. *Example: A door is sealed and cannot be opened. A wound is sealed and cannot bleed. A collapsing wall is sealed and cannot fall.*
+    *   *Nullify:* Removes an active permission or constraint. *Example: A fire loses permission to burn. Sound loses permission to travel. A lock loses permission to hold.*
+    *   *Expose:* Forces a hidden constraint, falsehood, or invisible architecture to become visible to the naked eye. *Example: Exposing the hidden ward on a smuggled document, causing the ink to glow.*
+    *   *Bridge:* Connects two physical or conceptual points that normally do not connect. *Example: Bridging a crushing stone block to the floor, allowing it to be pushed as if weightless, or bridging two mirrors to allow sight between them.*
+*   **Old Office Rites (Legacy Synergies):** Performing the specific rites of an Old Office (using their symbols, reciting their taboos) while casting a Working related to their domain reduces the Exert cost by 1 (minimum 0), or extends its duration past the end of the scene. Invoking the gods is functionally executing a legacy system call, making the override highly efficient.
+*   **Temporality (The Duration):** A Working lasts until the scene ends, the physical anchor (a wax stamp, a brass token, a chalk sigil) is broken, or the caster rests and reclaims their Exert.
+
+## **Rupture Casting (The Fire)**
+
+Not all magic is sanctioned. Rupture Casting is raw, desperate, and illegal. It bypasses the permission structure entirely by exploiting the instability of a Rupture to force an immediate, violent change in reality. This is where characters find explosive, unpredictable power, but the cost is paid by the world itself.
+
+*   **The Gate (Who Can Cast):** You cannot Rupture Cast on a quiet day. The character must either be standing inside an active Rupture zone (Scene Drift 1+), or be physically touching an object, structure, or entity that is already experiencing constraint shear (failing).
+*   **Effort (The Cost):** Rupture Casting costs **0 Exert**. It requires no mental endurance because the caster is not building a stable architecture; they are simply pulling the pin on a grenade.
+*   **Effect (The Function):** Immediate, massive Impact. Rupture Castings can shatter armor, incinerate enemies, or collapse structures instantly. They bypass normal resistance rolls.
+*   **The Consequence:** Because Rupture Casting resolves one constraint collision by introducing another, it generates massive entropy. **Every Rupture Casting immediately increases Scene Drift.**
+    *   **+1 Drift:** The casting affects a single target or localized space (e.g., shattering a heavily sealed vault door, or incinerating a single Ash-Walker).
+    *   **+2 Drift:** The casting affects multiple targets, alters the entire room, or permanently destroys civic infrastructure (e.g., collapsing the roof of a transit station, or flash-freezing an entire canal).
