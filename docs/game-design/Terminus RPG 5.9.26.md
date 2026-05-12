@@ -487,9 +487,8 @@ Sanctioned Workings are authorized overrides of reality, granted by the Old Offi
 
 ## **Rupture Casting (The Fire)**
 
-Not all magic is sanctioned. Rupture Casting is raw, desperate, and illegal. It bypasses the permission structure entirely by exploiting the instability of a Rupture to force an immediate, violent change in reality. This is where characters find explosive, unpredictable power, but the cost is paid by the world itself.
+Not all magic is sanctioned. Rupture Casting is raw, desperate, and illegal. It bypasses the permission structure entirely by exploiting the underlying instability of the world to force an immediate, violent change in reality. This is where characters find explosive, unpredictable power, but the cost is paid by the world itself.
 
-*   **The Gate (Who Can Cast):** You cannot Rupture Cast on a quiet day. The character must either be standing inside an active Rupture zone (Scene Drift 1+), or be physically touching an object, structure, or entity that is already experiencing constraint shear (failing).
 *   **Effort (The Cost):** Rupture Casting costs **0 Exert**. It requires no mental endurance because the caster is not building a stable architecture; they are simply pulling the pin on a grenade.
 *   **Effect (The Function):** Immediate, massive Impact. Rupture Castings can shatter armor, incinerate enemies, or collapse structures instantly. They bypass normal resistance rolls.
 *   **The Consequence:** Because Rupture Casting resolves one constraint collision by introducing another, it generates massive entropy. **Every Rupture Casting immediately increases Scene Drift.**

@@ -1,2 +1,3 @@
 Date,Mechanic,Version,Change,Status,Rationale,Next_Steps
 2026-05-12,System Audit,5.9.26,Added design_evaluation.md as baseline roadmap,Implemented,Comprehensive review flagged Magic System and Advancement as top priorities.,Draft Section 15: Magic System
+2026-05-12,Magic System Update,5.9.26,Removed mechanical gate from Rupture Casting,Implemented,Rely on fiction-first consequence (+Drift) to act as deterrent. Do not gatekeep the story with a number.,Continue to Advancement or Faction tools

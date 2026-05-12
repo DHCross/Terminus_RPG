@@ -1,0 +1,102 @@
+[
+  {
+    "id": "canal-01",
+    "title": "The Great Rusted Canal",
+    "location": "Tringad, Sector 7 – Main Arterial Waterway",
+    "ground": [
+      "Sluggish, ochre water thick with metallic sediment.",
+      "Corroded iron beams jut at angles from the canal walls.",
+      "A half-submerged barge, its hull a lacework of rust and barnacles.",
+      "Faint ripples from something large shifting below the surface."
+    ],
+    "will": {
+      "NPCName": "Nara Vex",
+      "Role": "Canal Scavenger (Hinderer)",
+      "ActiveWill": "She wants to know if you carry anything that can be traded for safe passage or if you are a threat to her salvage."
+    },
+    "shift": [
+      "IF a character disturbs the water with a pole or oar → THEN a submerged grate releases a cloud of gas, causing coughing and reduced visibility for 1d4 rounds.",
+      "IF a character offers a working battery or tool to Nara → THEN she opens a hidden lock gate leading to a dry under-cavern filled with salvage.",
+      "IF a character attempts to cross without acknowledging her → THEN she whistles, and two rust-snakes surface near the boat, testing the hull."
+    ],
+    "drift": {
+      "rate": "Slow but steady – the canal’s chemical erosion accelerates metal decay by an hour per day of exposure.",
+      "consequence": "After 3 hours in this zone, any unsealed weapon or tool gains the Brittle tag (breaks on a natural 1 during use)."
+    }
+  },
+  {
+    "id": "ministry-02",
+    "title": "The Ministry of Seals",
+    "location": "Tringad, Administrative Core – Hall of Infinite Forms",
+    "ground": [
+      "Desks arranged in endless, interlocking rows, each burdened with stacks of yellowed paper.",
+      "A single gas lamp flickers overhead, casting long, dancing shadows.",
+      "The air smells of old ink, wax, and faint decay.",
+      "A mechanical seal-press stamps every few seconds, its rhythm hypnotic."
+    ],
+    "will": {
+      "NPCName": "Clerk Thaddeus Quill",
+      "Role": "Senior Scribe (Gatekeeper)",
+      "ActiveWill": "He wants to verify your paperwork is absolutely perfect before he allows access to the sealed maps below."
+    },
+    "shift": [
+      "IF a character presents a document with a missing stamp → THEN Thaddeus slides a blank requisition form across the desk and demands a ‘Pragma Fee’ (1 resource token).",
+      "IF a character offers a bribe in the form of rare ink → THEN he stamps their papers immediately and mutters a code that unlocks a hidden file cabinet.",
+      "IF a character argues or raises their voice → THEN the gas lamp gutters, the seal-press stops, and two Automaton Scribes enter the room."
+    ],
+    "drift": {
+      "rate": "Coherence decays by one step per hour as bureaucracy folds in on itself.",
+      "consequence": "After two failed checks, characters are issued a ‘Null-Drag Notice’ – all future interactions here suffer a -1 penalty until resolved."
+    }
+  },
+  {
+    "id": "shear-03",
+    "title": "Shear Rupture – The Unspooling",
+    "location": "Tringad, Sector 12 – Edge of the Riftlands",
+    "ground": [
+      "Air shimmers like heat haze, but cold – reality visibly warps at the seams.",
+      "Jagged, glassy edges of exposed static space, where color has no name.",
+      "Broken cobblestones hover a few inches above the ground, slowly rotating.",
+      "Faint whispers from no one – words backwards, then forward, then in a loop."
+    ],
+    "will": {
+      "NPCName": "Lector Aris",
+      "Role": "Field Analyst (Patron)",
+      "ActiveWill": "She is measuring the rupture’s expansion rate and wants coherent matter that could anchor the rift."
+    },
+    "shift": [
+      "IF a character throws an object into the rupture → THEN it is absorbed without sound, and a perfect duplicate appears 10 meters away.",
+      "IF a character touches the shimmering edge → THEN their limb becomes a Drift echo (perception lags 2 seconds behind reality).",
+      "IF a character uses a Logos tool near the rupture → THEN the tear shrinks by 2 meters and Lector Aris offers a data chip."
+    ],
+    "drift": {
+      "rate": "Fast – the static zone grows a meter per hour, pulling nearby matter into null-drag.",
+      "consequence": "If the rupture is not stabilized within 4 hours, a localized ‘Static Storm’ triggers, dealing 2d6 Coherence damage to all nearby organics."
+    }
+  },
+  {
+    "id": "sump-04",
+    "title": "The Sump Slums",
+    "location": "Tringad, Sector 9 – Lower Sump District",
+    "ground": [
+      "Ceiling of interwoven pipes weeping black oil and steam.",
+      "Shanties built from scrap metal and cured hides, roofs slick with condensation.",
+      "A central pit of boiling sump water, bubbling with methane.",
+      "Children’s faces in the shadows – watching, calculating."
+    ],
+    "will": {
+      "NPCName": "Garret Vane",
+      "Role": "Sump Boss (Competitor)",
+      "ActiveWill": "He wants to know if you are a threat to his operation or a potential customer for his ‘clean’ water filters."
+    },
+    "shift": [
+      "IF a character shows visible wealth → THEN Garret nods at two heavies who shadow you until you leave or pay a ‘floor tax’.",
+      "IF a character offers medical supplies → THEN he leads you to a hidden still and gives you a token for safe passage.",
+      "IF a character draws a weapon → THEN the children throw smoke bombs, and Garret vanishes into a trapdoor."
+    ],
+    "drift": {
+      "rate": "Moderate – the sump water level rises by 2 inches every hour, flooding the lowest hovels.",
+      "consequence": "After 2 hours of inaction, the central pit overflows, releasing toxic fumes (DC 12 Avoid/Endure or take 1d4 poison damage)."
+    }
+  }
+]
