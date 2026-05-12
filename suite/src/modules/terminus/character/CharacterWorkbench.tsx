@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { Users, TrendingUp, Trash2, Archive } from 'lucide-react';
+import { Users, TrendingUp, Archive, Sparkles } from 'lucide-react';
 import { CharacterGenerator } from './CharacterGenerator';
 import { AdvancementTracker } from './AdvancementTracker';
 import { useCharacterStorage } from './useCharacterStorage';
+import { VaultCharacterCard } from './VaultCharacterCard';
 import type { Die } from '../../../data/terminus/skills';
 import type { CharacterCreationState } from '../../../data/terminus/advancement';
 
@@ -119,75 +120,96 @@ export function CharacterWorkbench() {
         )}
 
         {tab === 'vault' && (
-          <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-            <h2 style={{ color: 'var(--color-primary)', marginBottom: '0.5rem', fontSize: '1.5rem' }}>
-              Character Vault
-            </h2>
-            <p style={{ color: 'var(--color-text-muted)', marginBottom: '1.5rem', fontSize: '0.875rem' }}>
-              {characters.length === 0
-                ? 'No saved characters yet. Create one in the Generator tab.'
-                : `${characters.length} character${characters.length !== 1 ? 's' : ''} saved locally.`
-              }
-            </p>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              {characters.map(char => (
-                <div
-                  key={char.id}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    padding: '1rem 1.25rem',
-                    background: selectedCharacterId === char.id ? 'var(--color-surface-hover)' : 'var(--color-surface)',
-                    border: `1px solid ${selectedCharacterId === char.id ? 'var(--color-primary)' : 'var(--color-border)'}`,
-                    borderRadius: '8px',
-                    transition: 'all 0.15s ease',
-                  }}
-                >
-                  <div
-                    style={{ cursor: 'pointer', flex: 1 }}
-                    onClick={() => handleLoadCharacter(char)}
-                  >
-                    <div style={{ fontWeight: 700, color: 'var(--color-text)', fontSize: '1rem' }}>
-                      {char.name}
-                    </div>
-                    <div style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', marginTop: '0.25rem' }}>
-                      {char.order ? `Order: ${char.order}` : 'No order'}
-                      {' · '}
-                      F:{char.skills.Force} A:{char.skills.Agility} W:{char.skills.Willpower}
-                    </div>
-                    <div style={{ fontSize: '0.7rem', color: 'var(--color-text-muted)', marginTop: '0.25rem' }}>
-                      Created {new Date(char.createdAt).toLocaleDateString()}
-                    </div>
-                  </div>
-
-                  <button
-                    onClick={() => deleteCharacter(char.id)}
-                    title="Delete character"
-                    style={{
-                      background: 'transparent',
-                      border: '1px solid transparent',
-                      color: 'var(--color-text-muted)',
-                      cursor: 'pointer',
-                      padding: '0.5rem',
-                      borderRadius: '4px',
-                      transition: 'all 0.15s ease',
-                    }}
-                    onMouseEnter={e => {
-                      e.currentTarget.style.color = '#ef4444';
-                      e.currentTarget.style.borderColor = '#ef4444';
-                    }}
-                    onMouseLeave={e => {
-                      e.currentTarget.style.color = 'var(--color-text-muted)';
-                      e.currentTarget.style.borderColor = 'transparent';
-                    }}
-                  >
-                    <Trash2 size={16} />
-                  </button>
+          <div style={{ maxWidth: '960px', margin: '0 auto' }}>
+            {/* Vault header */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              marginBottom: '1.5rem',
+              flexWrap: 'wrap',
+              gap: '1rem',
+            }}>
+              <div>
+                <h2 style={{
+                  margin: '0 0 0.25rem 0',
+                  fontFamily: "'EB Garamond', serif",
+                  fontSize: '2rem',
+                  fontWeight: 700,
+                  color: '#f8fafc',
+                  letterSpacing: '1px',
+                }}>
+                  Character Vault
+                </h2>
+                <p style={{ color: '#94a3b8', margin: 0, fontSize: '0.85rem' }}>
+                  {characters.length === 0
+                    ? 'No responders on file. Create one in the Generator.'
+                    : `${characters.length} responder${characters.length !== 1 ? 's' : ''} on file`
+                  }
+                </p>
+              </div>
+              {characters.length > 0 && (
+                <div style={{
+                  display: 'flex',
+                  gap: '12px',
+                  fontSize: '0.75rem',
+                  color: '#64748b',
+                }}>
+                  {['seeker','breaker','warden','rival','broker','shade'].map(orderId => {
+                    const count = characters.filter(c => (c.order || '').toLowerCase() === orderId).length;
+                    if (count === 0) return null;
+                    return (
+                      <span key={orderId} style={{
+                        padding: '3px 10px',
+                        background: 'rgba(148,163,184,0.06)',
+                        borderRadius: '4px',
+                        border: '1px solid rgba(148,163,184,0.12)',
+                      }}>
+                        {orderId.charAt(0).toUpperCase() + orderId.slice(1)}: {count}
+                      </span>
+                    );
+                  })}
                 </div>
-              ))}
+              )}
             </div>
+
+            {/* Empty state */}
+            {characters.length === 0 && (
+              <div style={{
+                textAlign: 'center',
+                padding: '4rem 2rem',
+                background: 'rgba(30,41,59,0.4)',
+                borderRadius: '12px',
+                border: '1px dashed rgba(148,163,184,0.2)',
+              }}>
+                <Sparkles size={32} style={{ color: '#64748b', marginBottom: '1rem' }} />
+                <p style={{ color: '#94a3b8', fontSize: '0.95rem', margin: '0 0 0.5rem 0' }}>
+                  No characters in the vault yet.
+                </p>
+                <p style={{ color: '#64748b', fontSize: '0.8rem', margin: 0 }}>
+                  Generate your first responder in the <strong style={{ color: '#94a3b8' }}>Generator</strong> tab, then save to vault.
+                </p>
+              </div>
+            )}
+
+            {/* Card grid */}
+            {characters.length > 0 && (
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(380px, 1fr))',
+                gap: '1rem',
+              }}>
+                {characters.map(char => (
+                  <VaultCharacterCard
+                    key={char.id}
+                    character={char}
+                    isSelected={selectedCharacterId === char.id}
+                    onSelect={() => handleLoadCharacter(char)}
+                    onDelete={() => deleteCharacter(char.id)}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         )}
       </div>

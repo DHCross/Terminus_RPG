@@ -166,5 +166,5 @@ export function advanceSkill(currentDie: Die, availableAP: number): { newDie: Di
   
   if (availableAP < cost) return null; // Not enough AP
   
-  return { newDie, apSpent: cost };
+  return { newDie: nextDie, apSpent: cost };
 }

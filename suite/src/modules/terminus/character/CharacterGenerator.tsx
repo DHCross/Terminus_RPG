@@ -28,7 +28,7 @@ export function CharacterGenerator({ onSave }: CharacterGeneratorProps = {}) {
     completedOperations: 0,
   });
 
-  const [unassignedUpgrades, setUnassignedUpgrades] = useState<Set<'d10' | 'd8' | 'd6'>>(
+  const [unassignedUpgrades, setUnassignedUpgrades] = useState<Set<Die>>(
     new Set(['d10', 'd8', 'd6'])
   );
 

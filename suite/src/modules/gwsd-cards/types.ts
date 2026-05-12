@@ -161,6 +161,8 @@ export interface Scene {
   scenePressure?: number;
   cards: [GWSDCard, GWSDCard, GWSDCard, GWSDCard];
   raw: string;
+  /** Terminus RPG scene-level metadata used by export and builder flows */
+  terminus?: TerminusSceneMeta;
   /** Hierarchical scope (position in adventure structure) */
   scope?: GWSDScope;
   /** Content type — only 'scene_state' produces valid GWSD cards */
