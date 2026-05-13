@@ -3,6 +3,7 @@ import { ClipboardList, Dices, Gauge, Waves } from 'lucide-react';
 import { DIE_LADDER, type Die } from '../../../data/terminus/skills';
 import { getSecureRandom } from '../../../utils/crypto';
 import { ConflictResolver } from '../conflict/ConflictResolver';
+import { DRIFT_DOCTRINE, DRIFT_MODES, DRIFT_WRITING_RULES, type DriftMode } from '../../../data/terminus/drift';
 
 type Tool = 'conflict' | 'dice' | 'drift' | 'questionnaire';
 
@@ -192,15 +193,10 @@ function DiceRoller() {
 }
 
 function DriftResolver() {
-  const driftOptions = [
-    'Another pedestrian repeats an action',
-    'A signal changes out of sequence',
-    'The duplicate tram becomes more solid',
-    'The crowd compresses toward the center',
-    'A vendor stall appears in two places',
-    'The bell rings twice, and one character loses track',
-  ];
+  const [driftMode, setDriftMode] = useState<DriftMode>('hazard');
+  const driftOptions = DRIFT_MODES.find((mode) => mode.id === driftMode)?.examples || DRIFT_MODES[0].examples;
   const [customOptions, setCustomOptions] = useState<string[]>([]);
+  const [customDraft, setCustomDraft] = useState('');
   const [result, setResult] = useState<string | null>(null);
 
   const handleRoll = () => {
@@ -210,9 +206,9 @@ function DriftResolver() {
   };
 
   const handleAddCustom = () => {
-    const newOption = prompt('Enter a custom drift option:');
-    if (newOption && newOption.trim()) {
-      setCustomOptions([...customOptions, newOption.trim()]);
+    if (customDraft.trim()) {
+      setCustomOptions([...customOptions, customDraft.trim()]);
+      setCustomDraft('');
     }
   };
 
@@ -233,12 +229,80 @@ function DriftResolver() {
         Drift Resolver
       </h3>
       <p style={{ color: '#94a3b8', marginBottom: '1.5rem', lineHeight: 1.6 }}>
-        At the end of each round, roll or choose what changes if characters do nothing.
+        Drift is the scene's Else statement: what changes if the players do nothing.
+        Write it as an executable end-of-round trigger.
       </p>
+
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
+        gap: '0.75rem',
+        marginBottom: '1.5rem',
+      }}>
+        {DRIFT_DOCTRINE.map((point) => (
+          <div
+            key={point.title}
+            style={{
+              backgroundColor: '#0f172a',
+              border: '1px solid #334155',
+              borderRadius: '0.5rem',
+              padding: '0.85rem',
+            }}
+          >
+            <strong style={{ color: '#fbbf24', display: 'block', marginBottom: '0.35rem', fontSize: '0.85rem' }}>
+              {point.title}
+            </strong>
+            <span style={{ color: '#94a3b8', fontSize: '0.78rem', lineHeight: 1.45 }}>
+              {point.summary}
+            </span>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
+        {DRIFT_MODES.map((mode) => (
+          <button
+            key={mode.id}
+            onClick={() => {
+              setDriftMode(mode.id);
+              setResult(null);
+            }}
+            style={{
+              padding: '0.65rem 1rem',
+              backgroundColor: driftMode === mode.id ? '#3b82f6' : '#0f172a',
+              color: driftMode === mode.id ? '#fff' : '#94a3b8',
+              border: `1px solid ${driftMode === mode.id ? '#3b82f6' : '#334155'}`,
+              borderRadius: '0.375rem',
+              cursor: 'pointer',
+              fontWeight: 700,
+            }}
+          >
+            {mode.name}
+          </button>
+        ))}
+      </div>
+
+      {DRIFT_MODES.filter((mode) => mode.id === driftMode).map((mode) => (
+        <div
+          key={mode.id}
+          style={{
+            backgroundColor: '#0f172a',
+            border: '1px solid #334155',
+            borderRadius: '0.5rem',
+            padding: '1rem',
+            marginBottom: '1.5rem',
+          }}
+        >
+          <strong style={{ color: '#f8fafc' }}>{mode.test}</strong>
+          <p style={{ color: '#94a3b8', margin: '0.5rem 0 0', fontSize: '0.9rem' }}>
+            {mode.driftShape}
+          </p>
+        </div>
+      ))}
 
       <div style={{ marginBottom: '1.5rem' }}>
         <label style={{ display: 'block', marginBottom: '0.75rem', fontSize: '0.875rem', color: '#94a3b8' }}>
-          Drift Options
+          Executable Drift Options
         </label>
         <div style={{
           backgroundColor: '#0f172a',
@@ -292,19 +356,34 @@ function DriftResolver() {
         </div>
         <button
           onClick={handleAddCustom}
+          disabled={!customDraft.trim()}
           style={{
             marginTop: '0.75rem',
             padding: '0.5rem 1rem',
-            backgroundColor: '#334155',
+            backgroundColor: customDraft.trim() ? '#334155' : '#1e293b',
             color: '#f8fafc',
             border: '1px solid #475569',
             borderRadius: '0.375rem',
-            cursor: 'pointer',
+            cursor: customDraft.trim() ? 'pointer' : 'not-allowed',
             fontSize: '0.875rem',
           }}
         >
-          + Add Custom Option
+          Add Custom Option
         </button>
+        <input
+          value={customDraft}
+          onChange={(event) => setCustomDraft(event.target.value)}
+          placeholder="At the end of each round, ..."
+          style={{
+            width: '100%',
+            marginTop: '0.75rem',
+            padding: '0.65rem 0.75rem',
+            backgroundColor: '#0f172a',
+            border: '1px solid #334155',
+            borderRadius: '0.375rem',
+            color: '#f8fafc',
+          }}
+        />
       </div>
 
       <button
@@ -334,13 +413,22 @@ function DriftResolver() {
           textAlign: 'center',
         }}>
           <div style={{ fontSize: '0.875rem', color: '#94a3b8', marginBottom: '0.5rem' }}>
-            This round's drift:
+            End-of-round Drift:
           </div>
           <div style={{ fontSize: '1.125rem', color: '#f8fafc', fontWeight: 600 }}>
             {result}
           </div>
         </div>
       )}
+
+      <div style={{ marginTop: '1.5rem' }}>
+        <h4 style={{ margin: '0 0 0.75rem 0', fontSize: '0.875rem', color: '#94a3b8' }}>
+          Writing Rules
+        </h4>
+        <ul style={{ margin: 0, paddingLeft: '1.25rem', color: '#94a3b8', fontSize: '0.875rem', lineHeight: 1.6 }}>
+          {DRIFT_WRITING_RULES.map((rule) => <li key={rule}>{rule}</li>)}
+        </ul>
+      </div>
     </div>
   );
 }

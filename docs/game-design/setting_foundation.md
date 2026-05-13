@@ -16,6 +16,69 @@ The world does not break all at once. It loses permissions.
 
 ---
 
+## Operational Doctrine
+
+Terminus should read like maintenance records, exhausted doctrine, and field procedure because the rules treat every crisis as a thing to parse, contain, and answer.
+
+### Scene Management
+
+Reality at the table is parsed through the **Scene Card**.
+
+The Scene Card is not flavor text. It is the Guide's operating surface:
+
+* **Ground:** What is currently reliable, legal, physical, or available.
+* **Will:** What pressure, agent, system, monster, faction, or mechanism is already acting.
+* **Shift:** What changes when the characters act.
+* **Drift:** What changes if the characters do nothing.
+
+This vocabulary keeps Terminus procedural. The Guide does not improvise vague tension. The Guide runs Ground, Will, Shift, and Drift.
+
+### Operational Identities
+
+The primary response identities are the **Six Orders**:
+
+* **Seeker**
+* **Breaker**
+* **Warden**
+* **Rival**
+* **Broker**
+* **Shade**
+
+These are not generic classes. They are recognized field-response identities used by the Sixfold Accord when routine fails and ordinary institutions cannot restore the quiet day.
+
+### Consequence Tracks
+
+Consequences should feel like burden, exposure, and loss of control, not abstract hit point depletion.
+
+* **Endure** tracks physical pressure, wear, injury, crushing force, exposure, and bodily failure.
+* **Avoid** tracks loss of position, safe angle, timing, footing, cover, and tactical room.
+* **Exert** tracks inner reserve, concentration, fear resistance, social pressure, magical strain, and control.
+
+When a scene causes loss, name what burden changed. A lost Endure circle means the body is carrying more pressure. A lost Avoid circle means the character has fewer safe options. A lost Exert circle means the character has less reserve left to hold themselves or the world together.
+
+### Magic as Permission
+
+Magic is not spectacle first. It is law, permission, oath, infrastructure, and controlled exception.
+
+Sanctioned Workings use four operational verbs:
+
+* **Seal:** lock a state in place.
+* **Expose:** make hidden permission, pressure, or falsehood legible.
+* **Bridge:** connect two things that share a lawful relation.
+* **Nullify:** remove a permission that currently exists.
+
+These verbs describe licensed methods for modifying reality. They are separate from **Rupture**, which is not a Working verb.
+
+### Rupture
+
+Routine stabilizes reality. A Rupture is systemic failure.
+
+Rupture is both the threat the Orders answer and the condition that makes the world unreliable. It often begins with small, logical breaks in civic pattern: a repeated step, a signal out of order, a verdict changing form, a ward recognizing the wrong person, or a scheduled crossing arriving before it departs.
+
+Rupture Casting belongs to magic, but it is not a fifth Working verb. It is an unlicensed casting method that bypasses permission structure. It costs **0 Exert** and spends systemic stability instead, increasing **Scene Drift** by +1 or +2 depending on scope.
+
+---
+
 ## The Lived World: Tringad
 
 The people of the world do not call it Terminus.

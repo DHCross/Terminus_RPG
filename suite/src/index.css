@@ -480,6 +480,183 @@ p {
   font-size: 0.82rem;
 }
 
+.magic-page {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.magic-mode-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.magic-mode-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.magic-mode-card svg {
+  color: var(--color-accent);
+}
+
+.magic-mode-card h3 {
+  margin: 0;
+  font-size: 1.35rem;
+}
+
+.magic-mode-card p {
+  margin: 0;
+}
+
+.magic-mode-card dl {
+  display: grid;
+  gap: 0.45rem;
+  margin: 0.35rem 0 0;
+}
+
+.magic-mode-card dt {
+  color: var(--color-accent);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.magic-mode-card dd {
+  margin: 0;
+  color: var(--color-text-muted);
+  line-height: 1.5;
+}
+
+.magic-reference-layout {
+  padding: 0;
+}
+
+.magic-boundary-panel {
+  margin-bottom: 1.5rem;
+}
+
+.magic-boundary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.magic-boundary-grid div {
+  padding: 1rem;
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+}
+
+.magic-boundary-grid strong {
+  color: var(--color-accent);
+}
+
+.magic-boundary-grid p {
+  margin: 0.35rem 0 0;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+
+.magic-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.magic-detail-grid ul,
+.procedure-list {
+  margin: 0;
+  padding-left: 1.25rem;
+  color: var(--color-text-muted);
+  line-height: 1.6;
+}
+
+.magic-example-list {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.magic-example-list .chip {
+  justify-content: flex-start;
+  white-space: normal;
+}
+
+.magic-bottom-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.7fr) minmax(0, 1fr);
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.magic-rotes-section {
+  margin-top: 1.5rem;
+}
+
+.magic-order-tabs {
+  margin-bottom: 1rem;
+}
+
+.magic-casting-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.magic-casting-card {
+  background: var(--color-background);
+}
+
+.magic-casting-card h3 {
+  margin: 0.75rem 0;
+  color: var(--color-text);
+  font-size: 1.3rem;
+}
+
+.magic-casting-card dl {
+  display: grid;
+  gap: 0.45rem;
+  margin: 0;
+}
+
+.magic-casting-card dt {
+  color: var(--color-accent);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.magic-casting-card dd {
+  margin: 0;
+  color: var(--color-text-muted);
+  line-height: 1.45;
+}
+
+.order-expression-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.order-expression-list strong {
+  color: var(--color-primary);
+}
+
+.order-expression-list p {
+  margin: 0.25rem 0 0;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+
 /* --- Form elements --- */
 select, input, textarea {
   background-color: var(--color-background);
@@ -564,6 +741,17 @@ select:focus, input:focus, textarea:focus {
   .reference-layout {
     grid-template-columns: 1fr;
     padding: 1rem;
+  }
+  .magic-page {
+    padding: 1rem;
+  }
+  .magic-mode-grid,
+  .magic-detail-grid,
+  .magic-bottom-grid,
+  .magic-boundary-grid,
+  .magic-casting-grid,
+  .order-expression-list {
+    grid-template-columns: 1fr;
   }
   .tab-bar {
     padding: 0;

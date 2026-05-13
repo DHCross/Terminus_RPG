@@ -4,6 +4,7 @@ import {
   Archive,
   BookOpen,
   Dices,
+  Flame,
   Layers,
   Map,
   ScrollText,
@@ -126,6 +127,11 @@ function App() {
               <BookOpen size={20} />
               <span>Orders</span>
               <small>Consult roles, approaches, and abilities.</small>
+            </Link>
+            <Link to="/magic" className="action-card">
+              <Flame size={20} />
+              <span>Magic</span>
+              <small>Use Workings, rites, and Rupture Casting.</small>
             </Link>
             <Link to="/species" className="action-card">
               <ScrollText size={20} />

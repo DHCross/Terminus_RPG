@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import { 
-  Layers, 
+import {
   Sparkles, 
   Save, 
   Eye, 
@@ -194,9 +193,9 @@ ${orderLines || '- No order hooks provided.'}
       - ground: What is currently reliable, permissions, and physical constraints. (Operational, bullet points style)
       - will: The active pressure/enemy intent already acting on the situation. (Operational)
       - shift: Immediate consequences of a player's action/interrupt. (Operational)
-      - drift: What changes/worsens if players do nothing. The future asserting itself. (Operational)
+      - drift: The executable Else statement: "At the end of each round, [specific state change]." It answers what changes if players do nothing. Do not write vague urgency.
       - readAloud: A short atmospheric description to read to players. Focus on sensory cues of systemic strain.
-      - driftLadder: A brief transition state or timeline of how the scene degrades.
+      - driftLadder: A brief executable transition ladder. Each step must change what players can safely do next.
       - mapHooks: Key interactive nouns or features in the environment.
       - orderHooks: Provide one specific actionable opportunity for each of the 6 Orders:
           * Seeker: Reveals hidden/forgotten truth.
@@ -384,8 +383,22 @@ ${orderLines || '- No order hooks provided.'}
                 <textarea name="shift" value={formData.shift} onChange={handleInputChange} rows={3} className="w-full bg-slate-950 border border-slate-700 rounded p-2 text-sm text-slate-200 focus:border-amber-500 outline-none resize-none font-mono text-xs" />
               </div>
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-purple-400">Drift <span className="text-slate-600 font-normal ml-1">What changes if no one acts</span></label>
-                <textarea name="drift" value={formData.drift} onChange={handleInputChange} rows={3} className="w-full bg-slate-950 border border-slate-700 rounded p-2 text-sm text-slate-200 focus:border-amber-500 outline-none resize-none font-mono text-xs" />
+                <label className="text-xs font-semibold text-purple-400">Drift <span className="text-slate-600 font-normal ml-1">Else statement: what changes if no one acts</span></label>
+                <textarea name="drift" value={formData.drift} onChange={handleInputChange} rows={3} className="w-full bg-slate-950 border border-slate-700 rounded p-2 text-sm text-slate-200 focus:border-amber-500 outline-none resize-none font-mono text-xs" placeholder="At the end of each round, ..." />
+              </div>
+            </div>
+            <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+              <div className="bg-slate-950 border border-slate-800 rounded p-3 text-slate-400">
+                <strong className="block text-amber-400 mb-1">Else Statement</strong>
+                Drift answers what happens if the players do nothing.
+              </div>
+              <div className="bg-slate-950 border border-slate-800 rounded p-3 text-slate-400">
+                <strong className="block text-amber-400 mb-1">Executable State</strong>
+                Write an end-of-round trigger with a visible state change.
+              </div>
+              <div className="bg-slate-950 border border-slate-800 rounded p-3 text-slate-400">
+                <strong className="block text-amber-400 mb-1">Threat Shape</strong>
+                Hazard worsens environment. Trap escalates response or intent.
               </div>
             </div>
           </section>
@@ -420,7 +433,7 @@ ${orderLines || '- No order hooks provided.'}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <label className="text-xs text-slate-400">Drift Ladder / Transition State</label>
-                  <textarea name="driftLadder" value={formData.driftLadder} onChange={handleInputChange} rows={2} className="w-full bg-slate-950 border border-slate-700 rounded p-2 text-sm text-slate-200 focus:border-amber-500 outline-none resize-none" />
+                  <textarea name="driftLadder" value={formData.driftLadder} onChange={handleInputChange} rows={2} className="w-full bg-slate-950 border border-slate-700 rounded p-2 text-sm text-slate-200 focus:border-amber-500 outline-none resize-none" placeholder="1. Water reaches ankles -> 2. Lower exits flood -> 3. Bridge buckles" />
                 </div>
                 <div className="space-y-1">
                   <label className="text-xs text-slate-400">Map Hooks / Nouns</label>
