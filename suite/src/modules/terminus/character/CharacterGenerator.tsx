@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Dices, Shuffle, Save } from 'lucide-react';
 import { ORDERS_LIST } from '../../../data/terminus/orders';
 import { ORIGINS, generateArchetype, applyArchetypeUpgrades, generateRandomCharacter, type OriginId } from '../../../data/terminus/archetypes';
-import { CHARACTER_BASELINE, CREATION_UPGRADES, THRESHOLD_MAPPING, deriveThresholds, type CharacterCreationState } from '../../../data/terminus/advancement';
+import { deriveThresholds, type CharacterCreationState } from '../../../data/terminus/advancement';
 import type { Die } from '../../../data/terminus/skills';
 
 interface CharacterGeneratorProps {
@@ -12,7 +12,6 @@ interface CharacterGeneratorProps {
 export function CharacterGenerator({ onSave }: CharacterGeneratorProps = {}) {
   const [step, setStep] = useState<'order-select' | 'origin-select' | 'upgrade-assign' | 'review'>('order-select');
   const [selectedOrder, setSelectedOrder] = useState<string>('');
-  const [selectedOrigin, setSelectedOrigin] = useState<OriginId | ''>('');
   
   const [character, setCharacter] = useState<CharacterCreationState>({
     name: 'Unnamed Responder',
@@ -38,7 +37,6 @@ export function CharacterGenerator({ onSave }: CharacterGeneratorProps = {}) {
   };
 
   const handleSelectOrigin = (originId: OriginId) => {
-    setSelectedOrigin(originId);
     const archetype = generateArchetype(selectedOrder, originId);
     const skills = applyArchetypeUpgrades(archetype);
     const thresholds = deriveThresholds(skills);

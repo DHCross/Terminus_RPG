@@ -1,85 +1,38 @@
 import { useState } from 'react';
+import { ClipboardList, Dices, Gauge, Waves } from 'lucide-react';
 import { DIE_LADDER, type Die } from '../../../data/terminus/skills';
 import { getSecureRandom } from '../../../utils/crypto';
 import { ConflictResolver } from '../conflict/ConflictResolver';
 
-type RollResult = {
-  attacker: number;
-  defender: number;
-  winner: 'attacker' | 'defender' | 'tie';
-  message: string;
-};
-
 type Tool = 'conflict' | 'dice' | 'drift' | 'questionnaire';
+
+const toolTabs = [
+  { id: 'conflict' as const, label: 'Conflict', icon: Gauge },
+  { id: 'dice' as const, label: 'Dice Roller', icon: Dices },
+  { id: 'drift' as const, label: 'Drift Resolver', icon: Waves },
+  { id: 'questionnaire' as const, label: 'Questionnaire', icon: ClipboardList },
+];
 
 export function PlaytestTools() {
   const [activeTool, setActiveTool] = useState<Tool>('conflict');
 
   return (
-    <div className="playtest-tools" style={{ padding: '2rem', maxWidth: '1000px' }}>
-      <h2 style={{ color: 'var(--color-primary)', marginBottom: '0.5rem' }}>Playtest Tools</h2>
-      <p style={{ color: 'var(--color-text-muted)', marginBottom: '2rem' }}>
-        Tools for testing the Terminus RPG alpha rules
-      </p>
+    <div className="playtest-tools" style={{ padding: '2rem', maxWidth: '1040px' }}>
+      <div className="page-header">
+        <h2>Playtest Tools</h2>
+        <p>Live table utilities for testing the Terminus RPG alpha rules.</p>
+      </div>
 
-      {/* Tool selector */}
-      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '2rem', flexWrap: 'wrap' }}>
-        <button
-          onClick={() => setActiveTool('conflict')}
-          style={{
-            padding: '0.5rem 1rem',
-            background: activeTool === 'conflict' ? '#3b82f6' : '#1e293b',
-            color: activeTool === 'conflict' ? '#fff' : '#94a3b8',
-            border: `1px solid ${activeTool === 'conflict' ? '#3b82f6' : '#334155'}`,
-            borderRadius: '0.375rem',
-            cursor: 'pointer',
-            fontWeight: 600,
-          }}
-        >
-          ⚔️ Conflict Resolution
-        </button>
-        <button
-          onClick={() => setActiveTool('dice')}
-          style={{
-            padding: '0.5rem 1rem',
-            background: activeTool === 'dice' ? '#3b82f6' : '#1e293b',
-            color: activeTool === 'dice' ? '#fff' : '#94a3b8',
-            border: `1px solid ${activeTool === 'dice' ? '#3b82f6' : '#334155'}`,
-            borderRadius: '0.375rem',
-            cursor: 'pointer',
-            fontWeight: 600,
-          }}
-        >
-          🎲 Dice Roller
-        </button>
-        <button
-          onClick={() => setActiveTool('drift')}
-          style={{
-            padding: '0.5rem 1rem',
-            background: activeTool === 'drift' ? '#3b82f6' : '#1e293b',
-            color: activeTool === 'drift' ? '#fff' : '#94a3b8',
-            border: `1px solid ${activeTool === 'drift' ? '#3b82f6' : '#334155'}`,
-            borderRadius: '0.375rem',
-            cursor: 'pointer',
-            fontWeight: 600,
-          }}
-        >
-          🌊 Drift Resolver
-        </button>
-        <button
-          onClick={() => setActiveTool('questionnaire')}
-          style={{
-            padding: '0.5rem 1rem',
-            background: activeTool === 'questionnaire' ? '#3b82f6' : '#1e293b',
-            color: activeTool === 'questionnaire' ? '#fff' : '#94a3b8',
-            border: `1px solid ${activeTool === 'questionnaire' ? '#3b82f6' : '#334155'}`,
-            borderRadius: '0.375rem',
-            cursor: 'pointer',
-            fontWeight: 600,
-          }}
-        >
-          📋 Questionnaire
-        </button>
+      <div className="tab-bar" style={{ marginBottom: '1.5rem', padding: 0 }}>
+        {toolTabs.map(({ id, label, icon: Icon }) => (
+          <button
+            key={id}
+            onClick={() => setActiveTool(id)}
+            className={activeTool === id ? 'tab-button active' : 'tab-button'}
+          >
+            <Icon size={18} /> {label}
+          </button>
+        ))}
       </div>
 
       {/* Tool content */}
@@ -188,7 +141,7 @@ function DiceRoller() {
             fontSize: '1rem',
           }}
         >
-          {rolling ? 'Rolling...' : '🎲 Roll'}
+          {rolling ? 'Rolling...' : 'Roll'}
         </button>
         <button
           onClick={clearHistory}
@@ -239,14 +192,14 @@ function DiceRoller() {
 }
 
 function DriftResolver() {
-  const [driftOptions, setDriftOptions] = useState<string[]>([
+  const driftOptions = [
     'Another pedestrian repeats an action',
     'A signal changes out of sequence',
     'The duplicate tram becomes more solid',
     'The crowd compresses toward the center',
     'A vendor stall appears in two places',
     'The bell rings twice, and one character loses track',
-  ]);
+  ];
   const [customOptions, setCustomOptions] = useState<string[]>([]);
   const [result, setResult] = useState<string | null>(null);
 
@@ -369,7 +322,7 @@ function DriftResolver() {
           marginBottom: '1.5rem',
         }}
       >
-        🎲 Roll Drift
+        Roll Drift
       </button>
 
       {result && (
@@ -479,7 +432,7 @@ function PlaytestQuestionnaire() {
           fontSize: '1rem',
         }}
       >
-        📋 Copy to Clipboard
+        Copy to Clipboard
       </button>
     </div>
   );

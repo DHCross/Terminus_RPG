@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Users, TrendingUp, Archive, Sparkles } from 'lucide-react';
+import { Archive, Sparkles, TrendingUp, Users } from 'lucide-react';
 import { CharacterGenerator } from './CharacterGenerator';
 import { AdvancementTracker } from './AdvancementTracker';
 import { useCharacterStorage } from './useCharacterStorage';
@@ -10,6 +10,7 @@ import type { CharacterCreationState } from '../../../data/terminus/advancement'
 export function CharacterWorkbench() {
   const [tab, setTab] = useState<'generator' | 'tracker' | 'vault'>('generator');
   const { characters, saveCharacter, deleteCharacter, selectedCharacter, selectedCharacterId, setSelectedCharacterId } = useCharacterStorage();
+  const [saveMessage, setSaveMessage] = useState<string | null>(null);
 
   const [currentCharacter, setCurrentCharacter] = useState({
     name: 'Unnamed Responder',
@@ -23,15 +24,28 @@ export function CharacterWorkbench() {
   });
 
   const handleSaveFromGenerator = (char: CharacterCreationState) => {
-    saveCharacter({
+    const saved = saveCharacter({
       name: char.name,
       order: char.order,
+      species: char.origin,
       skills: {
         Force: char.Force,
         Agility: char.Agility,
         Willpower: char.Willpower,
       },
     });
+    setCurrentCharacter({
+      name: saved.name,
+      order: saved.order || '',
+      origin: saved.species || '',
+      Force: (saved.skills.Force || 'd4') as Die,
+      Agility: (saved.skills.Agility || 'd4') as Die,
+      Willpower: (saved.skills.Willpower || 'd4') as Die,
+      advancementPoints: 0,
+      completedOperations: 0,
+    });
+    setSaveMessage(`${saved.name} saved to the vault.`);
+    window.setTimeout(() => setSaveMessage(null), 4000);
   };
 
   const handleLoadCharacter = (char: typeof characters[number]) => {
@@ -49,45 +63,48 @@ export function CharacterWorkbench() {
     setTab('tracker');
   };
 
-  const tabStyle = (active: boolean) => ({
-    display: 'flex',
-    alignItems: 'center',
-    gap: '0.5rem',
-    padding: '0.5rem 1rem',
-    borderRadius: '6px 6px 0 0',
-    border: 'none',
-    cursor: 'pointer',
-    fontWeight: 600 as const,
-    fontSize: '0.875rem',
-    background: active ? 'var(--color-surface)' : 'transparent',
-    color: active ? 'var(--color-accent)' : 'var(--color-text-muted)',
-    borderBottom: active ? '2px solid var(--color-accent)' : '2px solid transparent',
-    transition: 'all 0.15s ease',
-  });
-
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-      {/* Tabs */}
-      <div style={{
-        display: 'flex',
-        gap: '0.25rem',
-        borderBottom: '1px solid var(--color-border)',
-        padding: '0 1rem',
-        background: 'var(--color-background)',
-      }}>
-        <button onClick={() => setTab('generator')} style={tabStyle(tab === 'generator')}>
+      <div className="tab-bar">
+        <button onClick={() => setTab('generator')} className={tab === 'generator' ? 'tab-button active' : 'tab-button'}>
           <Users size={18} /> Generator
         </button>
-        <button onClick={() => setTab('tracker')} style={tabStyle(tab === 'tracker')}>
+        <button onClick={() => setTab('tracker')} className={tab === 'tracker' ? 'tab-button active' : 'tab-button'}>
           <TrendingUp size={18} /> Advancement
         </button>
-        <button onClick={() => setTab('vault')} style={tabStyle(tab === 'vault')}>
+        <button onClick={() => setTab('vault')} className={tab === 'vault' ? 'tab-button active' : 'tab-button'}>
           <Archive size={18} /> Vault ({characters.length})
         </button>
       </div>
 
-      {/* Content */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '1.5rem' }}>
+        <div className="panel" style={{ maxWidth: '960px', margin: '0 auto 1rem' }}>
+          <div className="chip-row" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+            <div>
+              <span className="eyebrow">Active Record</span>
+              <h2 style={{ margin: '0.25rem 0 0' }}>
+                {selectedCharacter?.name || currentCharacter.name}
+              </h2>
+              <p className="muted" style={{ margin: '0.25rem 0 0' }}>
+                {selectedCharacter?.order || currentCharacter.order || 'No Order selected'} / {characters.length} vault record{characters.length === 1 ? '' : 's'}
+              </p>
+            </div>
+            <div className="chip-row">
+              <button className="btn btn-secondary" onClick={() => setTab('vault')}>
+                <Archive size={16} /> View Vault
+              </button>
+              <button className="btn btn-secondary" onClick={() => setTab('tracker')}>
+                <TrendingUp size={16} /> Advance
+              </button>
+            </div>
+          </div>
+          {saveMessage && (
+            <div className="empty-state" style={{ marginTop: '1rem', padding: '0.85rem' }}>
+              {saveMessage} Continue in Advancement or review it in the Vault.
+            </div>
+          )}
+        </div>
+
         {tab === 'generator' && (
           <CharacterGenerator onSave={handleSaveFromGenerator} />
         )}
@@ -196,7 +213,7 @@ export function CharacterWorkbench() {
             {characters.length > 0 && (
               <div style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(380px, 1fr))',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 380px), 1fr))',
                 gap: '1rem',
               }}>
                 {characters.map(char => (

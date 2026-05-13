@@ -1,9 +1,20 @@
-import React from 'react';
+import { useState } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
-import { LayoutDashboard, Users, Layers, Book, Tent } from 'lucide-react';
+import { Book, LayoutDashboard, Layers, Menu, Tent, Users, X } from 'lucide-react';
 import '../index.css';
 
+const navItems = [
+  { to: '/', label: 'Dashboard', icon: LayoutDashboard, end: true },
+  { to: '/scene-cards', label: 'Scene Cards', icon: Layers },
+  { to: '/characters', label: 'Characters', icon: Users },
+  { to: '/species', label: 'Lineages', icon: Users },
+  { to: '/orders', label: 'Orders', icon: Book },
+  { to: '/playtest', label: 'Playtest Tools', icon: Tent },
+];
+
 export function AppShell() {
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
+
   return (
     <div className="app-layout">
       <aside className="sidebar">
@@ -22,30 +33,49 @@ export function AppShell() {
           </div>
         </div>
         <nav className="nav-menu">
-          <NavLink to="/" end className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
-            <LayoutDashboard className="icon" /> Dashboard
-          </NavLink>
-          <NavLink to="/scene-cards" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
-            <Layers className="icon" /> Scene Cards
-          </NavLink>
-          <NavLink to="/characters" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
-            <Users className="icon" /> Characters
-          </NavLink>
-          <NavLink to="/species" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
-            <Users className="icon" /> Lineages
-          </NavLink>
-          <NavLink to="/orders" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
-            <Book className="icon" /> Orders
-          </NavLink>
-          <NavLink to="/playtest" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
-            <Tent className="icon" /> Playtest Tools
-          </NavLink>
+          {navItems.map(({ to, label, icon: Icon, end }) => (
+            <NavLink
+              key={to}
+              to={to}
+              end={end}
+              className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}
+            >
+              <Icon className="icon" /> {label}
+            </NavLink>
+          ))}
         </nav>
       </aside>
       <main className="main-content">
         <header className="topbar">
+          <button
+            className="mobile-menu-button"
+            type="button"
+            onClick={() => setMobileNavOpen((open) => !open)}
+            aria-expanded={mobileNavOpen}
+            aria-controls="mobile-nav"
+            aria-label={mobileNavOpen ? 'Close navigation' : 'Open navigation'}
+          >
+            {mobileNavOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
           <h2>Terminus Software Suite</h2>
         </header>
+        <nav
+          id="mobile-nav"
+          className={mobileNavOpen ? 'mobile-nav open' : 'mobile-nav'}
+          aria-label="Mobile navigation"
+        >
+          {navItems.map(({ to, label, icon: Icon, end }) => (
+            <NavLink
+              key={to}
+              to={to}
+              end={end}
+              onClick={() => setMobileNavOpen(false)}
+              className={({ isActive }) => isActive ? 'mobile-nav-item active' : 'mobile-nav-item'}
+            >
+              <Icon className="icon" /> {label}
+            </NavLink>
+          ))}
+        </nav>
         <div className="content-area">
           <Outlet />
         </div>
