@@ -37,7 +37,7 @@ export function PlaytestTools() {
       </div>
 
       {/* Tool content */}
-      {activeTool === 'conflict' && <ConflictResolver />}
+      {activeTool === 'conflict' && <ConflictResolver onTriggerDrift={() => setActiveTool('drift')} />}
       {activeTool === 'dice' && <DiceRoller />}
       {activeTool === 'drift' && <DriftResolver />}
       {activeTool === 'questionnaire' && <PlaytestQuestionnaire />}
