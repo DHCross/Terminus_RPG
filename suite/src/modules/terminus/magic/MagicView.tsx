@@ -2,10 +2,12 @@ import { useMemo, useState } from 'react';
 import { Flame, Landmark, Search, ShieldCheck, Sparkles } from 'lucide-react';
 import {
   ARCHETYPAL_CASTINGS,
+  HOSTILE_TRACE_PROTOCOL,
   MAGIC_MODES,
   MAGIC_TABLE_PROCEDURE,
   MAGIC_TERMINOLOGY_BOUNDARIES,
   ORDER_MAGIC_EXPRESSIONS,
+  RUPTURE_CASTING_SUBTYPES,
   WORKING_VERBS,
 } from '../../../data/terminus/magic';
 import { ORDERS_LIST } from '../../../data/terminus/orders';
@@ -90,6 +92,46 @@ export function MagicView() {
             </div>
           ))}
         </div>
+      </section>
+
+      <section className="panel magic-rupture-panel">
+        <div className="section-heading">
+          <span className="eyebrow">Unlicensed Cost</span>
+          <h2>Rupture Casting Subtypes</h2>
+          <p className="muted">
+            Every Rupture Casting spends systemic stability. After adding Drift, the Guide
+            checks whether the act leaves a Hostile Trace.
+          </p>
+        </div>
+        <div className="magic-casting-grid">
+          {RUPTURE_CASTING_SUBTYPES.map((subtype) => (
+            <article className="panel magic-casting-card" key={subtype.id}>
+              <div className="chip-row">
+                <span className="chip">{subtype.driftCost}</span>
+                <span className="chip">Rupture Casting</span>
+              </div>
+              <h3>{subtype.name}</h3>
+              <dl>
+                <dt>Definition</dt>
+                <dd>{subtype.definition}</dd>
+                <dt>Systemic Cost</dt>
+                <dd>{subtype.systemicCost}</dd>
+              </dl>
+            </article>
+          ))}
+        </div>
+        <article className="panel magic-hostile-trace-card">
+          <span className="eyebrow">{HOSTILE_TRACE_PROTOCOL.title}</span>
+          <h3>d10 {'<='} current Drift</h3>
+          <ol className="procedure-list">
+            {HOSTILE_TRACE_PROTOCOL.steps.map((step) => <li key={step}>{step}</li>)}
+          </ol>
+          <div className="chip-row" style={{ marginTop: '1rem' }}>
+            {HOSTILE_TRACE_PROTOCOL.examples.map((example) => (
+              <span className="chip" key={example}>{example}</span>
+            ))}
+          </div>
+        </article>
       </section>
 
       <section className="reference-layout magic-reference-layout">

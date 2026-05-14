@@ -46,11 +46,12 @@ function App() {
     <div className="dashboard-page">
       <section className="dashboard-hero">
         <div className="dashboard-hero__copy">
-          <span className="eyebrow">Civic Archive Suite</span>
-          <h1>Terminus Field Console</h1>
+          <span className="eyebrow">A Coherence System Game</span>
+          <h1>Terminus</h1>
           <p>
-            Prepare responders, build scene pressure, consult Orders, and keep alpha playtest
-            work moving from one operational surface.
+            You are responders sent into districts where roads move, laws contradict
+            themselves, and bells ring for people who no longer exist. Your Order enters
+            before the collapse spreads.
           </p>
           <div className="dashboard-actions">
             <Link className="btn btn-primary" to="/characters">
@@ -101,8 +102,8 @@ function App() {
         </div>
         <div className="stat-tile">
           <Sparkles className="stat-tile__icon" />
-          <span className="stat-tile__value">Alpha 0.1</span>
-          <span className="stat-tile__label">Rules Snapshot</span>
+          <span className="stat-tile__value">Coherence</span>
+          <span className="stat-tile__label">Rules Engine</span>
         </div>
       </section>
 

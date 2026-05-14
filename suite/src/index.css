@@ -537,8 +537,21 @@ p {
   padding: 0;
 }
 
-.magic-boundary-panel {
+.magic-boundary-panel,
+.magic-rupture-panel {
   margin-bottom: 1.5rem;
+}
+
+.magic-hostile-trace-card {
+  margin-top: 1rem;
+  background: var(--color-background);
+}
+
+.magic-hostile-trace-card h3 {
+  margin: 0.35rem 0 1rem;
+  color: var(--color-primary);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.1rem;
 }
 
 .magic-boundary-grid {

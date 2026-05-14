@@ -28,6 +28,20 @@ export interface MagicTerminologyBoundary {
   summary: string;
 }
 
+export interface RuptureCastingSubtype {
+  id: string;
+  name: string;
+  driftCost: '+1 Drift' | '+2 Drift';
+  definition: string;
+  systemicCost: string;
+}
+
+export interface HostileTraceProtocol {
+  title: string;
+  steps: string[];
+  examples: string[];
+}
+
 export interface ArchetypalCasting {
   id: string;
   orderId: OrderInfo['id'];
@@ -80,6 +94,38 @@ export const MAGIC_MODES: MagicMode[] = [
     consequence: 'Creates a visible obligation, taboo, debt, omen, or institutional trace the Guide can bring back later.',
   },
 ];
+
+export const RUPTURE_CASTING_SUBTYPES: RuptureCastingSubtype[] = [
+  {
+    id: 'localized-override',
+    name: 'Localized Override',
+    driftCost: '+1 Drift',
+    definition: 'A brief, focused rupture targeting a single object, barrier, or individual. It temporarily overrides one local law while minimizing public notice.',
+    systemicCost: 'The Guide immediately adds +1 Drift to the Scene Card, then checks for Hostile Trace.',
+  },
+  {
+    id: 'systemic-overdraw',
+    name: 'Systemic Overdraw',
+    driftCost: '+2 Drift',
+    definition: 'A wide-scope rupture affecting multiple targets, damaging infrastructure, or publicly breaking civic routine such as stopping a tram line or shattering multiple seals.',
+    systemicCost: 'The Guide immediately adds +2 Drift to the Scene Card, then checks for Hostile Trace.',
+  },
+];
+
+export const HOSTILE_TRACE_PROTOCOL: HostileTraceProtocol = {
+  title: 'Hostile Trace',
+  steps: [
+    'After Rupture Casting, add the subtype Drift cost to the Scene Card.',
+    'The Guide secretly rolls d10 against the new total Drift value.',
+    'If the roll is equal to or less than current Drift, Hostile Trace is confirmed.',
+    'On confirmation, add a new Will or Drift condition reflecting impending arrival, influence, pursuit, or exploitation.',
+    'Keep the identity hidden until it enters play: pressure trace, monster, rival agent, compromised Order, or deep architectural response.',
+  ],
+  examples: [
+    'Drift 0 to 1: Hostile Trace on 1 or less, a 10% chance.',
+    'Drift 7 to 9: Hostile Trace on 9 or less, a 90% chance.',
+  ],
+};
 
 export const WORKING_VERBS: WorkingVerb[] = [
   {
@@ -303,5 +349,6 @@ export const MAGIC_TABLE_PROCEDURE = [
   'If it is a Sanctioned Working, choose one verb: Seal, Expose, Bridge, or Nullify.',
   'Identify the anchor: seal, oath, tool, body, route mark, rite, ledger, witness, or physical boundary.',
   'Pay the cost, then resolve any contested pressure with the normal Skill and Threshold engine.',
+  'If using Rupture Casting, classify it as Localized Override or Systemic Overdraw and check for Hostile Trace.',
   'Update the Scene Card: what changed, what now holds, and what Drift consequence follows.',
 ];

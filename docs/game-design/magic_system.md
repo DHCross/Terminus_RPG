@@ -232,12 +232,63 @@ Rupture Casting bypasses permission structure entirely. It is raw, desperate, an
 
 **Consequence:** Increase Scene Drift.
 
-- **+1 Drift:** Localized effect, single target, single barrier, brief override.
-- **+2 Drift:** Multiple targets, infrastructure damage, scene-wide disruption, or a change that breaks civic routine in public.
+### Subtype Classification
+
+Every Rupture Casting must be classified by scope.
+
+#### Localized Override
+
+**Cost:** +1 Drift.
+
+A Localized Override is a brief, focused rupture targeting a single object, barrier, or individual. It temporarily overrides one local law within the scene while minimizing public notice.
+
+Examples:
+
+- Force one sealed door open.
+- Break one hostile permission on one target.
+- Make one impossible crossing for one person.
+- Shatter one ward-anchor.
+
+The Guide immediately adds **+1 Drift** to the Scene Card.
+
+#### Systemic Overdraw
+
+**Cost:** +2 Drift.
+
+A Systemic Overdraw is a wide-scope rupture that affects multiple targets, causes infrastructure damage, or publicly breaks civic routine.
+
+Examples:
+
+- Stop a tram line.
+- Shatter multiple seals.
+- Tear open a route for the whole cell.
+- Break a public ward in front of witnesses.
+- Damage civic infrastructure to force a result.
+
+The Guide immediately adds **+2 Drift** to the Scene Card.
 
 There is no mechanical gate. Do not require a Drift number before someone can Rupture Cast. If a player does this on a quiet day, they have broken the quiet day. The consequence is the gate.
 
 Rupture Casting should always update the Scene Card. The Guide should state what permission broke, what Drift advanced, and what the room now does if no one answers it.
+
+### Hostile Trace
+
+Rupture Casting leaves a systemic trace. Monsters, rival agents, compromised Orders, and deeper architectural responses can exploit that trace.
+
+After any successful Rupture Casting:
+
+1. Add the Drift cost to the Scene Card.
+2. The Guide secretly rolls **d10**.
+3. Compare the roll to the new total **Scene Drift** value.
+4. If the d10 result is **equal to or less than** current Drift, a **Hostile Trace** is confirmed.
+5. On confirmation, add a new **Will** or **Drift** condition to the Scene Card showing impending arrival, influence, pursuit, or exploitation.
+
+Examples:
+
+- Drift 0 becomes Drift 1 after a Localized Override. Hostile Trace occurs on a d10 roll of 1 or less.
+- Drift 7 becomes Drift 9 after a Systemic Overdraw. Hostile Trace occurs on a d10 roll of 9 or less.
+
+The Guide does not have to reveal what noticed the casting immediately. The identity can remain hidden until it enters play: pressure trace, monster, rival agent, mechanical Terminus response, compromised Accord asset, or something else suited to the scene.
 
 ## Old Office Rites
 

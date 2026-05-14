@@ -8,11 +8,16 @@ This directory contains all documentation for the Terminus RPG project.
 Core game system design, lore, and world-building documentation.
 - **TerminusRPG.md** - Main game system rules and mechanics
 - **Terminus RPG 5.9.26.md** - Specific version documentation
+- **public_pitch.md** - Public-facing one-page pitch language for Terminus as a Coherence System game
+- **kickstarter_page_structure.md** - Suggested Kickstarter page flow and messaging hierarchy
+- **core_terms_glossary.md** - One-sentence definitions for public-facing terminology
 - **gazetteer.md** - World locations and geography
 - **setting_foundation.md** - Core setting and world fundamentals
 - **terminus_campaign_setting.md** - Campaign and adventure setting details
 - **terminus_rpg_free_alpha_v0_1.md** - Alpha version specification
 - **Mental_and_Monster_Design.md** - Character and creature design guide
+- **magic_system.md** - Sanctioned Workings, rotes, Rupture Casting, and Hostile Trace
+- **scene_drift.md** - Drift doctrine and GM-facing scene clock guidance
 
 ### `/development`
 Development progress and implementation notes for the Terminus system.
