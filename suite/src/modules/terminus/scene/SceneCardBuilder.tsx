@@ -3,6 +3,8 @@ import { useToast } from '../../../components/Toast';
 import type { Scene, GWSDCard, ActiveGWSDCard, LatentGWSDCard, TerminusSceneMode } from '../../gwsd-cards/types';
 import { ORDERS_LIST } from '../../../data/terminus/orders';
 import { exportCanonicalMarkdown, exportInlineGWSD, exportVisualCard } from './exportScene';
+import { AIGenerator } from './AIGenerator';
+import type { AISceneResponse } from '../../../services/aiService';
 
 interface SceneCardBuilderProps {
   onAddScene: (scene: Scene) => void;
@@ -192,6 +194,43 @@ export function SceneCardBuilder({ onAddScene, onCancel }: SceneCardBuilderProps
     };
   };
 
+  const handleAIGenerated = (data: AISceneResponse) => {
+    setTitle(data.title || '');
+    if (data.adventure) setAdventure(data.adventure);
+    if (data.act) setAct(data.act);
+    setLocation(data.location || '');
+    setSceneMode(data.sceneMode || 'confrontation');
+    setStateType(data.stateType || 'active');
+    setPressureType(data.pressureType || 'ground');
+    setScenePressure(data.scenePressure || 3);
+    setReadAloud(data.readAloud || '');
+    setGround(data.ground || '');
+    setWill(data.will || '');
+    
+    if (data.stateType === 'active') {
+      setShift(data.shift || '');
+      setDrift(data.drift || '');
+    } else {
+      setTrigger(data.trigger || '');
+      setAccumulation(data.accumulation || '');
+      setReveal(data.reveal || '');
+    }
+
+    setDriftLadder(data.driftLadder || '');
+    setMapHooks(data.mapHooks || '');
+    
+    if (data.orderHooks) {
+      setOrderHooks({
+        seeker: data.orderHooks.seeker || '',
+        breaker: data.orderHooks.breaker || '',
+        warden: data.orderHooks.warden || '',
+        rival: data.orderHooks.rival || '',
+        broker: data.orderHooks.broker || '',
+        shade: data.orderHooks.shade || '',
+      });
+    }
+  };
+
   return (
     <div style={{
       backgroundColor: '#1e293b',
@@ -224,6 +263,8 @@ export function SceneCardBuilder({ onAddScene, onCancel }: SceneCardBuilderProps
           Cancel
         </button>
       </div>
+
+      <AIGenerator onGenerate={handleAIGenerated} adventure={adventure} act={act} />
 
       {/* Basic Info */}
       <div style={{ marginBottom: '2rem' }}>
