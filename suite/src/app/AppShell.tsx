@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
-import { Book, Flame, LayoutDashboard, Layers, Menu, Tent, Users, X } from 'lucide-react';
+import { Book, Flame, LayoutDashboard, Layers, Menu, ScrollText, Tent, Users, X } from 'lucide-react';
 import '../index.css';
 
 const navItems = [
@@ -11,6 +11,7 @@ const navItems = [
   { to: '/species', label: 'Lineages', icon: Users },
   { to: '/orders', label: 'Orders', icon: Book },
   { to: '/playtest', label: 'Playtest Tools', icon: Tent },
+  { to: '/rules', label: 'Rules', icon: ScrollText },
 ];
 
 export function AppShell() {

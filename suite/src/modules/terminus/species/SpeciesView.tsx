@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Search } from 'lucide-react';
 import { SPECIES_LIST, type SpeciesInfo } from '../../../data/terminus/species';
+import { RuleLink } from '../rules/RuleLink';
 
 export function SpeciesView() {
   const [selectedSpecies, setSelectedSpecies] = useState<SpeciesInfo>(SPECIES_LIST[0]);
@@ -27,6 +28,9 @@ export function SpeciesView() {
         <div className="page-header">
           <h2>Lineages</h2>
           <p>Origin, body, inheritance, and small exceptions without replacing Order identity.</p>
+          <p className="muted" style={{ marginTop: '0.5rem' }}>
+            <RuleLink section="species" block />
+          </p>
         </div>
         <label className="chip" htmlFor="species-search">
           <Search size={15} /> Search Lineages

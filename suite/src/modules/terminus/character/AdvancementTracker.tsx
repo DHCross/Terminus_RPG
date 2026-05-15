@@ -9,6 +9,7 @@ import {
   canAdvanceSkill,
   deriveThresholds,
 } from '../../../data/terminus/advancement';
+import { RuleLink } from '../rules/RuleLink';
 
 interface AdvancementTrackerProps {
   characterName: string;
@@ -167,6 +168,9 @@ export function AdvancementTracker({
           <TrendingUp size={24} /> Advancement Tracker
         </h2>
         <p className="text-sm text-slate-400">{characterName}</p>
+        <p className="text-sm text-slate-500 mt-1">
+          <RuleLink section="advancement" />
+        </p>
       </header>
 
       {/* AP Summary */}

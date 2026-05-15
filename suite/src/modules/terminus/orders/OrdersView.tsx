@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Search } from 'lucide-react';
 import { ORDERS_LIST, type OrderInfo } from '../../../data/terminus/orders';
+import { RuleLink } from '../rules/RuleLink';
 
 export function OrdersView() {
   const [selectedOrder, setSelectedOrder] = useState<OrderInfo>(ORDERS_LIST[0]);
@@ -28,6 +29,9 @@ export function OrdersView() {
         <div className="page-header">
           <h2>The Orders</h2>
           <p>Social powers, field roles, and play identities for rupture response.</p>
+          <p className="muted" style={{ marginTop: '0.5rem' }}>
+            <RuleLink section="orders" block />
+          </p>
         </div>
         <label className="chip" htmlFor="orders-search">
           <Search size={15} /> Search Orders

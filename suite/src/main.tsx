@@ -11,6 +11,7 @@ import { SpeciesView } from './modules/terminus/species/SpeciesView';
 import { PlaytestTools } from './modules/terminus/playtest/PlaytestTools';
 import { SceneCardsWorkbench } from './modules/terminus/scene/SceneCardsWorkbench';
 import { MagicView } from './modules/terminus/magic/MagicView';
+import { RulesPage } from './modules/terminus/rules/RulesPage';
 import './index.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
@@ -27,6 +28,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
               <Route path="species" element={<SpeciesView />} />
               <Route path="orders" element={<OrdersView />} />
               <Route path="playtest" element={<PlaytestTools />} />
+              <Route path="rules" element={<RulesPage />} />
             </Route>
           </Routes>
         </BrowserRouter>

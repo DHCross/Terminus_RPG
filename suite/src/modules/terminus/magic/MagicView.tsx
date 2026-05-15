@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Flame, Landmark, Search, ShieldCheck, Sparkles } from 'lucide-react';
+import { RuleLink } from '../rules/RuleLink';
 import {
   ARCHETYPAL_CASTINGS,
   HOSTILE_TRACE_PROTOCOL,
@@ -52,6 +53,9 @@ export function MagicView() {
           Magic changes what reality accepts. It is permission, law, oath,
           infrastructure, rite, and controlled exception before it is spectacle.
         </p>
+        <p className="muted" style={{ marginTop: '0.5rem' }}>
+          <RuleLink section="magic-modes" block />
+        </p>
       </section>
 
       <section className="magic-mode-grid">
@@ -98,6 +102,9 @@ export function MagicView() {
         <div className="section-heading">
           <span className="eyebrow">Unlicensed Cost</span>
           <h2>Rupture Casting Subtypes</h2>
+          <p className="muted" style={{ marginTop: '0.25rem' }}>
+            <RuleLink section="rupture-casting" />
+          </p>
           <p className="muted">
             Every Rupture Casting spends systemic stability. After adding Drift, the Guide
             checks whether the act leaves a Hostile Trace.
@@ -139,6 +146,9 @@ export function MagicView() {
           <div className="page-header">
             <h2>Working Verbs</h2>
             <p>Four verbs keep the system broad without becoming a spell catalog.</p>
+            <p className="muted" style={{ marginTop: '0.25rem' }}>
+              <RuleLink section="working-verbs" />
+            </p>
           </div>
           <label className="chip" htmlFor="magic-search">
             <Search size={15} /> Search Workings
@@ -202,6 +212,9 @@ export function MagicView() {
         <div className="section-heading">
           <span className="eyebrow">Buttons To Press</span>
           <h2>Archetypal Castings</h2>
+          <p className="muted" style={{ marginTop: '0.25rem' }}>
+            <RuleLink section="archetypal-castings" />
+          </p>
           <p className="muted">
             Rotes are reliable, pre-approved Workings for players who want concrete effects.
             They are examples of the verb engine, not a separate spell list.

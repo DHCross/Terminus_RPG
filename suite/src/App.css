@@ -226,3 +226,538 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ─── Rules Reference Page ─────────────────────────────────────────────── */
+
+.rules-page {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 1.5rem 4rem;
+  scroll-behavior: smooth;
+}
+
+.rules-hero {
+  padding: 2.5rem 0 1.5rem;
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: 2rem;
+}
+
+.rules-hero h1 {
+  font-family: 'EB Garamond', serif;
+  font-size: 3.2rem;
+  margin: 0.35rem 0 0.5rem;
+  color: var(--color-primary);
+}
+
+.rules-hero__subtitle {
+  max-width: 680px;
+  color: var(--color-text-muted);
+  font-size: 1.05rem;
+  line-height: 1.6;
+}
+
+/* ── Table of Contents ────────────────────────────────────────────────── */
+
+.rules-toc {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 1.5rem 2rem;
+  margin-bottom: 2.5rem;
+}
+
+.rules-toc__heading {
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-text-muted);
+  margin: 0 0 0.75rem;
+}
+
+.rules-toc__list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.4rem 1.5rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.rules-toc__list a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--color-text);
+  text-decoration: none;
+  font-size: 0.92rem;
+  padding: 0.25rem 0;
+  transition: color 0.15s;
+}
+
+.rules-toc__list a:hover {
+  color: var(--color-primary);
+}
+
+/* ── Sections ──────────────────────────────────────────────────────────── */
+
+.rules-section {
+  padding: 2rem 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.rules-section:first-of-type {
+  border-top: none;
+}
+
+.rules-section-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.6rem;
+  margin: 0 0 1.25rem;
+  color: var(--color-text);
+  scroll-margin-top: 1rem;
+}
+
+.rules-section-heading svg {
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.rules-anchor {
+  font-size: 1.2rem;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  opacity: 0;
+  transition: opacity 0.15s;
+  margin-left: 0.25rem;
+}
+
+.rules-section-heading:hover .rules-anchor {
+  opacity: 1;
+}
+
+.rules-lede {
+  color: var(--color-text-muted);
+  max-width: 720px;
+  margin: 0 0 1.25rem;
+  line-height: 1.65;
+}
+
+.rules-note {
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  font-style: italic;
+  margin: 0.5rem 0;
+}
+
+.rules-crosslink {
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+  margin: 0.75rem 0 0;
+}
+
+.rules-crosslink a {
+  color: var(--color-primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* ── Cards ────────────────────────────────────────────────────────────── */
+
+.rules-card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+  margin: 1.25rem 0;
+}
+
+.rules-card-grid--2col {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.rules-card-grid--3col {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.rules-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 1.25rem;
+}
+
+.rules-card h3 {
+  margin: 0 0 0.35rem;
+  font-size: 1.15rem;
+  color: var(--color-primary);
+}
+
+.rules-card h4 {
+  margin: 0 0 0.25rem;
+  font-size: 0.95rem;
+  color: var(--color-text);
+}
+
+.rules-card__function {
+  color: var(--color-text-muted);
+  font-style: italic;
+  font-size: 0.92rem;
+  margin: 0 0 0.75rem;
+}
+
+.rules-card__detail {
+  margin-top: 0.75rem;
+}
+
+.rules-card__detail h4 {
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+  margin: 0 0 0.35rem;
+}
+
+.rules-card__detail dl {
+  margin: 0;
+}
+
+.rules-card__detail dt {
+  font-weight: 600;
+  color: var(--color-accent);
+  margin-top: 0.5rem;
+}
+
+.rules-card__detail dd {
+  margin: 0.15rem 0 0;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+
+.rules-card dl {
+  margin: 0.5rem 0 0;
+}
+
+.rules-card dt {
+  font-weight: 600;
+  color: var(--color-text);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.rules-card dd {
+  margin: 0.15rem 0 0.5rem;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+
+.rules-card ul {
+  margin: 0.25rem 0;
+  padding-left: 1.25rem;
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+}
+
+.rules-card a {
+  color: var(--color-primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* ── Stat Grid ─────────────────────────────────────────────────────────── */
+
+.rules-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+  margin: 1.25rem 0;
+}
+
+.rules-stat-grid--3col {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+/* ── Die Ladder ──────────────────────────────────────────────────────── */
+
+.rules-die-ladder {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin: 1rem 0 1.5rem;
+  padding: 1rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  overflow-x: auto;
+}
+
+.rules-die-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.5rem 0.75rem;
+}
+
+.rules-die-face {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.rules-die-circles {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.rules-die-arrow {
+  font-size: 1.25rem;
+  color: var(--color-text-muted);
+  margin: 0 0.25rem;
+}
+
+/* ── Tables ──────────────────────────────────────────────────────────── */
+
+.rules-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0 1.5rem;
+  font-size: 0.92rem;
+}
+
+.rules-table th {
+  text-align: left;
+  padding: 0.6rem 0.75rem;
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.rules-table td {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text);
+}
+
+.rules-table tr:last-child td {
+  border-bottom: none;
+}
+
+.rules-table a {
+  color: var(--color-primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* ── Glossary DL ────────────────────────────────────────────────────── */
+
+.rules-glossary dl {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 0.5rem 1.5rem;
+  margin: 0;
+}
+
+.rules-glossary dt {
+  font-weight: 600;
+  color: var(--color-accent);
+  font-size: 0.92rem;
+  text-align: right;
+}
+
+.rules-glossary dd {
+  margin: 0 0 0.75rem;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.rules-glossary a {
+  color: var(--color-primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* ── Callouts ──────────────────────────────────────────────────────────── */
+
+.rules-callout {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-left: 3px solid var(--color-primary);
+  border-radius: 6px;
+  padding: 1rem 1.25rem;
+  margin: 1rem 0;
+}
+
+.rules-callout--alert {
+  border-left-color: var(--color-accent);
+  text-align: center;
+}
+
+.rules-callout h3,
+.rules-callout h4 {
+  margin: 0 0 0.5rem;
+  color: var(--color-text);
+}
+
+.rules-die-check {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 2rem;
+  color: var(--color-accent);
+  margin: 0.5rem 0;
+}
+
+/* ── Procedure List ───────────────────────────────────────────────────── */
+
+.procedure-list {
+  padding-left: 1.5rem;
+  margin: 0.75rem 0;
+  color: var(--color-text-muted);
+  line-height: 1.7;
+}
+
+.procedure-list li {
+  margin-bottom: 0.4rem;
+}
+
+/* ── Back to Top ─────────────────────────────────────────────────────── */
+
+.rules-back-to-top {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  margin-top: 1.25rem;
+  transition: color 0.15s;
+}
+
+.rules-back-to-top:hover {
+  color: var(--color-primary);
+}
+
+/* ── Subsection ───────────────────────────────────────────────────────── */
+
+.rules-subsection {
+  margin: 1.5rem 0;
+}
+
+.rules-subsection h3 {
+  font-size: 1.2rem;
+  color: var(--color-text);
+  margin: 0 0 1rem;
+  scroll-margin-top: 1rem;
+}
+
+.rules-subsection h3 a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.rules-subsection h3 a:hover {
+  text-decoration: underline;
+}
+
+/* ── Footer ──────────────────────────────────────────────────────────── */
+
+.rules-footer {
+  text-align: center;
+  padding: 2.5rem 0 1rem;
+  border-top: 1px solid var(--color-border);
+  margin-top: 2rem;
+  color: var(--color-text-muted);
+}
+
+.rules-footer p {
+  margin: 0.25rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+}
+
+/* ── RuleLink component ────────────────────────────────────────────────── */
+
+.rule-link {
+  color: var(--color-primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-style: dotted;
+  cursor: pointer;
+  font-weight: 500;
+  transition: color 0.15s;
+}
+
+.rule-link:hover {
+  color: var(--color-primary-hover);
+}
+
+.rule-link--block {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.75rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  text-decoration: none;
+  font-size: 0.88rem;
+  color: var(--color-text);
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.rule-link--block:hover {
+  background: var(--color-surface-hover);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────── */
+
+@media (max-width: 900px) {
+  .rules-toc__list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .rules-card-grid,
+  .rules-stat-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .rules-card-grid--2col,
+  .rules-card-grid--3col,
+  .rules-stat-grid--3col {
+    grid-template-columns: 1fr;
+  }
+
+  .rules-glossary dl {
+    grid-template-columns: 1fr;
+  }
+
+  .rules-glossary dt {
+    text-align: left;
+  }
+
+  .rules-hero h1 {
+    font-size: 2.4rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .rules-toc__list {
+    grid-template-columns: 1fr;
+  }
+
+  .rules-die-ladder {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}

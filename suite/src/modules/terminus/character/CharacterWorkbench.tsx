@@ -6,6 +6,7 @@ import { useCharacterStorage } from './useCharacterStorage';
 import { VaultCharacterCard } from './VaultCharacterCard';
 import type { Die } from '../../../data/terminus/skills';
 import type { CharacterCreationState } from '../../../data/terminus/advancement';
+import { RuleLink } from '../rules/RuleLink';
 
 export function CharacterWorkbench() {
   const [tab, setTab] = useState<'generator' | 'tracker' | 'vault'>('generator');
@@ -96,6 +97,7 @@ export function CharacterWorkbench() {
               <button className="btn btn-secondary" onClick={() => setTab('tracker')}>
                 <TrendingUp size={16} /> Advance
               </button>
+              <RuleLink section="skills" block />
             </div>
           </div>
           {saveMessage && (

@@ -139,6 +139,11 @@ function App() {
               <span>Lineages</span>
               <small>Review bodies, inheritance, and traits.</small>
             </Link>
+            <Link to="/rules" className="action-card">
+              <BookOpen size={20} />
+              <span>Rules Reference</span>
+              <small>Complete hyperlinked rules document.</small>
+            </Link>
           </div>
         </div>
 
