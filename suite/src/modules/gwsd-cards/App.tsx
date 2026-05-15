@@ -667,6 +667,12 @@ export default function App() {
                   Paste or open a manuscript. Supports <code>[gwsd]</code> tagged blocks, <code>[sidebar]</code> blocks,<br/>
                   and structural detection from headers + prose.
                 </p>
+                <div style={{ marginTop: 40, borderTop: '1px solid #374151', paddingTop: 24, display: 'inline-block' }}>
+                  <p style={{ fontSize: 12, fontStyle: 'italic', color: '#4B5563', margin: 0 }}>
+                    "I made a language out of code, taught the bells when they should ring...<br/>
+                    built the Orders out of silence, to keep pressure from the seam."
+                  </p>
+                </div>
               </div>
             ) : view === 'deck' ? (
               <div

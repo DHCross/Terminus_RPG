@@ -288,6 +288,9 @@ export default function App() {
                   <div className="spinner"></div>
                   <div>INITIATING COHERENCE ENGINE...</div>
                   <div style={{fontSize: '0.7rem', opacity: 0.6}}>Constructing non-anathema structural parameters...</div>
+                  <div style={{fontSize: '0.8rem', opacity: 0.8, fontStyle: 'italic', marginTop: '24px', color: '#9ca3af'}}>
+                    "I'm somewhere in the silence, trying to keep the world intact."
+                  </div>
                 </div>
               ) : activeScene ? (
                 <div className="gwsd-card">
