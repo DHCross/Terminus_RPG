@@ -245,16 +245,18 @@ body {
 }
 
 /* --- Typography --- */
-h2, h3, h4, h5, h6 {
-  font-family: 'EB Garamond', serif;
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Cinzel', serif;
   color: var(--color-text);
   line-height: 1.4;
+  letter-spacing: 0.02em;
 }
 
 p {
-  font-family: 'Inter', sans-serif;
+  font-family: 'EB Garamond', serif;
   color: var(--text-lore);
   line-height: 1.65;
+  font-size: 1.05rem;
 }
 
 /* --- Buttons --- */
