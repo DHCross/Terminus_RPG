@@ -7,11 +7,12 @@ const navItems = [
   { to: '/', label: 'Dashboard', icon: LayoutDashboard, end: true },
   { to: '/scene-cards', label: 'Scene Cards', icon: Layers },
   { to: '/characters', label: 'Characters', icon: Users },
+  { to: '/npcs', label: 'NPC Vault', icon: Users },
   { to: '/magic', label: 'Magic', icon: Flame },
   { to: '/species', label: 'Lineages', icon: Users },
   { to: '/orders', label: 'Orders', icon: Book },
   { to: '/playtest', label: 'Playtest Tools', icon: Tent },
-  { to: '/rules', label: 'Rules', icon: ScrollText },
+  { to: '/rules', label: 'Playtest Rules', icon: ScrollText },
 ];
 
 export function AppShell() {

@@ -12,6 +12,7 @@ import { PlaytestTools } from './modules/terminus/playtest/PlaytestTools';
 import { SceneCardsWorkbench } from './modules/terminus/scene/SceneCardsWorkbench';
 import { MagicView } from './modules/terminus/magic/MagicView';
 import { RulesPage } from './modules/terminus/rules/RulesPage';
+import { NPCWorkbench } from './modules/terminus/npc/NPCWorkbench';
 import './index.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
@@ -24,6 +25,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
               <Route index element={<App />} />
               <Route path="scene-cards" element={<SceneCardsWorkbench />} />
               <Route path="characters" element={<CharacterWorkbench />} />
+              <Route path="npcs" element={<NPCWorkbench />} />
               <Route path="magic" element={<MagicView />} />
               <Route path="species" element={<SpeciesView />} />
               <Route path="orders" element={<OrdersView />} />

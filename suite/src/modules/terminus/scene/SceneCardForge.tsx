@@ -11,8 +11,10 @@ import {
   Gauge
 } from 'lucide-react';
 
-// API Key from environment variables
-const apiKey = import.meta.env.VITE_GEMINI_API_KEY || "";
+// API Key and Endpoint from environment variables
+const apiKey = import.meta.env.VITE_AI_API_KEY || import.meta.env.VITE_GEMINI_API_KEY || "";
+const apiEndpoint = import.meta.env.VITE_AI_ENDPOINT || "https://api.deepseek.com/chat/completions";
+const apiModel = import.meta.env.VITE_AI_MODEL || "deepseek-chat";
 
 export function SceneCardForge() {
   const [isGenerating, setIsGenerating] = useState(false);
@@ -170,7 +172,7 @@ ${orderLines || '- No order hooks provided.'}
   // LLM Generation Logic
   const handleAutoFill = async () => {
     if (!apiKey) {
-      setGenerationMessage('⚠️ API key not configured. Set VITE_GEMINI_API_KEY in your environment.');
+      setGenerationMessage('⚠️ API key not configured. Set VITE_AI_API_KEY in your environment (.env.local).');
       return;
     }
 
@@ -206,50 +208,31 @@ ${orderLines || '- No order hooks provided.'}
           * Shade: Moves through concealment/misdirection.
     `;
 
-    const systemInstruction = "You are a specialized game design assistant for Terminus RPG. Return ONLY valid JSON matching the schema provided. Do not use markdown formatting outside the JSON.";
+    const systemInstruction = "You are a specialized game design assistant for Terminus RPG. Return ONLY valid JSON matching the exact keys requested. Do not use markdown formatting outside the JSON.";
 
     const payload = {
-      contents: [{ parts: [{ text: prompt }] }],
-      systemInstruction: { parts: [{ text: systemInstruction }] },
-      generationConfig: {
-        responseMimeType: "application/json",
-        responseSchema: {
-          type: "OBJECT",
-          properties: {
-            ground: { type: "STRING" },
-            will: { type: "STRING" },
-            shift: { type: "STRING" },
-            drift: { type: "STRING" },
-            readAloud: { type: "STRING" },
-            driftLadder: { type: "STRING" },
-            mapHooks: { type: "STRING" },
-            orderHooks: {
-              type: "OBJECT",
-              properties: {
-                Seeker: { type: "STRING" },
-                Breaker: { type: "STRING" },
-                Warden: { type: "STRING" },
-                Rival: { type: "STRING" },
-                Broker: { type: "STRING" },
-                Shade: { type: "STRING" }
-              }
-            }
-          }
-        }
-      }
+      model: apiModel,
+      messages: [
+        { role: "system", content: systemInstruction },
+        { role: "user", content: prompt }
+      ],
+      response_format: { type: "json_object" }
     };
 
     try {
       const result = await fetchWithRetry(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`,
+        apiEndpoint,
         {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`
+          },
           body: JSON.stringify(payload)
         }
       );
 
-      const generatedData = JSON.parse(result.candidates[0].content.parts[0].text);
+      const generatedData = JSON.parse(result.choices[0].message.content);
       
       setFormData(prev => ({
         ...prev,
@@ -272,7 +255,7 @@ ${orderLines || '- No order hooks provided.'}
       setGenerationMessage('✓ Scene content generated successfully');
     } catch (error) {
       console.error("Failed to generate content:", error);
-      setGenerationMessage('✗ Failed to generate scene content. Check API key and try again.');
+      setGenerationMessage('✗ Failed to generate scene content. Check your VITE_AI_API_KEY and endpoint.');
     } finally {
       setIsGenerating(false);
     }

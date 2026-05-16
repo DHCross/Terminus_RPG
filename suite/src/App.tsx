@@ -119,6 +119,11 @@ function App() {
               <span>Characters</span>
               <small>Create, save, and advance responders.</small>
             </Link>
+            <Link to="/npcs" className="action-card">
+              <Users size={20} />
+              <span>NPC Vault</span>
+              <small>Generate and manage NPCs.</small>
+            </Link>
             <Link to="/scene-cards" className="action-card">
               <Layers size={20} />
               <span>Scene Cards</span>

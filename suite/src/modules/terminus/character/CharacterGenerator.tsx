@@ -10,10 +10,11 @@ interface CharacterGeneratorProps {
 }
 
 export function CharacterGenerator({ onSave }: CharacterGeneratorProps = {}) {
-  const [step, setStep] = useState<'order-select' | 'origin-select' | 'upgrade-assign' | 'review'>('order-select');
+  const [step, setStep] = useState<'origin-select' | 'order-select' | 'upgrade-assign' | 'review'>('origin-select');
   const [selectedOrder, setSelectedOrder] = useState<string>('');
+  const [selectedOrigin, setSelectedOrigin] = useState<OriginId | ''>('');
   
-  const getSpeciesImage = (originId: string) => {
+  const getLineageImage = (originId: string) => {
     if (originId.startsWith('human')) return 'human.png.png';
     if (originId.startsWith('stoneborn')) return 'stoneborn.png.png';
     if (originId.startsWith('wild_alfar')) return 'wild_alfar.png.png';
@@ -40,36 +41,39 @@ export function CharacterGenerator({ onSave }: CharacterGeneratorProps = {}) {
     new Set(['d10', 'd8', 'd6'])
   );
 
-  const handleSelectOrder = (orderId: string) => {
-    setSelectedOrder(orderId);
-    setStep('origin-select');
+  const handleSelectOrigin = (originId: OriginId) => {
+    setSelectedOrigin(originId);
+    setStep('order-select');
   };
 
-  const handleSelectOrigin = (originId: OriginId) => {
-    const archetype = generateArchetype(selectedOrder, originId);
+  const handleSelectOrder = (orderId: string) => {
+    if (!selectedOrigin) return;
+    const archetype = generateArchetype(orderId, selectedOrigin);
     const skills = applyArchetypeUpgrades(archetype);
     const thresholds = deriveThresholds(skills);
     
     setCharacter(prev => ({
       ...prev,
-      order: selectedOrder,
-      origin: originId,
+      order: orderId,
+      origin: selectedOrigin,
       Force: skills.Force,
       Agility: skills.Agility,
       Willpower: skills.Willpower,
       ...thresholds,
     }));
     
+    setSelectedOrder(orderId);
     setStep('review');
   };
 
-  const handleRandomGenerate = (orderId: string) => {
-    const { archetype, skills } = generateRandomCharacter(orderId);
+  const handleRandomGenerate = () => {
+    const randomOrder = ORDERS_LIST[Math.floor(Math.random() * ORDERS_LIST.length)].id;
+    const { archetype, skills } = generateRandomCharacter(randomOrder);
     const thresholds = deriveThresholds(skills);
     
     setCharacter(prev => ({
       ...prev,
-      order: orderId,
+      order: randomOrder,
       origin: archetype.origin,
       Force: skills.Force,
       Agility: skills.Agility,
@@ -77,7 +81,8 @@ export function CharacterGenerator({ onSave }: CharacterGeneratorProps = {}) {
       ...thresholds,
     }));
     
-    setSelectedOrder(orderId);
+    setSelectedOrder(randomOrder);
+    setSelectedOrigin(archetype.origin);
     setStep('review');
   };
 
@@ -116,58 +121,49 @@ export function CharacterGenerator({ onSave }: CharacterGeneratorProps = {}) {
   return (
     <div className="max-w-4xl mx-auto p-6 bg-slate-950 rounded-lg border border-slate-800 space-y-6">
       <header>
-        <h2 className="text-2xl font-bold text-amber-500 flex items-center gap-2 mb-2">
+        <h2 className="text-2xl font-bold text-amber-500 flex items-center gap-2 mb-2 drop-shadow-md">
           <Dices size={24} /> Character Generator
         </h2>
         <p className="text-sm text-slate-400">Build a Terminus responder with controlled advancement</p>
       </header>
 
-      {/* Step 1: Order Selection */}
-      {step === 'order-select' && (
-        <section className="space-y-4">
-          <h3 className="text-lg font-semibold text-slate-200">1. Choose Your Order</h3>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-            {ORDERS_LIST.map(order => (
-              <button
-                key={order.id}
-                onClick={() => handleSelectOrder(order.id)}
-                className="relative overflow-hidden p-4 min-h-[120px] bg-slate-900 border border-slate-700 rounded hover:border-amber-500 hover:bg-slate-800 transition-all text-left group"
-              >
-                <div className="absolute inset-0 opacity-30 group-hover:opacity-60 transition-opacity">
-                  <img src={`/images/orders/${order.id}.png.png`} alt={order.name} className="w-full h-full object-cover object-top mix-blend-screen grayscale contrast-125" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/80 to-transparent" />
-                </div>
-                <div className="relative z-10 mt-12">
-                  <div className="font-bold text-lg text-amber-400 group-hover:text-amber-300 drop-shadow-md">{order.name}</div>
-                  <div className="text-xs font-medium text-slate-400 mt-1 uppercase tracking-wider">{order.fieldFunction || order.id}</div>
-                </div>
-              </button>
-            ))}
-          </div>
-        </section>
-      )}
+      {/* Progress Stepper */}
+      <div className="flex items-center justify-between pb-6 border-b border-slate-800">
+        {[
+          { id: 'origin-select', label: '1. Lineage' },
+          { id: 'order-select', label: '2. Order' },
+          { id: 'upgrade-assign', label: '3. Upgrades' },
+          { id: 'review', label: '4. Finalize' }
+        ].map((s, idx) => {
+          const isActive = step === s.id;
+          const isPast = ['origin-select', 'order-select', 'upgrade-assign', 'review'].indexOf(step) > idx;
+          return (
+            <div key={s.id} className={`flex flex-col items-center gap-2 flex-1 relative ${isActive ? 'opacity-100' : isPast ? 'opacity-70' : 'opacity-30'}`}>
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm transition-colors duration-300 ${isActive ? 'bg-amber-500 text-amber-950 shadow-[0_0_15px_rgba(245,158,11,0.5)]' : isPast ? 'bg-slate-700 text-slate-300' : 'bg-slate-800 text-slate-500 border border-slate-700'}`}>
+                {idx + 1}
+              </div>
+              <div className={`text-xs font-medium tracking-wide uppercase ${isActive ? 'text-amber-400' : 'text-slate-500'}`}>
+                {s.label}
+              </div>
+              {idx < 3 && <div className="absolute top-4 left-[60%] right-[-40%] h-[2px] bg-slate-800" />}
+            </div>
+          );
+        })}
+      </div>
 
-      {/* Step 2: Origin Selection */}
+      {/* Step 1: Origin Selection */}
       {step === 'origin-select' && (
         <section className="space-y-4">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => setStep('order-select')}
-              className="px-3 py-1 text-sm bg-slate-800 text-slate-300 rounded hover:bg-slate-700"
-            >
-              ← Back
-            </button>
-            <h3 className="text-lg font-semibold text-slate-200">2. Choose Your Origin</h3>
-          </div>
+          <h3 className="text-lg font-semibold text-slate-200">1. Choose Your Origin (Lineage)</h3>
           <div className="space-y-2">
             {ORIGINS.map(origin => (
               <button
                 key={origin.id}
                 onClick={() => handleSelectOrigin(origin.id)}
-                className="relative overflow-hidden w-full p-6 bg-slate-900 border border-slate-700 rounded hover:border-amber-500 hover:bg-slate-800 transition-all text-left group"
+                className="relative overflow-hidden w-full p-6 bg-slate-900 border border-slate-700 rounded-lg hover:border-amber-400 hover:shadow-[0_0_20px_rgba(245,158,11,0.15)] hover:-translate-y-1 transition-all duration-300 text-left group"
               >
-                <div className="absolute inset-0 opacity-20 group-hover:opacity-40 transition-opacity">
-                  <img src={`/images/species/${getSpeciesImage(origin.id)}`} alt={origin.name} className="w-full h-full object-cover object-center mix-blend-screen grayscale contrast-125" />
+                <div className="absolute inset-0 opacity-20 group-hover:opacity-50 transition-opacity duration-300">
+                  <img src={`/images/lineages/${getLineageImage(origin.id)}`} alt={origin.name} className="w-full h-full object-cover object-center mix-blend-screen grayscale contrast-125" />
                   <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-900/80 to-transparent" />
                 </div>
                 <div className="relative z-10 flex justify-between items-center">
@@ -185,11 +181,44 @@ export function CharacterGenerator({ onSave }: CharacterGeneratorProps = {}) {
           
           <div className="pt-4 border-t border-slate-700">
             <button
-              onClick={() => handleRandomGenerate(selectedOrder)}
+              onClick={() => handleRandomGenerate()}
               className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-indigo-900/30 text-indigo-300 border border-indigo-700/50 rounded hover:bg-indigo-800/40 transition-colors"
             >
               <Shuffle size={16} /> Generate Random Character
             </button>
+          </div>
+        </section>
+      )}
+
+      {/* Step 2: Order Selection */}
+      {step === 'order-select' && (
+        <section className="space-y-4">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setStep('origin-select')}
+              className="px-3 py-1 text-sm bg-slate-800 text-slate-300 rounded hover:bg-slate-700"
+            >
+              ← Back
+            </button>
+            <h3 className="text-lg font-semibold text-slate-200">2. Choose Your Order</h3>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            {ORDERS_LIST.map(order => (
+              <button
+                key={order.id}
+                onClick={() => handleSelectOrder(order.id)}
+                className="relative overflow-hidden p-5 min-h-[140px] bg-slate-900 border border-slate-700 rounded-lg hover:border-amber-400 hover:shadow-[0_0_20px_rgba(245,158,11,0.15)] hover:-translate-y-1 transition-all duration-300 text-left group"
+              >
+                <div className="absolute inset-0 opacity-30 group-hover:opacity-70 transition-opacity duration-300">
+                  <img src={`/images/orders/${order.id}.png.png`} alt={order.name} className="w-full h-full object-cover object-top mix-blend-screen grayscale contrast-125" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/80 to-transparent" />
+                </div>
+                <div className="relative z-10 mt-12">
+                  <div className="font-bold text-lg text-amber-400 group-hover:text-amber-300 drop-shadow-md">{order.name}</div>
+                  <div className="text-xs font-medium text-slate-400 mt-1 uppercase tracking-wider">{order.fieldFunction || order.id}</div>
+                </div>
+              </button>
+            ))}
           </div>
         </section>
       )}
@@ -228,7 +257,7 @@ export function CharacterGenerator({ onSave }: CharacterGeneratorProps = {}) {
           <div className="flex items-center gap-2 mb-4">
             <h3 className="text-lg font-semibold text-slate-200">Your Character</h3>
             <button
-              onClick={() => setStep('order-select')}
+              onClick={() => setStep('origin-select')}
               className="text-xs px-2 py-1 bg-slate-800 text-slate-400 rounded hover:text-slate-200"
             >
               Start Over
