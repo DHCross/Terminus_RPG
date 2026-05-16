@@ -13,6 +13,15 @@ export function CharacterGenerator({ onSave }: CharacterGeneratorProps = {}) {
   const [step, setStep] = useState<'order-select' | 'origin-select' | 'upgrade-assign' | 'review'>('order-select');
   const [selectedOrder, setSelectedOrder] = useState<string>('');
   
+  const getSpeciesImage = (originId: string) => {
+    if (originId.startsWith('human')) return 'human.png.png';
+    if (originId.startsWith('stoneborn')) return 'stoneborn.png.png';
+    if (originId.startsWith('wild_alfar')) return 'wild_alfar.png.png';
+    if (originId.startsWith('deep_alfar')) return 'deep_alfar.png.png';
+    if (originId.startsWith('high_alfar')) return 'high_alfar.png.png';
+    return 'human.png.png';
+  };
+  
   const [character, setCharacter] = useState<CharacterCreationState>({
     name: 'Unnamed Responder',
     order: '',
@@ -122,10 +131,16 @@ export function CharacterGenerator({ onSave }: CharacterGeneratorProps = {}) {
               <button
                 key={order.id}
                 onClick={() => handleSelectOrder(order.id)}
-                className="p-4 bg-slate-900 border border-slate-700 rounded hover:border-amber-500 hover:bg-slate-800/50 transition-all text-left group"
+                className="relative overflow-hidden p-4 min-h-[120px] bg-slate-900 border border-slate-700 rounded hover:border-amber-500 hover:bg-slate-800 transition-all text-left group"
               >
-                <div className="font-semibold text-amber-400 group-hover:text-amber-300">{order.name}</div>
-                <div className="text-xs text-slate-500 mt-1">{order.id}</div>
+                <div className="absolute inset-0 opacity-30 group-hover:opacity-60 transition-opacity">
+                  <img src={`/images/orders/${order.id}.png.png`} alt={order.name} className="w-full h-full object-cover object-top mix-blend-screen grayscale contrast-125" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/80 to-transparent" />
+                </div>
+                <div className="relative z-10 mt-12">
+                  <div className="font-bold text-lg text-amber-400 group-hover:text-amber-300 drop-shadow-md">{order.name}</div>
+                  <div className="text-xs font-medium text-slate-400 mt-1 uppercase tracking-wider">{order.fieldFunction || order.id}</div>
+                </div>
               </button>
             ))}
           </div>
@@ -149,14 +164,20 @@ export function CharacterGenerator({ onSave }: CharacterGeneratorProps = {}) {
               <button
                 key={origin.id}
                 onClick={() => handleSelectOrigin(origin.id)}
-                className="w-full p-4 bg-slate-900 border border-slate-700 rounded hover:border-amber-500 hover:bg-slate-800/50 transition-all text-left group"
+                className="relative overflow-hidden w-full p-6 bg-slate-900 border border-slate-700 rounded hover:border-amber-500 hover:bg-slate-800 transition-all text-left group"
               >
-                <div className="flex justify-between items-start">
-                  <div>
-                    <div className="font-semibold text-amber-400 group-hover:text-amber-300">{origin.name}</div>
-                    <div className="text-sm text-slate-400 mt-1">{origin.description}</div>
+                <div className="absolute inset-0 opacity-20 group-hover:opacity-40 transition-opacity">
+                  <img src={`/images/species/${getSpeciesImage(origin.id)}`} alt={origin.name} className="w-full h-full object-cover object-center mix-blend-screen grayscale contrast-125" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-900/80 to-transparent" />
+                </div>
+                <div className="relative z-10 flex justify-between items-center">
+                  <div className="max-w-[70%]">
+                    <div className="font-bold text-xl text-amber-400 group-hover:text-amber-300 drop-shadow-md">{origin.name}</div>
+                    <div className="text-sm text-slate-300 mt-2 leading-relaxed">{origin.description}</div>
                   </div>
-                  <div className="text-xs text-slate-500">+{origin.archetypalBonus}</div>
+                  <div className="text-lg font-bold text-slate-500 bg-slate-950/50 px-3 py-1 rounded border border-slate-800 backdrop-blur-sm">
+                    +{origin.archetypalBonus}
+                  </div>
                 </div>
               </button>
             ))}
