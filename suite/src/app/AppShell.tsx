@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
-import { Book, Flame, LayoutDashboard, Layers, Menu, ScrollText, Tent, Users, X } from 'lucide-react';
+import { Book, Flame, LayoutDashboard, Layers, Menu, ScrollText, Tent, Users, X, Skull } from 'lucide-react';
 import '../index.css';
 
 const navItems = [
@@ -8,6 +8,7 @@ const navItems = [
   { to: '/scene-cards', label: 'Scene Cards', icon: Layers },
   { to: '/characters', label: 'Characters', icon: Users },
   { to: '/npcs', label: 'NPC Vault', icon: Users },
+  { to: '/bestiary', label: 'Bestiary', icon: Skull },
   { to: '/magic', label: 'Magic', icon: Flame },
   { to: '/species', label: 'Lineages', icon: Users },
   { to: '/orders', label: 'Orders', icon: Book },

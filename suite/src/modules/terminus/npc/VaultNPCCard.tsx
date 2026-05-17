@@ -11,14 +11,14 @@ export function VaultNPCCard({ npc, onDelete }: VaultNPCCardProps) {
   const [copied, setCopied] = useState(false);
 
   const handleCopyMarkdown = () => {
-    const markdown = \`# \${npc.name || 'Unnamed NPC'}
-*\${npc.lineage || 'Unknown Lineage'} \${npc.role || 'Unknown Role'}*
+    const markdown = `# ${npc.name || 'Unnamed NPC'}
+*${npc.lineage || 'Unknown Lineage'} ${npc.role || 'Unknown Role'}*
 
-**Appearance:** \${npc.appearance}
-**Quirk:** \${npc.quirk}
+**Appearance:** ${npc.appearance}
+**Quirk:** ${npc.quirk}
 
-**Will:** \${npc.will}
-**Drift:** \${npc.drift}\`;
+**Will:** ${npc.will}
+**Drift:** ${npc.drift}`;
 
     navigator.clipboard.writeText(markdown).then(() => {
       setCopied(true);

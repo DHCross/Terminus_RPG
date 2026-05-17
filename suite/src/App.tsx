@@ -12,6 +12,7 @@ import {
   Sparkles,
   TrendingUp,
   Users,
+  Skull,
 } from 'lucide-react';
 import { DIE_LADDER, type Die } from './data/terminus/skills';
 import { useCharacterStorage } from './modules/terminus/character/useCharacterStorage';
@@ -123,6 +124,11 @@ function App() {
               <Users size={20} />
               <span>NPC Vault</span>
               <small>Generate and manage NPCs.</small>
+            </Link>
+            <Link to="/bestiary" className="action-card">
+              <Skull size={20} />
+              <span>Bestiary</span>
+              <small>Generate hostiles and track threats.</small>
             </Link>
             <Link to="/scene-cards" className="action-card">
               <Layers size={20} />

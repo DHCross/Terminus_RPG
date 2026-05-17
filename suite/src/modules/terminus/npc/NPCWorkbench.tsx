@@ -11,7 +11,7 @@ export function NPCWorkbench() {
 
   const handleSave = (npcData: any) => {
     const saved = saveNPC(npcData);
-    setSaveMessage(\`\${saved.name} saved to the vault.\`);
+    setSaveMessage(`${saved.name} saved to the vault.`);
     window.setTimeout(() => setSaveMessage(null), 4000);
   };
 
@@ -75,7 +75,7 @@ export function NPCWorkbench() {
                 <p style={{ color: '#94a3b8', margin: 0, fontSize: '0.85rem' }}>
                   {npcs.length === 0
                     ? 'No NPCs on file. Generate one in the Generator.'
-                    : \`\${npcs.length} NPC\${npcs.length !== 1 ? 's' : ''} on file\`
+                    : `${npcs.length} NPC${npcs.length !== 1 ? 's' : ''} on file`
                   }
                 </p>
               </div>

@@ -133,7 +133,7 @@ export function NPCGenerator({ onSave }: NPCGeneratorProps) {
           method: 'POST',
           headers: { 
             'Content-Type': 'application/json',
-            'Authorization': \`Bearer \${apiKey}\`
+            Authorization: `Bearer ${apiKey}`,
           },
           body: JSON.stringify(payload)
         }
@@ -155,7 +155,7 @@ export function NPCGenerator({ onSave }: NPCGeneratorProps) {
       } else {
         if (generatedData.npcs && Array.isArray(generatedData.npcs)) {
           setGeneratedGroup(generatedData.npcs);
-          setGenerationMessage(\`✓ \${generatedData.npcs.length} NPCs generated successfully\`);
+          setGenerationMessage(`✓ ${generatedData.npcs.length} NPCs generated successfully`);
         } else {
           throw new Error("Invalid array format returned for group generation.");
         }
@@ -206,13 +206,13 @@ export function NPCGenerator({ onSave }: NPCGeneratorProps) {
         <div className="flex bg-slate-950 border border-slate-700 rounded p-1">
           <button 
             onClick={() => { setGenerationMode('single'); setGenerationMessage(''); }}
-            className={\`flex items-center gap-2 px-3 py-1.5 text-sm rounded \${generationMode === 'single' ? 'bg-amber-900/30 text-amber-400 font-medium border border-amber-800/50' : 'text-slate-500 hover:text-slate-300'}\`}
+            className={`flex items-center gap-2 px-3 py-1.5 text-sm rounded ${generationMode === 'single' ? 'bg-amber-900/30 text-amber-400 font-medium border border-amber-800/50' : 'text-slate-500 hover:text-slate-300'}`}
           >
             <UserPlus size={14} /> Single
           </button>
           <button 
             onClick={() => { setGenerationMode('group'); setGenerationMessage(''); }}
-            className={\`flex items-center gap-2 px-3 py-1.5 text-sm rounded \${generationMode === 'group' ? 'bg-amber-900/30 text-amber-400 font-medium border border-amber-800/50' : 'text-slate-500 hover:text-slate-300'}\`}
+            className={`flex items-center gap-2 px-3 py-1.5 text-sm rounded ${generationMode === 'group' ? 'bg-amber-900/30 text-amber-400 font-medium border border-amber-800/50' : 'text-slate-500 hover:text-slate-300'}`}
           >
             <Users size={14} /> Group Batch
           </button>
@@ -230,7 +230,7 @@ export function NPCGenerator({ onSave }: NPCGeneratorProps) {
 
       <div className="p-6 space-y-6">
         {generationMessage && (
-          <div className={\`text-sm p-3 rounded \${generationMessage.includes('✓') ? 'bg-green-900/20 text-green-400 border border-green-800/30' : 'bg-red-900/20 text-red-400 border border-red-800/30'}\`}>
+          <div className={`text-sm p-3 rounded ${generationMessage.includes('✓') ? 'bg-green-900/20 text-green-400 border border-green-800/30' : 'bg-red-900/20 text-red-400 border border-red-800/30'}`}>
             {generationMessage}
           </div>
         )}
