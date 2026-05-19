@@ -211,9 +211,14 @@ export default function App() {
     return filtered;
   }, [scenes, modeFilter, organizeBy, sceneModeKeyById]);
 
-  const activeSceneId = selectedSceneId && displayedScenes.some((scene) => scene.id === selectedSceneId)
-    ? selectedSceneId
-    : displayedScenes[0]?.id || null;
+  const activeSceneId = useMemo(
+    () => (
+      selectedSceneId && displayedScenes.some((scene) => scene.id === selectedSceneId)
+        ? selectedSceneId
+        : displayedScenes[0]?.id || null
+    ),
+    [displayedScenes, selectedSceneId],
+  );
 
   const selectedScene = useMemo(
     () => scenes.find((scene) => scene.id === activeSceneId) || null,
