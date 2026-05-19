@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useToast } from '../../../components/Toast';
-import type { Scene, GWSDCard, ActiveGWSDCard, LatentGWSDCard, TerminusSceneMode } from '../../gwsd-cards/types';
+import type { Scene, GWSDCard, ActiveGWSDCard, LatentGWSDCard, GWSDState, TerminusOrder, TerminusSceneMode } from '../../gwsd-cards/types';
 import { ORDERS_LIST } from '../../../data/terminus/orders';
 import { exportCanonicalMarkdown, exportInlineGWSD, exportVisualCard } from './exportScene';
 import { AIGenerator } from './AIGenerator';
@@ -40,18 +40,11 @@ export function SceneCardBuilder({ onAddScene, onCancel }: SceneCardBuilderProps
   const [accumulation, setAccumulation] = useState('');
   const [reveal, setReveal] = useState('');
 
-  // Silhouette sections
-  const [agency, setAgency] = useState('');
-  const [pressure, setPressure] = useState('');
-  const [contingency, setContingency] = useState('');
-  const [consequence, setConsequence] = useState('');
-
-  const [environmentSummary, setEnvironmentSummary] = useState('');
   const [pressureType, setPressureType] = useState<string>('ground');
   const [scenePressure, setScenePressure] = useState<number>(3);
 
   // Order hooks
-  const [orderHooks, setOrderHooks] = useState<Record<string, string>>({
+  const [orderHooks, setOrderHooks] = useState<Record<TerminusOrder, string>>({
     seeker: '',
     breaker: '',
     warden: '',
@@ -91,15 +84,14 @@ export function SceneCardBuilder({ onAddScene, onCancel }: SceneCardBuilderProps
     }
 
     const sceneId = crypto.randomUUID();
-    const now = new Date().toISOString();
 
     // Create GWSD cards
-    const createCard = (state: string, text: string): GWSDCard => {
+    const createCard = (state: GWSDState, text: string): GWSDCard => {
       const base = {
         id: crypto.randomUUID(),
         sceneId,
         stateType,
-        state: state as any,
+        state,
         text,
         source: 'manual' as const,
       };
@@ -135,18 +127,18 @@ export function SceneCardBuilder({ onAddScene, onCancel }: SceneCardBuilderProps
       scenePressure,
       cards,
       raw: '',
-      terminus: {
-        scenePressure,
-        location: location.trim(),
-        sceneMode,
-        driftLadder: driftLadder.trim(),
-        mapHooks: mapHooks.trim(),
-        readAloud: readAloud.trim(),
-        orderTags: Object.entries(orderHooks)
-          .filter(([_, hook]) => hook.trim())
-          .map(([order, _]) => order as any),
-      },
-    };
+        terminus: {
+          scenePressure,
+          location: location.trim(),
+          sceneMode,
+          driftLadder: driftLadder.trim(),
+          mapHooks: mapHooks.trim(),
+          readAloud: readAloud.trim(),
+          orderTags: (Object.entries(orderHooks) as Array<[TerminusOrder, string]>)
+            .filter(([, hook]) => hook.trim())
+            .map(([order]) => order),
+        },
+      };
 
     onAddScene(newScene);
     addToast('success', `Scene "${title}" forged`);
@@ -156,12 +148,12 @@ export function SceneCardBuilder({ onAddScene, onCancel }: SceneCardBuilderProps
   const buildPreviewScene = (): Scene | null => {
     if (!title.trim() || !ground.trim() || !will.trim()) return null;
     const sceneId = 'preview';
-    const createCard = (state: string, text: string): GWSDCard => {
+    const createCard = (state: GWSDState, text: string): GWSDCard => {
       const base = {
         id: 'preview-' + state,
         sceneId,
         stateType,
-        state: state as any,
+        state,
         text,
         source: 'manual' as const,
       };
@@ -180,18 +172,18 @@ export function SceneCardBuilder({ onAddScene, onCancel }: SceneCardBuilderProps
       scenePressure,
       cards,
       raw: '',
-      terminus: {
-        scenePressure,
-        location: location.trim(),
-        sceneMode,
-        driftLadder: driftLadder.trim(),
-        mapHooks: mapHooks.trim(),
-        readAloud: readAloud.trim(),
-        orderTags: Object.entries(orderHooks)
-          .filter(([_, hook]) => hook.trim())
-          .map(([order, _]) => order as any),
-      },
-    };
+        terminus: {
+          scenePressure,
+          location: location.trim(),
+          sceneMode,
+          driftLadder: driftLadder.trim(),
+          mapHooks: mapHooks.trim(),
+          readAloud: readAloud.trim(),
+          orderTags: (Object.entries(orderHooks) as Array<[TerminusOrder, string]>)
+            .filter(([, hook]) => hook.trim())
+            .map(([order]) => order),
+        },
+      };
   };
 
   const handleAIGenerated = (data: AISceneResponse) => {

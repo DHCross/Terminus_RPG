@@ -1,6 +1,6 @@
 /* ── GWSD Card Generator — Main Application ── */
 
-import { useState, useCallback, useMemo, useEffect } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import type { Scene, SilhouetteSectionKey } from './types';
 import { smartParse, type DetectedMode } from './parser';
 import { detectScenes } from './sceneDetector';
@@ -211,19 +211,18 @@ export default function App() {
     return filtered;
   }, [scenes, modeFilter, organizeBy, sceneModeKeyById]);
 
-  useEffect(() => {
-    if (displayedScenes.length === 0) {
-      setSelectedSceneId(null);
-      return;
-    }
-    if (!selectedSceneId || !displayedScenes.some((scene) => scene.id === selectedSceneId)) {
-      setSelectedSceneId(displayedScenes[0].id);
-    }
-  }, [displayedScenes, selectedSceneId]);
+  const activeSceneId = useMemo(
+    () => (
+      selectedSceneId && displayedScenes.some((scene) => scene.id === selectedSceneId)
+        ? selectedSceneId
+        : displayedScenes[0]?.id || null
+    ),
+    [displayedScenes, selectedSceneId],
+  );
 
   const selectedScene = useMemo(
-    () => scenes.find((scene) => scene.id === selectedSceneId) || null,
-    [scenes, selectedSceneId],
+    () => scenes.find((scene) => scene.id === activeSceneId) || null,
+    [activeSceneId, scenes],
   );
   const selectedSceneEvidence = useMemo(
     () => (selectedScene ? sceneModeEvidenceById.get(selectedScene.id) || null : null),
@@ -733,7 +732,7 @@ export default function App() {
                   </div>
                   <div style={{ overflowY: 'auto', maxHeight: 250, borderBottom: '1px solid #1E293B' }}>
                     {displayedScenes.map((scene) => {
-                      const isActive = scene.id === selectedSceneId;
+                      const isActive = scene.id === activeSceneId;
                       const modeMeta = sceneModeById.get(scene.id);
                       return (
                         <button

@@ -203,12 +203,12 @@ function ensureDistinctBody(
 /** Patterns to strip game mechanics from narrative text */
 const MECHANIC_PATTERNS: Array<[RegExp, string]> = [
   // Dice: 1d6, 2d8+3, 3d6-1
-  [/\b\d+d\d+(?:[+\-]\d+)?\b/g, ''],
+  [/\b\d+d\d+(?:[-+]\d+)?\b/g, ''],
   // DC checks: DC 14, Fort DC 12, Reflex DC 15
   [/\b(?:Fort(?:itude)?|Ref(?:lex)?|Will|Perception|Stealth|Climb|Swim|Disable\s+Device)\s+(?:DC\s*)?\d+\b/gi, ''],
   [/\bDC\s+\d+\b/g, ''],
   // Attack bonuses: +6 Ranged, +12 melee, +5 to hit
-  [/[+\-]\d+\s+(?:Ranged|Melee|to\s+hit|attack)\b/gi, ''],
+  [/[-+]\d+\s+(?:Ranged|Melee|to\s+hit|attack)\b/gi, ''],
   // HP/AC: HP 30, AC 15
   [/\b(?:HP|hp|Hit\s+Points?)\s*\d+\b/gi, ''],
   [/\bAC\s+\d+\b/g, ''],
@@ -362,7 +362,7 @@ const STAT_BLOCK_PATTERNS: RegExp[] = [
   /\bSwarm\s+traits?\b/i,
   /\bPsionic\s+(?:Blast|Surge|Bolt|Shield)\b/i,
   // Full stat-line patterns: "AC 14, HP 30"
-  /\b(?:AC|HP|Init|Fort|Ref|Will|CMB|CMD|Base Atk|Speed|Melee|Ranged)\s+[+\-]?\d+/i,
+  /\b(?:AC|HP|Init|Fort|Ref|Will|CMB|CMD|Base Atk|Speed|Melee|Ranged)\s+[-+]?\d+/i,
   // CR/XP lines
   /\b(?:CR\s+\d|XP\s+[\d,])/i,
   // Ability score blocks: "Str 18, Dex 12"
@@ -371,7 +371,7 @@ const STAT_BLOCK_PATTERNS: RegExp[] = [
   /\b(?:NE|CE|LE|LG|NG|CG|LN|CN|N)\s+(?:Tiny|Small|Medium|Large|Huge)\s+(?:Aberration|Animal|Beast|Construct|Dragon|Elemental|Fey|Fiend|Giant|Humanoid|Monstrosity|Ooze|Plant|Undead|Vermin|Magical Beast)/i,
   // Feat/skill listing
   /\bFeats?\s+(?:Improved|Toughness|Weapon\s+Focus|Great)/i,
-  /\bSkills?\s+(?:Climb|Perception|Stealth|Swim|Acrobatics)\s+[+\-]?\d+/i,
+  /\bSkills?\s+(?:Climb|Perception|Stealth|Swim|Acrobatics)\s+[-+]?\d+/i,
 ];
 
 /**

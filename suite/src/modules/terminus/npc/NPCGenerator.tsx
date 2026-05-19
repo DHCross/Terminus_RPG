@@ -34,7 +34,7 @@ export function NPCGenerator({ onSave }: NPCGeneratorProps) {
   });
 
   // Generated group array to display
-  const [generatedGroup, setGeneratedGroup] = useState<any[]>([]);
+  const [generatedGroup, setGeneratedGroup] = useState<Omit<NPCData, 'id' | 'createdAt' | 'updatedAt'>[]>([]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -69,7 +69,7 @@ export function NPCGenerator({ onSave }: NPCGeneratorProps) {
     setIsGenerating(true);
     setGenerationMessage('');
     
-    let prompt = '';
+    let prompt: string;
     let systemInstruction = "You are a specialized game design assistant for Terminus RPG.";
 
     if (generationMode === 'single') {

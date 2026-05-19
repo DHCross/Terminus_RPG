@@ -2,14 +2,14 @@ import { useState } from 'react';
 import { Archive, Sparkles, Users } from 'lucide-react';
 import { NPCGenerator } from './NPCGenerator';
 import { VaultNPCCard } from './VaultNPCCard';
-import { useNPCStorage } from './useNPCStorage';
+import { useNPCStorage, type NPCData } from './useNPCStorage';
 
 export function NPCWorkbench() {
   const [tab, setTab] = useState<'generator' | 'vault'>('generator');
   const { npcs, saveNPC, deleteNPC } = useNPCStorage();
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
 
-  const handleSave = (npcData: any) => {
+  const handleSave = (npcData: Omit<NPCData, 'id' | 'createdAt' | 'updatedAt'>) => {
     const saved = saveNPC(npcData);
     setSaveMessage(`${saved.name} saved to the vault.`);
     window.setTimeout(() => setSaveMessage(null), 4000);

@@ -11,7 +11,6 @@ interface CharacterGeneratorProps {
 
 export function CharacterGenerator({ onSave }: CharacterGeneratorProps = {}) {
   const [step, setStep] = useState<'origin-select' | 'order-select' | 'upgrade-assign' | 'review'>('origin-select');
-  const [selectedOrder, setSelectedOrder] = useState<string>('');
   const [selectedOrigin, setSelectedOrigin] = useState<OriginId | ''>('');
   
   const getLineageImage = (originId: string) => {
@@ -62,7 +61,6 @@ export function CharacterGenerator({ onSave }: CharacterGeneratorProps = {}) {
       ...thresholds,
     }));
     
-    setSelectedOrder(orderId);
     setStep('review');
   };
 
@@ -81,7 +79,6 @@ export function CharacterGenerator({ onSave }: CharacterGeneratorProps = {}) {
       ...thresholds,
     }));
     
-    setSelectedOrder(randomOrder);
     setSelectedOrigin(archetype.origin);
     setStep('review');
   };

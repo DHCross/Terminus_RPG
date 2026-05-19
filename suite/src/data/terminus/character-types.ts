@@ -4,7 +4,6 @@
  */
 
 import type { Die } from './skills';
-import type { OrderAbility } from './orders';
 
 /* ── Core enums / constants ── */
 
