@@ -10,6 +10,8 @@ import {
   Swords,
   Gauge
 } from 'lucide-react';
+import { useToast } from '../../../components/Toast';
+import type { Scene, GWSDCard, ActiveGWSDCard, ActiveGWSDState, TerminusOrder, TerminusSceneMode } from '../../gwsd-cards/types';
 
 // API Key and Endpoint from environment variables
 const apiKey = import.meta.env.VITE_AI_API_KEY || import.meta.env.VITE_GEMINI_API_KEY || "";
@@ -18,7 +20,12 @@ const apiModel = import.meta.env.VITE_AI_MODEL || "deepseek-chat";
 // Give the browser time to start the download before revoking the blob URL.
 const BLOB_URL_REVOCATION_DELAY_MS = 250;
 
-export function SceneCardForge() {
+interface SceneCardForgeProps {
+  onSceneForged?: (scene: Scene) => void;
+}
+
+export function SceneCardForge({ onSceneForged }: SceneCardForgeProps = {}) {
+  const { addToast } = useToast();
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationMessage, setGenerationMessage] = useState('');
   const [previewMarkdown, setPreviewMarkdown] = useState('');
@@ -126,6 +133,7 @@ ${orderLines || '- No order hooks provided.'}
     const missingFields = getMissingRequiredFields();
     if (missingFields.length > 0) {
       setGenerationMessage(`⚠️ Complete required fields before forging: ${missingFields.join(', ')}`);
+      addToast('error', `Complete required fields: ${missingFields.join(', ')}`);
       return;
     }
 
@@ -133,6 +141,7 @@ ${orderLines || '- No order hooks provided.'}
     setPreviewMarkdown(markdown);
     setShowPreview(true);
 
+    // Download the markdown file
     const slug = (formData.sceneTitle || 'scene-cards')
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
@@ -149,7 +158,72 @@ ${orderLines || '- No order hooks provided.'}
     link.remove();
     setTimeout(() => URL.revokeObjectURL(url), BLOB_URL_REVOCATION_DELAY_MS);
 
+    // Build a Scene object and notify the parent so it can display in the workbench
+    if (onSceneForged) {
+      const sceneId = crypto.randomUUID();
+      const safePressure = Math.max(1, Math.min(5, Number(formData.scenePressure) || 1));
+
+      const sceneModeMap: Record<string, TerminusSceneMode> = {
+        'Confrontation': 'confrontation',
+        'Discovery': 'discovery',
+        'Social': 'social',
+        'Hazard': 'hazard',
+        'Trap': 'hazard',
+      };
+      const terminusSceneMode: TerminusSceneMode =
+        sceneModeMap[formData.sceneMode] ?? 'confrontation';
+
+      const orderKeyMap: Record<string, TerminusOrder> = {
+        Seeker: 'seeker', Breaker: 'breaker', Warden: 'warden',
+        Rival: 'rival', Broker: 'broker', Shade: 'shade',
+      };
+      const orderTags: TerminusOrder[] = Object.entries(formData.orderHooks)
+        .filter(([, hook]) => hook.trim())
+        .map(([order]) => orderKeyMap[order])
+        .filter((o): o is TerminusOrder => Boolean(o));
+
+      const makeCard = (state: ActiveGWSDState, text: string): ActiveGWSDCard => ({
+        id: crypto.randomUUID(),
+        sceneId,
+        stateType: 'active',
+        state,
+        text: text.trim(),
+        source: 'manual',
+      });
+
+      const cards: [GWSDCard, GWSDCard, GWSDCard, GWSDCard] = [
+        makeCard('ground', formData.ground),
+        makeCard('will', formData.will),
+        makeCard('shift', formData.shift),
+        makeCard('drift', formData.drift),
+      ];
+
+      const newScene: Scene = {
+        id: sceneId,
+        title: (formData.sceneTitle || 'Untitled Scene').trim(),
+        adventure: (formData.adventure || 'Custom Adventure').trim(),
+        act: formData.act.trim() || undefined,
+        order: 1,
+        stateType: 'active',
+        scenePressure: safePressure,
+        cards,
+        raw: markdown,
+        terminus: {
+          scenePressure: safePressure,
+          location: formData.location.trim(),
+          sceneMode: terminusSceneMode,
+          driftLadder: formData.driftLadder.trim(),
+          mapHooks: formData.mapHooks.trim(),
+          readAloud: formData.readAloud.trim(),
+          orderTags,
+        },
+      };
+
+      onSceneForged(newScene);
+    }
+
     setGenerationMessage(`✓ Scene cards forged and downloaded as ${filename}`);
+    addToast('success', `Scene "${formData.sceneTitle || 'Untitled'}" forged successfully`);
   };
 
   const handleToggleState = (type: string) => {
@@ -175,6 +249,7 @@ ${orderLines || '- No order hooks provided.'}
   const handleAutoFill = async () => {
     if (!apiKey) {
       setGenerationMessage('⚠️ API key not configured. Set VITE_AI_API_KEY in your environment (.env.local).');
+      addToast('error', 'AI API key not configured. Set VITE_AI_API_KEY in your .env.local file.');
       return;
     }
 
@@ -255,9 +330,11 @@ ${orderLines || '- No order hooks provided.'}
         }
       }));
       setGenerationMessage('✓ Scene content generated successfully');
+      addToast('success', 'Scene content generated — fill in any remaining fields and click Forge Scene Cards');
     } catch (error) {
       console.error("Failed to generate content:", error);
       setGenerationMessage('✗ Failed to generate scene content. Check your VITE_AI_API_KEY and endpoint.');
+      addToast('error', 'Failed to generate scene content. Check your API key and endpoint.');
     } finally {
       setIsGenerating(false);
     }
