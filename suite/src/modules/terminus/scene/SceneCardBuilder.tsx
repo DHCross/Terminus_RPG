@@ -62,7 +62,7 @@ export function SceneCardBuilder({ onAddScene, onCancel }: SceneCardBuilderProps
     return Math.max(1, Math.min(5, value));
   };
 
-  const createSceneFromAI = (data: AISceneResponse, order: number): Scene => {
+  const createSceneFromAI = (data: AISceneResponse): Scene => {
     const sceneId = crypto.randomUUID();
     const generatedStateType = data.stateType === 'latent' ? 'latent' : 'active';
     const pressure = clampScenePressure(data.scenePressure);
@@ -111,7 +111,7 @@ export function SceneCardBuilder({ onAddScene, onCancel }: SceneCardBuilderProps
       title: (data.title || 'Untitled Scene').trim(),
       adventure: (data.adventure || 'Custom Adventure').trim(),
       act: data.act?.trim() || undefined,
-      order,
+      order: 1,
       stateType: generatedStateType,
       scenePressure: pressure,
       cards,
@@ -264,48 +264,10 @@ export function SceneCardBuilder({ onAddScene, onCancel }: SceneCardBuilderProps
       addToast('error', 'No scene cards were generated.');
       return;
     }
-
-    const [primary] = generated;
-    setTitle(primary.title || '');
-    if (primary.adventure) setAdventure(primary.adventure);
-    if (primary.act) setAct(primary.act);
-    setLocation(primary.location || '');
-    setSceneMode(primary.sceneMode || 'confrontation');
-    setStateType(primary.stateType || 'active');
-    setPressureType(primary.pressureType || 'ground');
-    setScenePressure(clampScenePressure(primary.scenePressure));
-    setReadAloud(primary.readAloud || '');
-    setGround(primary.ground || '');
-    setWill(primary.will || '');
-    
-    if (primary.stateType === 'active') {
-      setShift(primary.shift || '');
-      setDrift(primary.drift || '');
-      setTrigger('');
-      setAccumulation('');
-      setReveal('');
-    } else {
-      setTrigger(primary.trigger || '');
-      setAccumulation(primary.accumulation || '');
-      setReveal(primary.reveal || '');
-      setShift('');
-      setDrift('');
-    }
-
-    setDriftLadder(primary.driftLadder || '');
-    setMapHooks(primary.mapHooks || '');
-    setOrderHooks({
-      seeker: primary.orderHooks?.seeker || '',
-      breaker: primary.orderHooks?.breaker || '',
-      warden: primary.orderHooks?.warden || '',
-      rival: primary.orderHooks?.rival || '',
-      broker: primary.orderHooks?.broker || '',
-      shade: primary.orderHooks?.shade || '',
-    });
-
     generated
-      .map((sceneData, index) => createSceneFromAI(sceneData, index + 1))
+      .map((sceneData) => createSceneFromAI(sceneData))
       .forEach((scene) => onAddScene(scene));
+    addToast('success', `${generated.length} generated scene${generated.length === 1 ? '' : 's'} added to the deck.`);
   };
 
   return (

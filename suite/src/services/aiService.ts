@@ -125,7 +125,7 @@ Output a valid JSON object matching this schema:
     const parsed = JSON.parse(content);
     const scenes = normalizeSceneArray(parsed);
     if (scenes.length === 0) {
-      throw new Error('No valid scenes were returned by the model.');
+      throw new Error(`AI response contained no valid scene objects matching the expected schema (received ${typeof parsed}).`);
     }
     return scenes;
   } catch (error: unknown) {

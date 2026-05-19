@@ -263,7 +263,7 @@ export default function App({ pendingScene, onPendingSceneConsumed }: { pendingS
   );
 
   const handleAddScene = useCallback((scene: Scene) => {
-    setScenes((prev) => [...prev, scene]);
+    setScenes((prev) => [...prev, { ...scene, order: prev.length + 1 }]);
     setCardsMode('parse');
     setSelectedSceneId(scene.id);
   }, []);
@@ -277,7 +277,7 @@ export default function App({ pendingScene, onPendingSceneConsumed }: { pendingS
     if (!pendingScene) return;
     setScenes((prev) => {
       if (prev.some((s) => s.id === pendingScene.id)) return prev;
-      return [...prev, pendingScene];
+      return [...prev, { ...pendingScene, order: prev.length + 1 }];
     });
     setCardsMode('parse');
     setSelectedSceneId(pendingScene.id);
