@@ -4,7 +4,7 @@ import { useToast } from '../../../components/Toast';
 import { Sparkles, Settings } from 'lucide-react';
 
 interface AIGeneratorProps {
-  onGenerate: (data: AISceneResponse) => void;
+  onGenerate: (data: AISceneResponse[]) => void;
   adventure?: string;
   act?: string;
 }
@@ -56,7 +56,7 @@ export function AIGenerator({ onGenerate, adventure, act }: AIGeneratorProps) {
         model
       );
       onGenerate(data);
-      addToast('success', 'Scene compilation complete.');
+      addToast('success', `Scene compilation complete (${data.length} generated).`);
       setPrompt('');
     } catch (error: unknown) {
       addToast('error', error instanceof Error ? error.message : 'Generation failed.');

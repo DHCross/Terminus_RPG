@@ -57,6 +57,79 @@ export function SceneCardBuilder({ onAddScene, onCancel }: SceneCardBuilderProps
   type ExportTab = 'canonical' | 'inline' | 'visual';
   const [activeExportTab, setActiveExportTab] = useState<ExportTab>('canonical');
 
+  const clampScenePressure = (value?: number) => {
+    if (typeof value !== 'number' || Number.isNaN(value)) return 3;
+    return Math.max(1, Math.min(5, value));
+  };
+
+  const createSceneFromAI = (data: AISceneResponse, order: number): Scene => {
+    const sceneId = crypto.randomUUID();
+    const generatedStateType = data.stateType === 'latent' ? 'latent' : 'active';
+    const pressure = clampScenePressure(data.scenePressure);
+
+    const createCard = (state: GWSDState, text: string): GWSDCard => {
+      const base = {
+        id: crypto.randomUUID(),
+        sceneId,
+        stateType: generatedStateType,
+        state,
+        text: text.trim(),
+        source: 'ai' as const,
+      };
+
+      if (generatedStateType === 'active') {
+        return base as ActiveGWSDCard;
+      }
+      return base as LatentGWSDCard;
+    };
+
+    const cards: [GWSDCard, GWSDCard, GWSDCard, GWSDCard] = generatedStateType === 'active'
+      ? [
+          createCard('ground', data.ground || ''),
+          createCard('will', data.will || ''),
+          createCard('shift', data.shift || ''),
+          createCard('drift', data.drift || ''),
+        ]
+      : [
+          createCard('ground', data.ground || ''),
+          createCard('will', data.will || ''),
+          createCard('trigger', data.trigger || ''),
+          createCard('accumulation', data.accumulation || ''),
+        ];
+
+    const sceneMode = (
+      data.sceneMode === 'social' ||
+      data.sceneMode === 'kinetic' ||
+      data.sceneMode === 'hazard' ||
+      data.sceneMode === 'confrontation' ||
+      data.sceneMode === 'discovery' ||
+      data.sceneMode === 'puzzle'
+    ) ? data.sceneMode : 'confrontation';
+
+    return {
+      id: sceneId,
+      title: (data.title || 'Untitled Scene').trim(),
+      adventure: (data.adventure || 'Custom Adventure').trim(),
+      act: data.act?.trim() || undefined,
+      order,
+      stateType: generatedStateType,
+      scenePressure: pressure,
+      cards,
+      raw: '',
+      terminus: {
+        scenePressure: pressure,
+        location: (data.location || '').trim(),
+        sceneMode,
+        driftLadder: (data.driftLadder || '').trim(),
+        mapHooks: (data.mapHooks || '').trim(),
+        readAloud: (data.readAloud || '').trim(),
+        orderTags: (Object.entries(data.orderHooks || {}) as Array<[TerminusOrder, string | undefined]>)
+          .filter(([, hook]) => typeof hook === 'string' && hook.trim())
+          .map(([order]) => order),
+      },
+    };
+  };
+
   const handleCreate = () => {
     if (!title.trim()) {
       addToast('error', 'Scene title is required');
@@ -186,41 +259,53 @@ export function SceneCardBuilder({ onAddScene, onCancel }: SceneCardBuilderProps
       };
   };
 
-  const handleAIGenerated = (data: AISceneResponse) => {
-    setTitle(data.title || '');
-    if (data.adventure) setAdventure(data.adventure);
-    if (data.act) setAct(data.act);
-    setLocation(data.location || '');
-    setSceneMode(data.sceneMode || 'confrontation');
-    setStateType(data.stateType || 'active');
-    setPressureType(data.pressureType || 'ground');
-    setScenePressure(data.scenePressure || 3);
-    setReadAloud(data.readAloud || '');
-    setGround(data.ground || '');
-    setWill(data.will || '');
-    
-    if (data.stateType === 'active') {
-      setShift(data.shift || '');
-      setDrift(data.drift || '');
-    } else {
-      setTrigger(data.trigger || '');
-      setAccumulation(data.accumulation || '');
-      setReveal(data.reveal || '');
+  const handleAIGenerated = (generated: AISceneResponse[]) => {
+    if (generated.length === 0) {
+      addToast('error', 'No scene cards were generated.');
+      return;
     }
 
-    setDriftLadder(data.driftLadder || '');
-    setMapHooks(data.mapHooks || '');
+    const [primary] = generated;
+    setTitle(primary.title || '');
+    if (primary.adventure) setAdventure(primary.adventure);
+    if (primary.act) setAct(primary.act);
+    setLocation(primary.location || '');
+    setSceneMode(primary.sceneMode || 'confrontation');
+    setStateType(primary.stateType || 'active');
+    setPressureType(primary.pressureType || 'ground');
+    setScenePressure(clampScenePressure(primary.scenePressure));
+    setReadAloud(primary.readAloud || '');
+    setGround(primary.ground || '');
+    setWill(primary.will || '');
     
-    if (data.orderHooks) {
-      setOrderHooks({
-        seeker: data.orderHooks.seeker || '',
-        breaker: data.orderHooks.breaker || '',
-        warden: data.orderHooks.warden || '',
-        rival: data.orderHooks.rival || '',
-        broker: data.orderHooks.broker || '',
-        shade: data.orderHooks.shade || '',
-      });
+    if (primary.stateType === 'active') {
+      setShift(primary.shift || '');
+      setDrift(primary.drift || '');
+      setTrigger('');
+      setAccumulation('');
+      setReveal('');
+    } else {
+      setTrigger(primary.trigger || '');
+      setAccumulation(primary.accumulation || '');
+      setReveal(primary.reveal || '');
+      setShift('');
+      setDrift('');
     }
+
+    setDriftLadder(primary.driftLadder || '');
+    setMapHooks(primary.mapHooks || '');
+    setOrderHooks({
+      seeker: primary.orderHooks?.seeker || '',
+      breaker: primary.orderHooks?.breaker || '',
+      warden: primary.orderHooks?.warden || '',
+      rival: primary.orderHooks?.rival || '',
+      broker: primary.orderHooks?.broker || '',
+      shade: primary.orderHooks?.shade || '',
+    });
+
+    generated
+      .map((sceneData, index) => createSceneFromAI(sceneData, index + 1))
+      .forEach((scene) => onAddScene(scene));
   };
 
   return (
