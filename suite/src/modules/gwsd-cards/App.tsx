@@ -1,6 +1,6 @@
 /* ── GWSD Card Generator — Main Application ── */
 
-import { useState, useCallback, useMemo, useEffect } from 'react';
+import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import type { Scene, SilhouetteSectionKey } from './types';
 import { smartParse, type DetectedMode } from './parser';
 import { detectScenes } from './sceneDetector';
@@ -121,7 +121,7 @@ function pressureTypeLabel(scene: Scene): string {
     : 'Unknown';
 }
 
-export default function App({ pendingScene, onPendingSceneConsumed }: { pendingScene?: Scene | null; onPendingSceneConsumed?: () => void } = {}) {
+export default function App({ pendingScene, onPendingSceneConsumed }: { pendingScene?: Scene | null; onPendingSceneConsumed?: () => void }) {
   const [scenes, setScenes] = useState<Scene[]>([]);
   const [deckName, setDeckName] = useState('Silhouette GWSD Deck');
   const [view, setView] = useState<View>('deck');
@@ -269,6 +269,10 @@ export default function App({ pendingScene, onPendingSceneConsumed }: { pendingS
   }, []);
 
   // Consume a scene that was forged in the AI Forge tab and passed in via props.
+  const onPendingSceneConsumedRef = useRef(onPendingSceneConsumed);
+  useEffect(() => {
+    onPendingSceneConsumedRef.current = onPendingSceneConsumed;
+  });
   useEffect(() => {
     if (!pendingScene) return;
     setScenes((prev) => {
@@ -277,8 +281,8 @@ export default function App({ pendingScene, onPendingSceneConsumed }: { pendingS
     });
     setCardsMode('parse');
     setSelectedSceneId(pendingScene.id);
-    onPendingSceneConsumed?.();
-  }, [pendingScene, onPendingSceneConsumed]);
+    onPendingSceneConsumedRef.current?.();
+  }, [pendingScene]);
 
   const handleExportJSON = useCallback(() => {
     const data = {

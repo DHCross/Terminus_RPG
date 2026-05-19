@@ -24,7 +24,7 @@ interface SceneCardForgeProps {
   onSceneForged?: (scene: Scene) => void;
 }
 
-export function SceneCardForge({ onSceneForged }: SceneCardForgeProps = {}) {
+export function SceneCardForge({ onSceneForged }: SceneCardForgeProps) {
   const { addToast } = useToast();
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationMessage, setGenerationMessage] = useState('');
