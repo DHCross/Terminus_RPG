@@ -4,7 +4,7 @@
  */
 export function getSecureRandom(): number {
   const array = new Uint32Array(1);
-  (globalThis.crypto || (window as any).crypto).getRandomValues(array);
+  (globalThis.crypto || window.crypto).getRandomValues(array);
   // Divide by 2^32 to get a value between 0 and 1
   return array[0] / (0xffffffff + 1);
 }

@@ -1,6 +1,18 @@
-import type { Character } from '../../silhouette-engine/src/index.ts';
+import type { Character, CharacterIdentity } from '../../silhouette-engine/src/index.ts';
 import './CharacterSheetPreview.css';
 import { ARMOR_REDUCTION } from '../../silhouette-engine/src/index.ts';
+
+type SheetIdentity = CharacterIdentity & {
+  species?: string;
+  order?: string;
+  subtitle?: string;
+  frame?: string;
+  edge?: string;
+  accord?: string;
+  signature?: string;
+  localOrigin?: string;
+  rite?: string;
+};
 
 interface Props {
   character: Character;
@@ -8,7 +20,7 @@ interface Props {
 
 export default function CharacterSheetPreview({ character }: Props) {
   // Extract custom fields from identity or use placeholders
-  const identity = character.identity as any;
+  const identity = character.identity as SheetIdentity;
   const species = identity.species || 'High Alfar';
   const order = identity.order || 'Seeker';
   const subtitle = identity.subtitle || 'Wayfarer Scholar';

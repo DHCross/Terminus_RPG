@@ -78,7 +78,7 @@ export default function MonsterStudio() {
   };
 
   const addEncounterPack = (presetKeys: string[]) => {
-    const baseTimestamp = Date.now();
+    const baseTimestamp = roster.length * 1000;
     const nextEntries = presetKeys
       .map((presetKey, index) => {
         const preset = monsterPresetsByKey.get(presetKey);

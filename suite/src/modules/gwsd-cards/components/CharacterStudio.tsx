@@ -18,9 +18,7 @@ import {
   primaryButtonStyle,
   secondaryButtonStyle,
   selectStyle,
-  statLine,
   StudioGrid,
-  summaryChip,
   textAreaStyle,
   WeaponEditor,
 } from './SilhouetteStudioCommon';

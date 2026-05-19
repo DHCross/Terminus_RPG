@@ -61,7 +61,7 @@ export function exportCanonicalMarkdown(scene: Scene): string {
     lines.push('## Accumulation');
     lines.push(cardText('accumulation'));
     // Reveal condition is optional
-    const revealText = (scene.cards as any[]).find(c => c.state === 'reveal')?.text;
+     const revealText = (scene.cards as Array<{ state: string; text: string }>).find((card) => card.state === 'reveal')?.text;
     if (revealText) {
       lines.push('');
       lines.push('## Reveal Condition');

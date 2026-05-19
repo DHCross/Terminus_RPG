@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react';
 import { SKILLS, DIE_LADDER, CIRCLE_MAPPING, type Die } from '../../../data/terminus/skills';
 import { SKILL_TO_THRESHOLD_MAP } from '../../../data/terminus/thresholds';
 import { ORDERS_LIST } from '../../../data/terminus/orders';
-import { WEAPONS, SIGNATURE_ITEMS } from '../../../data/terminus/weapons';
+import { WEAPONS } from '../../../data/terminus/weapons';
 import { ARMOR_TYPES } from '../../../data/terminus/armor';
-import { useCharacterStorage, type CharacterData } from './useCharacterStorage';
+import { useCharacterStorage } from './useCharacterStorage';
 import { useToast } from '../../../components/Toast';
 
 export function CharacterCard() {

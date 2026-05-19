@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
-import { generateSceneFromPrompt } from '../../../services/aiService';
+import { generateSceneFromPrompt, type AISceneResponse } from '../../../services/aiService';
 import { useToast } from '../../../components/Toast';
 import { Sparkles, Settings } from 'lucide-react';
 
 interface AIGeneratorProps {
-  onGenerate: (data: any) => void;
+  onGenerate: (data: AISceneResponse) => void;
   adventure?: string;
   act?: string;
 }
@@ -58,8 +58,8 @@ export function AIGenerator({ onGenerate, adventure, act }: AIGeneratorProps) {
       onGenerate(data);
       addToast('success', 'Scene compilation complete.');
       setPrompt('');
-    } catch (error: any) {
-      addToast('error', error.message || 'Generation failed.');
+    } catch (error: unknown) {
+      addToast('error', error instanceof Error ? error.message : 'Generation failed.');
     } finally {
       setIsGenerating(false);
     }

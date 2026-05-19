@@ -100,7 +100,7 @@ Output a valid JSON object matching this schema:
   
   try {
     return JSON.parse(content) as AISceneResponse;
-  } catch (e) {
-    throw new Error('Failed to parse AI response as JSON.');
+  } catch (error: unknown) {
+    throw new Error('Failed to parse AI response as JSON.', { cause: error });
   }
 }

@@ -75,12 +75,12 @@ function looksLikeDiagnosticsChunk(chunk: SceneChunk): boolean {
 /** Signals that a block is a reference/bestiary entry, not a runnable scene. */
 const REFERENCE_SIGNALS: RegExp[] = [
   // Stat-block structural markers
-  /\b(?:AC|HP|Hit Points|Init|Base Atk|CMB|CMD|Speed)\s+[+\-]?\d+/i,
+  /\b(?:AC|HP|Hit Points|Init|Base Atk|CMB|CMD|Speed)\s+[-+]?\d+/i,
   /\b(?:Str|Dex|Con|Int|Wis|Cha)\s+\d+\s*[,;]/i,
   /\b(?:CR\s+\d|XP\s+[\d,])/i,
   /\b(?:NE|CE|LE|LG|NG|CG|LN|CN|N)\s+(?:Tiny|Small|Medium|Large|Huge)\s+\w+/i,
   /\bFeats?\s+(?:Improved|Toughness|Weapon\s+Focus|Great|Power\s+Attack)/i,
-  /\bSkills?\s+(?:Climb|Perception|Stealth|Swim|Acrobatics)\s+[+\-]?\d+/i,
+  /\bSkills?\s+(?:Climb|Perception|Stealth|Swim|Acrobatics)\s+[-+]?\d+/i,
   // Monster manual / bestiary patterns
   /\b(?:use\s+\w+\s+stats?)\b/i,
   /\b(?:Telepathy|Darkvision|Blindsight|Tremorsense)\s+\d+/i,
@@ -88,7 +88,7 @@ const REFERENCE_SIGNALS: RegExp[] = [
   /\b\((?:Ex|Su|Sp)\)\b/,
   // Item/key/tool reference patterns (long lists of properties)
   /\b(?:Special\s+Abilities|DEFENSE|OFFENSE|STATISTICS|SPECIAL\s+ABILITIES)\b/,
-  /\b(?:Melee|Ranged)\s+[^.]{5,}\s+[+\-]\d+/i,
+  /\b(?:Melee|Ranged)\s+[^.]{5,}\s+[-+]\d+/i,
   // Pre-gen / NPC compendium entry markers
   /\b(?:See Appendix|Encountered in Area)\b/i,
   // Random-table / inventory reference markers
@@ -136,7 +136,7 @@ function listLikeLineCount(lines: string[]): number {
   for (const line of lines) {
     const trimmed = line.trim();
     if (!trimmed) continue;
-    if (/^(?:[-*]|\d+[.)]|[A-Za-z][A-Za-z '\-]+:|\*\*[^*]+\*\*:)/.test(trimmed)) count += 1;
+    if (/^(?:[-*]|\d+[.)]|[A-Za-z][A-Za-z '-]+:|\*\*[^*]+\*\*:)/.test(trimmed)) count += 1;
   }
   return count;
 }
