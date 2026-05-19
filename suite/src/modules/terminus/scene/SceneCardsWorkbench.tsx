@@ -2,11 +2,18 @@ import { useState } from 'react';
 import { FileText, Sparkles } from 'lucide-react';
 import { SceneCardForge } from './SceneCardForge';
 import GWSDApp from '../../gwsd-cards/App';
+import type { Scene } from '../../gwsd-cards/types';
 
 type SceneTab = 'forge' | 'parser';
 
 export function SceneCardsWorkbench() {
   const [activeTab, setActiveTab] = useState<SceneTab>('forge');
+  const [pendingScene, setPendingScene] = useState<Scene | null>(null);
+
+  const handleSceneForged = (scene: Scene) => {
+    setPendingScene(scene);
+    setActiveTab('parser');
+  };
 
   return (
     <div className="flex flex-col h-full">
@@ -38,12 +45,15 @@ export function SceneCardsWorkbench() {
       <div className="flex-1 overflow-hidden">
         {activeTab === 'forge' && (
           <div className="h-full overflow-y-auto">
-            <SceneCardForge />
+            <SceneCardForge onSceneForged={handleSceneForged} />
           </div>
         )}
         {activeTab === 'parser' && (
           <div className="h-full overflow-y-auto">
-            <GWSDApp />
+            <GWSDApp
+              pendingScene={pendingScene}
+              onPendingSceneConsumed={() => setPendingScene(null)}
+            />
           </div>
         )}
       </div>
