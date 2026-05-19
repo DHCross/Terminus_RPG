@@ -240,8 +240,9 @@ export function SceneCardBuilder({ onAddScene, onCancel }: SceneCardBuilderProps
         paddingBottom: '1rem',
         borderBottom: '1px solid #334155',
       }}>
-        <h2 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 700 }}>Create Scene Card</h2>
+        <h2 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 700 }}>Create Scene Cards</h2>
         <button
+          type="button"
           onClick={onCancel}
           style={{
             padding: '0.5rem 1rem',
@@ -835,6 +836,7 @@ export function SceneCardBuilder({ onAddScene, onCancel }: SceneCardBuilderProps
       {/* Actions */}
       <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end', paddingTop: '1rem', borderTop: '1px solid #334155' }}>
         <button
+          type="button"
           onClick={onCancel}
           style={{
             padding: '0.75rem 1.5rem',
@@ -850,6 +852,7 @@ export function SceneCardBuilder({ onAddScene, onCancel }: SceneCardBuilderProps
           Cancel
         </button>
         <button
+          type="button"
           onClick={() => setShowExportPreview(!showExportPreview)}
           style={{
             padding: '0.75rem 1.5rem',
@@ -865,6 +868,7 @@ export function SceneCardBuilder({ onAddScene, onCancel }: SceneCardBuilderProps
           {showExportPreview ? 'Hide Preview' : 'Preview Export'}
         </button>
         <button
+          type="button"
           onClick={handleCreate}
           style={{
             padding: '0.75rem 1.5rem',
@@ -877,7 +881,7 @@ export function SceneCardBuilder({ onAddScene, onCancel }: SceneCardBuilderProps
             fontSize: '0.9375rem',
           }}
         >
-          Forge Scene Card
+          Forge Scene Cards
         </button>
       </div>
     </div>

@@ -117,7 +117,7 @@ ${orderLines || '- No order hooks provided.'}
     const markdown = buildSceneCardMarkdown();
     setPreviewMarkdown(markdown);
     setShowPreview(true);
-    setGenerationMessage('✓ Preview generated. Review it below before forging.');
+    setGenerationMessage('✓ Preview generated. Review it below before forging scene cards.');
   };
 
   const handleForgeSceneCard = () => {
@@ -131,11 +131,11 @@ ${orderLines || '- No order hooks provided.'}
     setPreviewMarkdown(markdown);
     setShowPreview(true);
 
-    const slug = (formData.sceneTitle || 'scene-card')
+    const slug = (formData.sceneTitle || 'scene-cards')
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/(^-|-$)/g, '');
-    const filename = `${slug || 'scene-card'}.md`;
+    const filename = `${slug || 'scene-cards'}.md`;
 
     const blob = new Blob([markdown], { type: 'text/markdown;charset=utf-8' });
     const url = URL.createObjectURL(blob);
@@ -145,9 +145,9 @@ ${orderLines || '- No order hooks provided.'}
     document.body.appendChild(link);
     link.click();
     link.remove();
-    URL.revokeObjectURL(url);
+    setTimeout(() => URL.revokeObjectURL(url), 0);
 
-    setGenerationMessage(`✓ Scene card forged and downloaded as ${filename}`);
+    setGenerationMessage(`✓ Scene cards forged and downloaded as ${filename}`);
   };
 
   const handleToggleState = (type: string) => {
@@ -269,7 +269,7 @@ ${orderLines || '- No order hooks provided.'}
         <div className="flex justify-between items-center px-6 py-4 border-b border-slate-800 bg-slate-800/30">
           <h3 className="text-lg font-medium text-slate-100 flex items-center gap-2">
             <FileText size={20} className="text-amber-500"/>
-            Create Scene Card
+            Create Scene Cards
           </h3>
           <button className="text-slate-500 hover:text-slate-300 transition-colors">
             <X size={20} />
@@ -457,6 +457,7 @@ ${orderLines || '- No order hooks provided.'}
         {/* 8. Action Buttons */}
         <div className="bg-slate-950 border-t border-slate-800 p-4 flex justify-between items-center">
           <button
+            type="button"
             onClick={() => {
               setGenerationMessage('');
               setPreviewMarkdown('');
@@ -468,16 +469,18 @@ ${orderLines || '- No order hooks provided.'}
           </button>
           <div className="flex gap-3">
             <button
+              type="button"
               onClick={handlePreviewExport}
               className="flex items-center gap-2 px-4 py-2 text-sm bg-slate-800 text-slate-300 border border-slate-700 rounded hover:bg-slate-700 transition-colors"
             >
               <Eye size={16} /> Preview Export
             </button>
             <button
+              type="button"
               onClick={handleForgeSceneCard}
               className="flex items-center gap-2 px-6 py-2 text-sm bg-amber-600 hover:bg-amber-500 text-amber-950 font-bold rounded shadow-lg shadow-amber-900/20 transition-colors"
             >
-              <Save size={16} /> Forge Scene Card
+              <Save size={16} /> Forge Scene Cards
             </button>
           </div>
         </div>
