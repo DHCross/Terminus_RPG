@@ -15,6 +15,8 @@ import {
 const apiKey = import.meta.env.VITE_AI_API_KEY || import.meta.env.VITE_GEMINI_API_KEY || "";
 const apiEndpoint = import.meta.env.VITE_AI_ENDPOINT || "https://api.deepseek.com/chat/completions";
 const apiModel = import.meta.env.VITE_AI_MODEL || "deepseek-chat";
+// Give the browser time to start the download before revoking the blob URL.
+const BLOB_URL_REVOCATION_DELAY_MS = 250;
 
 export function SceneCardForge() {
   const [isGenerating, setIsGenerating] = useState(false);
@@ -145,7 +147,7 @@ ${orderLines || '- No order hooks provided.'}
     document.body.appendChild(link);
     link.click();
     link.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 250);
+    setTimeout(() => URL.revokeObjectURL(url), BLOB_URL_REVOCATION_DELAY_MS);
 
     setGenerationMessage(`✓ Scene cards forged and downloaded as ${filename}`);
   };
