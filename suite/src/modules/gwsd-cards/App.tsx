@@ -233,6 +233,7 @@ export default function App({ pendingScene, onPendingSceneConsumed }: { pendingS
   const [scenes, setScenes] = useState<Scene[]>(() => {
     const parsed = smartParse(DEMO_MANUSCRIPT);
     return parsed.scenes;
+  });
   const [deckName, setDeckName] = useState('Silhouette GWSD Deck');
   const [view, setView] = useState<View>('play');
   const [workspace, setWorkspace] = useState<Workspace>('cards');
