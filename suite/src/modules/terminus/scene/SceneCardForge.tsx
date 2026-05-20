@@ -22,14 +22,17 @@ const BLOB_URL_REVOCATION_DELAY_MS = 250;
 
 interface SceneCardForgeProps {
   onSceneForged?: (scene: Scene) => void;
+  onCancel?: () => void;
 }
 
-export function SceneCardForge({ onSceneForged }: SceneCardForgeProps) {
+export function SceneCardForge({ onSceneForged, onCancel }: SceneCardForgeProps) {
   const { addToast } = useToast();
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationMessage, setGenerationMessage] = useState('');
   const [previewMarkdown, setPreviewMarkdown] = useState('');
   const [showPreview, setShowPreview] = useState(false);
+  const [seedIdea, setSeedIdea] = useState('');
+  const [isBasicGenerating, setIsBasicGenerating] = useState(false);
   
   // Form State
   const [formData, setFormData] = useState({
@@ -245,6 +248,94 @@ ${orderLines || '- No order hooks provided.'}
     }
   };
 
+  // LLM Generation for Basic Information
+  const handleGenerateBasicInfo = async () => {
+    if (!apiKey) {
+      setGenerationMessage('⚠️ API key not configured. Set VITE_AI_API_KEY in your environment (.env.local).');
+      addToast('error', 'AI API key not configured. Set VITE_AI_API_KEY in your .env.local file.');
+      return;
+    }
+
+    setIsBasicGenerating(true);
+    setGenerationMessage('');
+
+    const seedPrompt = seedIdea.trim() || "A mysterious failure of civic routine in a dark fantasy town, such as a repeating street, a gate that refuses mourners, or records dated tomorrow.";
+
+    const prompt = `
+      You are an expert game designer for the Terminus RPG, a dark fantasy tabletop game powered by the Coherence System.
+      In this world, reality is maintained through civic routine, law, memory, and repeated structure. When patterns fail, reality fractures (Ruptures) in localized, civic-procedural anomalies.
+      
+      Generate a themed Terminus RPG scene setup based on the following user seed premise:
+      "${seedPrompt}"
+      
+      Requirements:
+      1. sceneTitle: Must be atmospheric and evocative of Terminus theme. Use Welsh, Norse, Gaelic, or Egyptian naming elements if appropriate (e.g. Rhudd-Sarn, Maerwyn, Valdr-Vard, Khamat-Maat) or mysterious civic/environmental terms.
+      2. adventure: A fitting dark-fantasy adventure/campaign segment title.
+      3. act: A number or Roman numeral (e.g., "1", "2", "3", "I", "II", "III").
+      4. location: A specific geographic or architectural place showing civic strain (e.g. "Rhudd-Sarn Crossing", "Maerwyn Archive Gate 3", "The Ash-Chamber").
+      5. sceneMode: Must be one of the following exact strings: "Confrontation", "Discovery", "Social", "Hazard", "Trap".
+      
+      Guidelines:
+      - Aesthetic: Civic ruin, cold black stone, wet masonry, expired public works, rusted brass gears, celestial infrastructure, dried oxblood, bone paper.
+      - Theme: Rupture is a local systemic failure of a routine (e.g., a bell ringing twice, a dead transit line accepting passengers, a street that grows longer, a bridge rejecting mourners, court verdicts changing based on who enters first).
+      - Core Entities/Anomalies: Utilize Terminus lore such as **Corrections** (reality-enforcing manifestations of routine failure: Correction Body, Correction Instrument, Correction Writ, or Correction Office), **Correction Offices** that override Ground rules, and chilling folk designations like *The Black Walker*, *Vardrek*, or *Sithny's Mark*.
+      
+      Return ONLY a valid JSON object matching this TypeScript interface exactly:
+      {
+        "sceneTitle": "string",
+        "adventure": "string",
+        "act": "string",
+        "location": "string",
+        "sceneMode": "Confrontation" | "Discovery" | "Social" | "Hazard" | "Trap"
+      }
+      Do not include any extra text, explanations, or markdown. Only the JSON object.
+    `;
+
+    const systemInstruction = "You are a specialized game design assistant for Terminus RPG. Return ONLY a valid JSON object matching the requested schema. No conversational filler, no markdown codeblocks.";
+
+    const payload = {
+      model: apiModel,
+      messages: [
+        { role: "system", content: systemInstruction },
+        { role: "user", content: prompt }
+      ],
+      response_format: { type: "json_object" }
+    };
+
+    try {
+      const result = await fetchWithRetry(
+        apiEndpoint,
+        {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`
+          },
+          body: JSON.stringify(payload)
+        }
+      );
+
+      const generatedData = JSON.parse(result.choices[0].message.content);
+      
+      setFormData(prev => ({
+        ...prev,
+        sceneTitle: generatedData.sceneTitle || prev.sceneTitle,
+        adventure: generatedData.adventure || prev.adventure,
+        act: generatedData.act || prev.act,
+        location: generatedData.location || prev.location,
+        sceneMode: generatedData.sceneMode || prev.sceneMode
+      }));
+      setGenerationMessage('✓ Basic information generated successfully.');
+      addToast('success', 'Basic information generated! Review fields, then click Auto-Fill with AI below.');
+    } catch (error) {
+      console.error("Failed to generate basic info:", error);
+      setGenerationMessage('✗ Failed to generate basic info. Check VITE_AI_API_KEY and endpoint.');
+      addToast('error', 'Failed to generate basic info.');
+    } finally {
+      setIsBasicGenerating(false);
+    }
+  };
+
   // LLM Generation Logic
   const handleAutoFill = async () => {
     if (!apiKey) {
@@ -257,34 +348,73 @@ ${orderLines || '- No order hooks provided.'}
     setGenerationMessage('');
     
     const prompt = `
-      You are an expert tabletop RPG designer building a "Scene Card" for the Terminus RPG.
-      Terminus is a dark fantasy world where reality fractures (Ruptures) when civic routines and systems fail. The players are "Orders" who respond to these systemic failures.
+      You are an expert game designer building a "Scene Card" for the Terminus RPG under the Coherence System.
+      In this world, reality holds together through routine, law, memory, and repeated structure. When those patterns fail, a localized Rupture (systemic breakdown of reality) occurs.
       
-      Based on the following scene information, generate the operational and narrative text for the scene.
+      Based on the following basic scene metadata, generate the operational and narrative text for this scene card:
       
       Scene Title: ${formData.sceneTitle}
       Adventure: ${formData.adventure}
+      Act: ${formData.act}
       Location: ${formData.location}
       Scene Mode: ${formData.sceneMode}
       Pressure Level (1-5): ${formData.scenePressure}
-      
-      Please provide rich, concise, and game-actionable text for the following fields:
-      - ground: What is currently reliable, permissions, and physical constraints. (Operational, bullet points style)
-      - will: The active pressure/enemy intent already acting on the situation. (Operational)
-      - shift: Immediate consequences of a player's action/interrupt. (Operational)
-      - drift: The executable Else statement: "At the end of each round, [specific state change]." It answers what changes if players do nothing. Do not write vague urgency.
-      - readAloud: A short atmospheric description to read to players. Focus on sensory cues of systemic strain.
-      - driftLadder: A brief executable transition ladder. Each step must change what players can safely do next.
-      - mapHooks: Key interactive nouns or features in the environment.
-      - orderHooks: Provide one specific actionable opportunity for each of the 6 Orders:
-          * Seeker: Reveals hidden/forgotten truth.
-          * Breaker: Forces openings through wards/deadlocks.
-          * Warden: Holds collapse at bay/protects.
-          * Rival: Turns conflict into formal contest/duel.
-          * Broker: Turns obligation into motion/leverage.
-          * Shade: Moves through concealment/misdirection.
+      State Type: ${formData.stateType}
 
-      Terminology Boundary: "Rupture" names a condition state — systemic failure when Routine no longer holds. Never use it as a substance, energy type, spell school, or aesthetic label. Never write "Rupture energy," "Rupture power," "Rupture magic," "Rupture-infused," "Rupture beast," or similar. Describe the physical, civic, sensory, or procedural symptoms of failed coherence. Show the strain, not the category.
+      Follow these strict creative guidelines:
+      1. THE ENGINE LAYER (GWSD)
+         - ground: Define what is currently reliable right now: physical constraints, social rules, access boundaries, permissions. Avoid vague flavor. Keep it actionable and game-focused. 
+           * Good Ground example: "No one can hear speech beyond arm's reach, and the eastern door only opens for names recorded in the ward ledger."
+         - will: The active pressure already acting on the situation before characters intervene.
+           * Good Will example: "The lich is maintaining the ritual shield and will abandon any attack that risks breaking concentration."
+         - shift: What changes immediately when characters act, interfere, or make an attempt. 
+           * Good Shift example: "If anyone touches the sealed bell, every door in the room locks and the nearest dead name is read aloud."
+         - drift: The executable "Else statement" — what worsens, advances, closes, or decays if no one acts at the end of a round.
+           * Good Drift example: "At the end of each round, another citizen's name vanishes from the civic register."
+      
+      2. OPTIONAL MECHANICS & FLAVOR
+         - readAloud: Atmospheric, sensory, concrete, and short (1-2 sentences). Focus on rain, stone, bells, cold brass, wet masonry, sealed gates, smoke, old public works, or shifting structures. NEVER dictate player emotions or explain the metaphysics too early. Let the failure speak for itself.
+         - driftLadder: If Drift is a sequence, specify 3 incremental steps (e.g. 1. Water reaches ankles -> 2. Lower exits flood -> 3. Bridge buckles).
+         - mapHooks: 2-3 specific interactive map elements (e.g. "The crumbling pillar," "The iron ledger grate").
+
+      3. ORDER HOOKS (SPECIFIC OPPORTUNITIES)
+         - Generate a table-facing opportunity for each of the 6 Orders using bounded, practical game terms (e.g., reveal, delay, expose, hold, block, reduce impact, act before next Drift, force hesitation, open a passage).
+         - Avoid software or internal developer jargon (no references to "runtime", "simulation", "state machine", "code", "AI", "text blocks"). These are player-facing tools.
+         - Avoid over-absolute terms ("automatically", "completely", "guarantee", "without a roll", "entire party", "rewrite the scene").
+         - Specific order goals:
+           * Seeker: Reveal hidden, forgotten, or sealed truth before it collapses.
+           * Breaker: Force openings in walls, wards, deadlocks, or dead systems.
+           * Warden: Hold collapse at bay, keep doors shut, preserve doomed structures.
+           * Rival: Turn conflict into duels, wagers, or structured contests.
+           * Broker: Manage passage rights, debts, patronage, or convert bonds to leverage.
+           * Shade: Access hidden paths, conceal, or redirect attention where it fails.
+
+      4. TERMINOLOGY BOUNDARY & CORRECTIONS (CRITICAL)
+         - "Rupture" names a condition state — systemic failure when Routine no longer holds. NEVER treat Rupture as a substance, energy type, spell school, or blade/monster infusion. 
+         - Never write "Rupture energy," "Rupture power," "Rupture magic," "Rupture-infused," "Rupture blade," or similar. 
+         - Instead, show physical, civic, sensory, or procedural symptoms: ink separating into oil and brine, blades casting two shadows, bells ringing before being struck, stairs repeating every seventh step, road lines crawling across the stone.
+         - Integrate Terminus entities and enforcements: **Corrections** (Correction Body, Correction Instrument, Correction Writ, or Correction Office).
+         - Show **Correction Offices** attempting to rewrite environmental Ground rules to force compliance, and draw upon folk names like *The Black Walker*, *Vardrek*, or *Sithny's Mark* to represent the haunting nature of these systemic anomalies.
+      
+      Return ONLY a valid JSON object matching this TypeScript interface exactly:
+      {
+        "ground": "string",
+        "will": "string",
+        "shift": "string",
+        "drift": "string",
+        "readAloud": "string",
+        "driftLadder": "string",
+        "mapHooks": "string",
+        "orderHooks": {
+          "Seeker": "string",
+          "Breaker": "string",
+          "Warden": "string",
+          "Rival": "string",
+          "Broker": "string",
+          "Shade": "string"
+        }
+      }
+      Ensure no markdown formatting or backticks outside the JSON.
     `;
 
     const systemInstruction = "You are a specialized game design assistant for Terminus RPG. Return ONLY valid JSON matching the exact keys requested. Do not use markdown formatting outside the JSON.";
@@ -352,7 +482,19 @@ ${orderLines || '- No order hooks provided.'}
             <FileText size={20} className="text-amber-500"/>
             Create Scene Cards
           </h3>
-          <button className="text-slate-500 hover:text-slate-300 transition-colors">
+          <button 
+            type="button"
+            onClick={() => {
+              if (onCancel) {
+                onCancel();
+              } else {
+                setGenerationMessage('');
+                setPreviewMarkdown('');
+                setShowPreview(false);
+              }
+            }}
+            className="text-slate-500 hover:text-slate-300 transition-colors"
+          >
             <X size={20} />
           </button>
         </div>
@@ -361,7 +503,47 @@ ${orderLines || '- No order hooks provided.'}
           
           {/* 1. Basic Information */}
           <section>
-            <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-4 border-b border-slate-800 pb-2">1. Basic Information</h4>
+            <div className="flex justify-between items-end mb-4 border-b border-slate-800 pb-2">
+              <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider">1. Basic Information</h4>
+              <button 
+                type="button"
+                onClick={handleGenerateBasicInfo}
+                disabled={isBasicGenerating || !apiKey}
+                className="flex items-center gap-1.5 text-xs bg-amber-900/30 hover:bg-amber-800/40 text-amber-300 border border-amber-700/50 px-3 py-1 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isBasicGenerating ? <Activity size={14} className="animate-pulse" /> : <Sparkles size={14} />}
+                {isBasicGenerating ? 'Forging Info...' : 'Generate Basic Info'}
+              </button>
+            </div>
+
+            <div className="mb-6 p-4 bg-slate-950/40 border border-slate-800 rounded-lg space-y-3">
+              <div className="flex justify-between items-center">
+                <span className="text-xs font-semibold text-amber-500 flex items-center gap-1.5">
+                  <Sparkles size={13} />
+                  AI Basic Info Generator (Premise / Seed)
+                </span>
+                {seedIdea && (
+                  <button 
+                    type="button" 
+                    onClick={() => setSeedIdea('')}
+                    className="text-[10px] text-slate-500 hover:text-slate-300 transition-colors"
+                  >
+                    Clear Seed
+                  </button>
+                )}
+              </div>
+              <p className="text-[11px] text-slate-400">
+                Type an anomaly concept (e.g. <em>"A street that grows longer the faster you run"</em>) or leave empty for a random seed, then click <strong>Generate Basic Info</strong>.
+              </p>
+              <textarea
+                value={seedIdea}
+                onChange={(e) => setSeedIdea(e.target.value)}
+                placeholder="Enter scene concept, anomaly description, or story hook..."
+                rows={2}
+                className="w-full bg-slate-950 border border-slate-700 rounded p-2 text-xs text-slate-200 focus:border-amber-500 outline-none resize-none font-mono transition-all"
+              />
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-1">
                 <label className="text-xs text-slate-400">Scene Title</label>
@@ -540,9 +722,13 @@ ${orderLines || '- No order hooks provided.'}
           <button
             type="button"
             onClick={() => {
-              setGenerationMessage('');
-              setPreviewMarkdown('');
-              setShowPreview(false);
+              if (onCancel) {
+                onCancel();
+              } else {
+                setGenerationMessage('');
+                setPreviewMarkdown('');
+                setShowPreview(false);
+              }
             }}
             className="px-4 py-2 text-sm text-slate-400 hover:text-slate-200 transition-colors"
           >

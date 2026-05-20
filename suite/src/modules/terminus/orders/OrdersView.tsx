@@ -26,7 +26,7 @@ export function OrdersView() {
         order.fieldFunction,
         ...order.approaches,
         ...order.signatures,
-        ...order.abilities.map((a) => `${a.name} ${a.shortText} ${a.trigger ?? ''} ${a.baseEffect ?? ''}`),
+        ...order.abilities.map((a) => `${a.name} ${a.shortText} ${a.trigger ?? ''} ${a.baseEffect ? `[${a.baseEffect.type}] ${a.baseEffect.text}` : ''}`),
       ].join(' ').toLowerCase();
       return searchable.includes(normalizedQuery);
     });
@@ -160,8 +160,10 @@ export function OrdersView() {
                       )}
                       {ability.baseEffect && (
                         <div>
-                          <p style={{ fontSize: '0.65rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--color-muted)', margin: '0 0 0.25rem' }}>Effect</p>
-                          <p className="muted" style={{ margin: 0, fontSize: '0.875rem', lineHeight: 1.5 }}>{ability.baseEffect}</p>
+                          <p style={{ fontSize: '0.65rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--color-muted)', margin: '0 0 0.25rem' }}>
+                            Base Effect ({ability.baseEffect.type})
+                          </p>
+                          <p className="muted" style={{ margin: 0, fontSize: '0.875rem', lineHeight: 1.5 }}>{ability.baseEffect.text}</p>
                         </div>
                       )}
                       {ability.exertEffect && (
@@ -169,8 +171,10 @@ export function OrdersView() {
                           background: 'var(--color-surface)', borderRadius: '3px',
                           padding: '0.5rem 0.65rem', borderLeft: '2px solid var(--color-primary)',
                         }}>
-                          <p style={{ fontSize: '0.65rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--color-primary)', margin: '0 0 0.25rem' }}>Exert</p>
-                          <p className="muted" style={{ margin: 0, fontSize: '0.875rem', lineHeight: 1.5 }}>{ability.exertEffect}</p>
+                          <p style={{ fontSize: '0.65rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--color-primary)', margin: '0 0 0.25rem' }}>
+                            Exert Effect ({ability.exertEffect.type})
+                          </p>
+                          <p className="muted" style={{ margin: 0, fontSize: '0.875rem', lineHeight: 1.5 }}>{ability.exertEffect.text}</p>
                         </div>
                       )}
                     </div>

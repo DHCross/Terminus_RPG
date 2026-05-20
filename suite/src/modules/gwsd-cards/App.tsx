@@ -22,7 +22,7 @@ import DiagnosticsViewer from './components/DiagnosticsViewer';
 import CharacterStudio from './components/CharacterStudio';
 import MonsterStudio from './components/MonsterStudio';
 import { parseDiagnosticsReport, type ParsedDiagnosticsReport } from './diagnosticsParser';
-import { SceneCardBuilder } from '../terminus/scene/SceneCardBuilder';
+import { SceneCardForge } from '../terminus/scene/SceneCardForge';
 
 type View = 'deck' | 'print' | 'play';
 type DeckOrganize = 'scene-order' | 'scene-type';
@@ -1067,8 +1067,8 @@ export default function App({ pendingScene, onPendingSceneConsumed }: { pendingS
         ) : workspace === 'monsters' ? (
           <MonsterStudio />
         ) : workspace === 'cards' && cardsMode === 'builder' ? (
-          <SceneCardBuilder
-            onAddScene={handleAddScene}
+          <SceneCardForge
+            onSceneForged={handleAddScene}
             onCancel={() => setCardsMode('parse')}
           />
         ) : (

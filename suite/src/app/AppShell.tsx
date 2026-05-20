@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
-import { Book, Flame, LayoutDashboard, Layers, Menu, ScrollText, Tent, Users, X, Skull } from 'lucide-react';
+import { Book, Flame, LayoutDashboard, Layers, Menu, ScrollText, Tent, Users, X, Skull, Languages } from 'lucide-react';
 import '../index.css';
 
 const navItems = [
   { to: '/', label: 'Dashboard', icon: LayoutDashboard, end: true },
   { to: '/scene-cards', label: 'Scene Cards', icon: Layers },
+  { to: '/nomenclator', label: 'Nomenclator', icon: Languages },
   { to: '/characters', label: 'Characters', icon: Users },
   { to: '/npcs', label: 'NPC Vault', icon: Users },
   { to: '/bestiary', label: 'Bestiary', icon: Skull },

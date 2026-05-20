@@ -14,6 +14,7 @@ import { MagicView } from './modules/terminus/magic/MagicView';
 import { RulesPage } from './modules/terminus/rules/RulesPage';
 import { NPCWorkbench } from './modules/terminus/npc/NPCWorkbench';
 import { MonsterWorkbench } from './modules/terminus/monster/MonsterWorkbench';
+import { NomenclatorWorkbench } from './modules/terminus/names/NomenclatorWorkbench';
 import './index.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
@@ -28,6 +29,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
               <Route path="characters" element={<CharacterWorkbench />} />
               <Route path="npcs" element={<NPCWorkbench />} />
               <Route path="bestiary" element={<MonsterWorkbench />} />
+              <Route path="nomenclator" element={<NomenclatorWorkbench />} />
               <Route path="magic" element={<MagicView />} />
               <Route path="species" element={<SpeciesView />} />
               <Route path="orders" element={<OrdersView />} />

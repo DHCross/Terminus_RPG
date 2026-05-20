@@ -249,8 +249,8 @@ export function RulesPage() {
                         </div>
                       )}
                       {ab.trigger && <p style={{ margin: '0.2rem 0', fontSize: '0.8rem', color: 'var(--color-muted)' }}><em>When:</em> {ab.trigger}</p>}
-                      {ab.baseEffect && <p style={{ margin: '0.2rem 0', fontSize: '0.8rem', color: 'var(--color-muted)' }}><em>Effect:</em> {ab.baseEffect}</p>}
-                      {ab.exertEffect && <p style={{ margin: '0.2rem 0 0', fontSize: '0.8rem', color: 'var(--color-muted)', borderTop: '1px solid var(--color-border)', paddingTop: '0.3rem', marginTop: '0.3rem' }}><em>Exert:</em> {ab.exertEffect}</p>}
+                      {ab.baseEffect && <p style={{ margin: '0.2rem 0', fontSize: '0.8rem', color: 'var(--color-muted)' }}><em>Effect ({ab.baseEffect.type}):</em> {ab.baseEffect.text}</p>}
+                      {ab.exertEffect && <p style={{ margin: '0.2rem 0 0', fontSize: '0.8rem', color: 'var(--color-muted)', borderTop: '1px solid var(--color-border)', paddingTop: '0.3rem', marginTop: '0.3rem' }}><em>Exert ({ab.exertEffect.type}):</em> {ab.exertEffect.text}</p>}
                     </div>
                   ))}
                 </div>

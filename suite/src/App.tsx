@@ -13,6 +13,7 @@ import {
   TrendingUp,
   Users,
   Skull,
+  Languages,
 } from 'lucide-react';
 import { DIE_LADDER, type Die } from './data/terminus/skills';
 import { useCharacterStorage } from './modules/terminus/character/useCharacterStorage';
@@ -134,6 +135,11 @@ function App() {
               <Layers size={20} />
               <span>Scene Cards</span>
               <small>Forge pressure, drift, and guide cards.</small>
+            </Link>
+            <Link to="/nomenclator" className="action-card">
+              <Languages size={20} />
+              <span>Nomenclator</span>
+              <small>Forge names and pronunciations.</small>
             </Link>
             <Link to="/orders" className="action-card">
               <BookOpen size={20} />
