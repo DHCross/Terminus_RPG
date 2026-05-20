@@ -37,7 +37,7 @@ export function SceneCardsWorkbench() {
               : 'border-b-transparent text-slate-400 hover:text-slate-200'
           }`}
         >
-          <FileText size={18} /> Markdown Parser
+          <FileText size={18} /> Scene Cards
         </button>
       </div>
 
