@@ -283,6 +283,8 @@ ${orderLines || '- No order hooks provided.'}
           * Rival: Turns conflict into formal contest/duel.
           * Broker: Turns obligation into motion/leverage.
           * Shade: Moves through concealment/misdirection.
+
+      Terminology Boundary: "Rupture" names a condition state — systemic failure when Routine no longer holds. Never use it as a substance, energy type, spell school, or aesthetic label. Never write "Rupture energy," "Rupture power," "Rupture magic," "Rupture-infused," "Rupture beast," or similar. Describe the physical, civic, sensory, or procedural symptoms of failed coherence. Show the strain, not the category.
     `;
 
     const systemInstruction = "You are a specialized game design assistant for Terminus RPG. Return ONLY valid JSON matching the exact keys requested. Do not use markdown formatting outside the JSON.";

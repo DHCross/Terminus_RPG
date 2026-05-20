@@ -17,6 +17,16 @@ import { DRIFT_DOCTRINE, DRIFT_MODES, DRIFT_WRITING_RULES } from '../../../data/
 import { WEAPONS, WEAPON_VECTORS } from '../../../data/terminus/weapons';
 import { ARMOR_TYPES } from '../../../data/terminus/armor';
 
+// ─── Scene Hook Badge Styles ────────────────────────────────────────────────
+
+const HOOK_STYLES: Record<string, { label: string; color: string }> = {
+  ground:  { label: 'Ground',  color: '#64748b' },
+  will:    { label: 'Will',    color: '#991b1b' },
+  shift:   { label: 'Shift',   color: '#92400e' },
+  drift:   { label: 'Drift',   color: '#1e40af' },
+  latent:  { label: 'Latent',  color: '#5b21b6' },
+};
+
 // ─── Table of Contents ───────────────────────────────────────────────────────
 
 const tocSections: { section: RulesSection; icon: typeof BookOpen }[] = [
@@ -162,6 +172,24 @@ export function RulesPage() {
 
             <dt>Hostile Trace</dt>
             <dd>A systemic signal created by Rupture Casting that may draw monsters, rival agents, or deeper architectural response. See <a href="#hostile-trace">Hostile Trace</a>.</dd>
+
+            <dt>Corrections</dt>
+            <dd>The hidden function by which the buried order attempts to repair, erase, isolate, or reassign incoherent regions. Guide-side term only; not used in-world.</dd>
+
+            <dt>Correction Body</dt>
+            <dd>Accord field classification for a manifested enforcement form. Humanoid or near-humanoid. The word a Sixfold Accord file uses; not what the dockworkers call it.</dd>
+
+            <dt>Correction Instrument</dt>
+            <dd>Accord classification for a tool-like manifested form that appears to perform a function rather than enact a will.</dd>
+
+            <dt>Correction Writ</dt>
+            <dd>A nonphysical or semi-legal manifestation: impossible notices, unsigned seals, unreceived summons, documents with no sender, redactions already performed.</dd>
+
+            <dt>Correction Office</dt>
+            <dd>A location that has begun enforcing its own reality. Not a monster in a room — a room whose Ground has become hostile law.</dd>
+
+            <dt>Unauthorized Correction</dt>
+            <dd>Accord classification for an entity acting without a traceable civic source. An admission of ignorance, not a description of behavior.</dd>
           </dl>
         </div>
 
@@ -200,14 +228,32 @@ export function RulesPage() {
 
               <div className="rules-card__detail">
                 <h4>Starter Abilities</h4>
-                <dl>
+                <div style={{ display: 'grid', gap: '0.75rem', marginTop: '0.5rem' }}>
                   {order.abilities.map((ab) => (
-                    <div key={ab.name}>
-                      <dt>{ab.name}</dt>
-                      <dd>{ab.description}</dd>
+                    <div key={ab.name} style={{ borderLeft: '2px solid var(--color-border)', paddingLeft: '0.75rem' }}>
+                      <strong style={{ color: 'var(--color-primary)', display: 'block', marginBottom: '0.15rem' }}>{ab.name}</strong>
+                      <p style={{ margin: '0 0 0.35rem', fontSize: '0.875rem' }}>{ab.shortText}</p>
+                      {ab.sceneHooks && ab.sceneHooks.length > 0 && (
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.25rem', marginBottom: '0.4rem' }}>
+                          {ab.sceneHooks.map((hook) => (
+                            <span key={hook} style={{
+                              fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.07em',
+                              textTransform: 'uppercase', padding: '0.1rem 0.35rem',
+                              border: `1px solid ${HOOK_STYLES[hook]?.color ?? '#475569'}`,
+                              color: HOOK_STYLES[hook]?.color ?? '#475569',
+                              borderRadius: '2px',
+                            }}>
+                              {HOOK_STYLES[hook]?.label ?? hook}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                      {ab.trigger && <p style={{ margin: '0.2rem 0', fontSize: '0.8rem', color: 'var(--color-muted)' }}><em>When:</em> {ab.trigger}</p>}
+                      {ab.baseEffect && <p style={{ margin: '0.2rem 0', fontSize: '0.8rem', color: 'var(--color-muted)' }}><em>Effect:</em> {ab.baseEffect}</p>}
+                      {ab.exertEffect && <p style={{ margin: '0.2rem 0 0', fontSize: '0.8rem', color: 'var(--color-muted)', borderTop: '1px solid var(--color-border)', paddingTop: '0.3rem', marginTop: '0.3rem' }}><em>Exert:</em> {ab.exertEffect}</p>}
                     </div>
                   ))}
-                </dl>
+                </div>
               </div>
 
               <p className="rules-crosslink">
@@ -234,6 +280,30 @@ export function RulesPage() {
             <article className="rules-card" key={species.id}>
               <h3>{species.name}</h3>
               <p className="rules-card__function">{species.description}</p>
+
+              {species.homelands && species.homelands.length > 0 && (
+                <div className="rules-card__detail">
+                  <h4>Homelands</h4>
+                  <div className="chip-row">
+                    {species.homelands.map((h) => <span className="chip chip--sm" key={h}>{h}</span>)}
+                  </div>
+                </div>
+              )}
+
+              {species.civicRelation && (
+                <div className="rules-card__detail">
+                  <h4>Civic Relation</h4>
+                  <p style={{ fontSize: '0.875rem' }}>{species.civicRelation}</p>
+                </div>
+              )}
+
+              {species.strainMarker && (
+                <div className="rules-card__detail">
+                  <h4>Strain Marker</h4>
+                  <p style={{ fontSize: '0.875rem', fontStyle: 'italic' }}>{species.strainMarker}</p>
+                </div>
+              )}
+
               <div className="rules-card__detail">
                 <h4>{species.traitName}</h4>
                 <p>{species.traitDescription}</p>

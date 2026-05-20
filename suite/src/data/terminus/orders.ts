@@ -1,6 +1,11 @@
 export interface OrderAbility {
   name: string;
-  description: string;
+  description: string; // kept for search compatibility
+  shortText: string;
+  trigger?: string;
+  baseEffect?: string;
+  exertEffect?: string;
+  sceneHooks?: Array<'ground' | 'will' | 'shift' | 'drift' | 'latent'>;
 }
 
 export interface OrderInfo {
@@ -20,11 +25,43 @@ export const ORDERS_LIST: OrderInfo[] = [
     approaches: ['Reveal', 'Trace', 'Name', 'Expose', 'Interpret'],
     signatures: ['lantern', 'lens', 'grimoire', 'marked coin', 'relic key', 'archive seal'],
     abilities: [
-      { name: 'Weak Point', description: 'After you study a target, object, or scene feature, name one way it can be pressured.' },
-      { name: 'Trace Source', description: 'When you examine a pressure, working, wound, or relic, you may ask where it came from.' },
-      { name: 'Bring to Light', description: 'You can reveal a hidden object, path, ward, person, motive, or weak point if you can reach evidence of it.' },
-      { name: 'Read the Pattern', description: 'After you observe a repeated behavior or routine, your next action against it cannot be surprised by that routine.' }
-    ]
+      {
+        name: 'Weak Point',
+        description: 'After you study a target or scene feature, name one way it can be pressured.',
+        shortText: 'After you study a target or scene feature, name one way it can be pressured.',
+        trigger: 'You study a target, object, barrier, creature, or scene feature.',
+        baseEffect: 'Ask the Guide for one way it can be pressured, bypassed, exposed, broken, or protected.',
+        exertEffect: 'Spend 1 Exert to make the answer immediately actionable. The next character who acts on that weakness may step up the relevant Skill die or ignore one stated obstacle that the weakness directly addresses.',
+        sceneHooks: ['ground', 'shift'],
+      },
+      {
+        name: 'Trace Source',
+        description: 'When you examine a pressure, working, wound, or relic, ask where it came from.',
+        shortText: 'When you examine a pressure, working, wound, or relic, ask where it came from.',
+        trigger: 'You examine a pressure, wound, working, relic, residue, broken ward, or abnormal effect.',
+        baseEffect: 'Ask the Guide where it came from: person, place, office, route, working, creature, or prior scene.',
+        exertEffect: 'Spend 1 Exert to learn whether the source is active, latent, spent, or still escalating.',
+        sceneHooks: ['will', 'latent'],
+      },
+      {
+        name: 'Bring to Light',
+        description: 'Reveal a hidden object, path, ward, person, motive, or weak point if you can reach evidence of it.',
+        shortText: 'Reveal a hidden object, path, ward, person, motive, or weak point if you can reach evidence of it.',
+        trigger: 'You have direct evidence of something hidden: a mark, contradiction, witness, trace, sound, shadow, residue, record, or pattern.',
+        baseEffect: 'Reveal the hidden thing\'s existence and its most immediate access condition.',
+        exertEffect: 'Spend 1 Exert to force the hidden thing into the active scene if the evidence is sufficient: a hidden route opens, a concealed ward becomes visible, a motive becomes undeniable, or a weak point becomes usable.',
+        sceneHooks: ['ground'],
+      },
+      {
+        name: 'Read the Pattern',
+        description: 'After you observe a repeated behavior or routine, your next action against it is not surprised by that pattern.',
+        shortText: 'After you observe a repeated behavior or routine, your next action against it is not surprised by that pattern.',
+        trigger: 'You observe a repeated behavior, civic routine, patrol, signal, creature habit, or Drift effect.',
+        baseEffect: 'You are not surprised when that pattern next repeats, and you may warn one nearby ally before it resolves.',
+        exertEffect: 'Spend 1 Exert to predict the pattern\'s next immediate consequence before it occurs.',
+        sceneHooks: ['drift', 'shift'],
+      },
+    ],
   },
   {
     id: 'breaker',
@@ -33,11 +70,43 @@ export const ORDERS_LIST: OrderInfo[] = [
     approaches: ['Shatter', 'Sever', 'Breach', 'Overwhelm', 'Unmake'],
     signatures: ['hammer', 'axe', 'blade', 'iron rod', 'demolition charm', 'broken standard'],
     abilities: [
-      { name: 'Breach Point', description: 'When you damage a barrier, lock, ward, shield, or formation, you may also open a temporary passage or gap.' },
-      { name: 'Overrun', description: 'When you win with Force, you may drive the target back, knock it aside, or break its position.' },
-      { name: 'Break the Tool', description: 'You may target a weapon, focus, ward-anchor, brace, chain, or mechanism instead of the wielder.' },
-      { name: 'Carry the Break', description: 'When something breaks, you may push part of that break into an adjacent object, target, or position.' }
-    ]
+      {
+        name: 'Breach Point',
+        description: 'When you damage a barrier, lock, ward, shield, or formation, open a temporary passage or gap.',
+        shortText: 'When you damage a barrier, lock, ward, shield, or formation, open a temporary passage or gap.',
+        trigger: 'You deal damage to or break a barrier, lock, ward, shield, or formation.',
+        baseEffect: 'Open a temporary passage, gap, or breach that others may use before the next Drift effect.',
+        exertEffect: 'Spend 1 Exert to widen or stabilize the breach for the rest of the scene, or to extend it to one additional blocked route.',
+        sceneHooks: ['ground', 'shift'],
+      },
+      {
+        name: 'Overrun',
+        description: 'When you win with Force, drive the target back or break its position.',
+        shortText: 'When you win with Force, drive the target back or break its position.',
+        trigger: 'You succeed on a Force roll against a target.',
+        baseEffect: 'Drive the target back, knock it aside, or break its position. It loses one positional advantage or cover.',
+        exertEffect: 'Spend 1 Exert to also force hesitation: the target must deal with you first before acting on another character this round.',
+        sceneHooks: ['shift'],
+      },
+      {
+        name: 'Break the Tool',
+        description: 'Target a weapon, focus, ward-anchor, or mechanism instead of its wielder.',
+        shortText: 'Target a weapon, focus, ward-anchor, or mechanism instead of its wielder.',
+        trigger: 'A target is wielding, using, or relying on a weapon, focus, mechanism, ward-anchor, brace, or chain.',
+        baseEffect: 'Direct your attack at the tool. If you succeed, the tool is damaged, broken, or rendered unreliable.',
+        exertEffect: 'Spend 1 Exert to also apply the Impact to the wielder if the tool\'s destruction is plausibly connected to their body or position.',
+        sceneHooks: ['ground', 'shift'],
+      },
+      {
+        name: 'Carry the Break',
+        description: 'When something breaks, redirect part of that break into an adjacent object, target, or position.',
+        shortText: 'When something breaks, redirect part of that break into an adjacent object, target, or position.',
+        trigger: 'An object, barrier, or structure breaks — by your action or as a scene consequence.',
+        baseEffect: 'Redirect part of the break\'s force or debris toward one adjacent target or position, reducing their Avoid or Endure by 1 circle, or compromising their position.',
+        exertEffect: 'Spend 1 Exert to redirect the full Impact of the break, choosing both the target and the nature of the consequence.',
+        sceneHooks: ['shift', 'drift'],
+      },
+    ],
   },
   {
     id: 'warden',
@@ -46,12 +115,52 @@ export const ORDERS_LIST: OrderInfo[] = [
     approaches: ['Anchor', 'Shield', 'Hold', 'Interpose', 'Contain'],
     signatures: ['shield', 'staff', 'oath-chain', 'ward-stone', 'field standard', 'iron-bound mantle'],
     abilities: [
-      { name: 'Hold the Line', description: 'When a nearby ally would lose a Threshold circle, you may take that loss instead if you can plausibly interpose.' },
-      { name: 'Anchor Point', description: 'Choose one position, door, bridge, threshold, or boundary. Until you move, it is harder to force open, cross, or collapse.' },
-      { name: 'Brace Against It', description: 'When you choose Endure, you may protect one nearby person or object from the same pressure.' },
-      { name: 'No Further', description: 'When an enemy tries to pass your position, you may force them to deal with you first.' },
-      { name: 'Absorb the Drift', description: 'When the Scene Drift increases due to a monster\'s passive escalation, you may suffer a loss to your Exert Threshold to delay or negate the increase for this round. You are holding the room together with your will.' }
-    ]
+      {
+        name: 'Hold the Line',
+        description: 'When a nearby ally would lose a Threshold circle, take that loss instead if you can plausibly interpose.',
+        shortText: 'When a nearby ally would lose a Threshold circle, take that loss instead if you can plausibly interpose.',
+        trigger: 'A nearby ally would lose an Endure, Avoid, or Exert circle.',
+        baseEffect: 'Take that loss on your own matching Threshold, if you can plausibly interpose between the source and the ally.',
+        exertEffect: 'Spend 1 Exert to reduce the Impact by 1 before absorbing it, if the scene\'s Ground allows a defensive action.',
+        sceneHooks: ['shift'],
+      },
+      {
+        name: 'Anchor Point',
+        description: 'Choose one position or threshold. Until you move, it is harder to force open, cross, or collapse.',
+        shortText: 'Choose one position or threshold. Until you move, it is harder to force open, cross, or collapse.',
+        trigger: 'You take a defensive position at a door, bridge, boundary, threshold, or chokepoint.',
+        baseEffect: 'Anything trying to pass or breach your position must deal with you first. The position gains one additional step of resistance against external pressure.',
+        exertEffect: 'Spend 1 Exert to hold the position even under a Drift effect this round, delaying its consequence by one step.',
+        sceneHooks: ['ground', 'drift'],
+      },
+      {
+        name: 'Brace Against It',
+        description: 'When you choose Endure, protect one nearby ally or object from the same pressure.',
+        shortText: 'When you choose Endure, protect one nearby ally or object from the same pressure.',
+        trigger: 'You choose Endure as your Threshold against an incoming pressure.',
+        baseEffect: 'Extend your Endure result to cover one nearby ally or object. Both resist with your Endure result.',
+        exertEffect: 'Spend 1 Exert to cover up to two nearby allies, or to apply your result to an Avoid or Exert pressure instead.',
+        sceneHooks: ['shift'],
+      },
+      {
+        name: 'No Further',
+        description: 'When an enemy tries to pass your position, they must deal with you first.',
+        shortText: 'When an enemy tries to pass your position, they must deal with you first.',
+        trigger: 'An enemy attempts to move past, around, or through your current position.',
+        baseEffect: 'The enemy must deal with you first before completing that movement. They may not act on another target without first resolving your opposition.',
+        exertEffect: 'Spend 1 Exert to also reduce their Impact by 1 on any action they make while pushing past rather than through you.',
+        sceneHooks: ['ground', 'shift'],
+      },
+      {
+        name: 'Absorb the Drift',
+        description: 'Suffer a loss to your Exert to delay or negate a Drift increase this round.',
+        shortText: 'Suffer a loss to your Exert to delay or negate a Drift increase this round.',
+        trigger: 'Scene Drift increases due to a monster\'s passive escalation or a structural pressure at the end of a round.',
+        baseEffect: 'Suffer 1 Exert circle loss to delay the Drift increase for one round. The escalation is postponed, not cancelled.',
+        exertEffect: 'Suffer 2 Exert circles to negate the increase entirely for this round. The scene holds.',
+        sceneHooks: ['drift'],
+      },
+    ],
   },
   {
     id: 'rival',
@@ -60,11 +169,43 @@ export const ORDERS_LIST: OrderInfo[] = [
     approaches: ['Challenge', 'Outpace', 'Answer', 'Match', 'Humiliate'],
     signatures: ['dueling blade', 'marked glove', 'racing token', 'trophy', 'challenge writ', 'mirrored charm'],
     abilities: [
-      { name: 'Call the Contest', description: 'Name the terms of a contest clearly. If the other side accepts or answers, both sides are bound to those terms until someone breaks them.' },
-      { name: 'Outpace', description: 'When timing matters, you may force a direct contest before the other side completes its move.' },
-      { name: 'Turnabout', description: 'When an opponent fails against you, you may immediately change position, claim leverage, or put them under pressure.' },
-      { name: 'Public Measure', description: 'When others are watching, your victory or failure changes how the crowd, faction, or witness treats the scene.' }
-    ]
+      {
+        name: 'Call the Contest',
+        description: 'Name the terms of a contest. If the other side accepts, both sides are bound until someone breaks them.',
+        shortText: 'Name the terms of a contest. If the other side accepts, both sides are bound until someone breaks them.',
+        trigger: 'You declare the terms of a contest in a scene where another party can hear and respond.',
+        baseEffect: 'Both sides are bound to the stated terms. Breaking the terms shifts the scene\'s Ground against the side that breaks first.',
+        exertEffect: 'Spend 1 Exert to make the terms witnessed: a third party or the scene itself registers the agreement, making any break visible and consequential.',
+        sceneHooks: ['ground', 'will'],
+      },
+      {
+        name: 'Outpace',
+        description: 'When timing matters, force a direct contest before the other side completes its move.',
+        shortText: 'When timing matters, force a direct contest before the other side completes its move.',
+        trigger: 'An opponent is completing an action where timing is the deciding factor.',
+        baseEffect: 'Interrupt and force a direct contest before their action resolves. The result determines who completes their action first.',
+        exertEffect: 'Spend 1 Exert to step up your Agility or relevant Skill die for the contest.',
+        sceneHooks: ['shift'],
+      },
+      {
+        name: 'Turnabout',
+        description: 'When an opponent fails against you, change position, claim leverage, or put them under pressure.',
+        shortText: 'When an opponent fails against you, change position, claim leverage, or put them under pressure.',
+        trigger: 'An opponent fails a roll or action directed at you.',
+        baseEffect: 'Immediately change your position, claim one piece of leverage, or put the opponent under a named pressure before they can act again.',
+        exertEffect: 'Spend 1 Exert to apply both a positional shift and a named pressure, forcing the opponent to respond to two consequences.',
+        sceneHooks: ['shift'],
+      },
+      {
+        name: 'Public Measure',
+        description: 'When others are watching, your outcome changes how the crowd or a faction treats the scene.',
+        shortText: 'When others are watching, your outcome changes how the crowd or a faction treats the scene.',
+        trigger: 'You succeed or fail at a consequential action while witnesses are present.',
+        baseEffect: 'Your outcome — win or loss — shifts one nearby faction, crowd, or witness toward or away from your position. Name the shift.',
+        exertEffect: 'Spend 1 Exert to direct which faction or witness responds and how their shift affects the current scene\'s Ground.',
+        sceneHooks: ['ground', 'will'],
+      },
+    ],
   },
   {
     id: 'broker',
@@ -73,12 +214,52 @@ export const ORDERS_LIST: OrderInfo[] = [
     approaches: ['Bind', 'Trade', 'Pressure', 'Reframe', 'Collect'],
     signatures: ['contract case', 'seal ring', 'ledger', 'marked scales', 'debt chain', 'witness token'],
     abilities: [
-      { name: 'Call in Favor', description: 'Introduce one plausible contact, owed service, minor resource, or old arrangement into the scene.' },
-      { name: 'Make Terms', description: 'When two sides can hear you, you may propose terms that change what each side is willing to risk.' },
-      { name: 'Hold the Debt', description: 'When someone accepts your help, mark the obligation. Later, you may ask for repayment in a related scene.' },
-      { name: 'Turn the Room', description: 'When you reveal leverage, you may shift one neutral, hesitant, or self-interested NPC toward action.' },
-      { name: 'Foreclose', description: 'You may apply Will pressure outward to attack a target\'s Exert Threshold by explicitly calling in a debt, presenting irrefutable leverage, or invoking a binding obligation.' }
-    ]
+      {
+        name: 'Call in Favor',
+        description: 'Introduce one plausible contact, owed service, or resource into the scene.',
+        shortText: 'Introduce one plausible contact, owed service, or resource into the scene.',
+        trigger: 'You have an existing relationship, prior arrangement, or Held Debt relevant to the current scene.',
+        baseEffect: 'Introduce one contact, owed service, minor resource, or prior arrangement that plausibly exists and changes what is available.',
+        exertEffect: 'Spend 1 Exert to make the contact or resource immediately present and actionable this scene, rather than requiring time to reach.',
+        sceneHooks: ['ground'],
+      },
+      {
+        name: 'Make Terms',
+        description: 'When two sides can hear you, propose terms that change what each side is willing to risk.',
+        shortText: 'When two sides can hear you, propose terms that change what each side is willing to risk.',
+        trigger: 'Two or more opposing parties are present and able to hear you.',
+        baseEffect: 'Propose terms that reframe the scene\'s stakes. Each side may now act on their new assessment of risk rather than the original pressure.',
+        exertEffect: 'Spend 1 Exert to lock the terms into the scene\'s Ground, making it visible that breaking them carries a consequence for the side that does.',
+        sceneHooks: ['ground', 'will'],
+      },
+      {
+        name: 'Hold the Debt',
+        description: 'When someone accepts your help, mark the obligation. Later, ask for repayment.',
+        shortText: 'When someone accepts your help, mark the obligation. Later, ask for repayment.',
+        trigger: 'A character — ally or NPC — accepts your assistance, resources, or cover.',
+        baseEffect: 'Mark the obligation. In a later related scene, invoke it to ask for one plausible act of repayment.',
+        exertEffect: 'Spend 1 Exert to invoke the debt immediately within the current scene, if the situation is urgent and the debtor is present.',
+        sceneHooks: ['will', 'latent'],
+      },
+      {
+        name: 'Turn the Room',
+        description: 'When you reveal leverage, shift one neutral or hesitant NPC toward action.',
+        shortText: 'When you reveal leverage, shift one neutral or hesitant NPC toward action.',
+        trigger: 'You reveal leverage — a debt, a risk, an exposure — in a scene where a neutral or hesitant NPC is present.',
+        baseEffect: 'Shift one NPC\'s stance from passive, neutral, or hesitant toward active cooperation, intervention, or departure.',
+        exertEffect: 'Spend 1 Exert to make the shift immediate and visible, affecting how other witnesses read the scene\'s Ground.',
+        sceneHooks: ['will', 'ground'],
+      },
+      {
+        name: 'Foreclose',
+        description: 'Apply Will pressure outward to attack a target\'s Exert by calling in a debt or invoking a binding obligation.',
+        shortText: 'Apply Will pressure outward to attack a target\'s Exert by calling in a debt or invoking a binding obligation.',
+        trigger: 'You have a marked debt, confirmed leverage, or a binding obligation the target has not met.',
+        baseEffect: 'Roll Willpower to pressure a target\'s Exert Threshold. Impact applies as normal. The target knows why.',
+        exertEffect: 'Spend 1 Exert to make the pressure public, forcing witnesses in the scene to acknowledge the obligation and its consequence.',
+        sceneHooks: ['will', 'shift'],
+      },
+    ],
   },
   {
     id: 'shade',
@@ -87,12 +268,44 @@ export const ORDERS_LIST: OrderInfo[] = [
     approaches: ['Slip', 'Veil', 'Misdirect', 'Reverse', 'Vanish'],
     signatures: ['mask', 'cloak', 'lockpick set', 'black knife', 'false papers', 'mirrored pin'],
     abilities: [
-      { name: 'Unmarked Entry', description: 'If no one is directly watching the point of entry, you may enter without immediately becoming the scene\'s focus.' },
-      { name: 'False Trail', description: 'Leave evidence that points attention, suspicion, or pursuit somewhere else.' },
-      { name: 'Slip the Boundary', description: 'You may pass through a guarded, watched, or socially restricted space if you can name the gap in attention.' },
-      { name: 'Turn It Back', description: 'When someone uses deception, concealment, or misdirection against you, you may redirect part of that confusion toward them.' }
-    ]
-  }
+      {
+        name: 'Unmarked Entry',
+        description: 'If no one is directly watching the entry point, enter without becoming the scene\'s focus.',
+        shortText: 'If no one is directly watching the entry point, enter without becoming the scene\'s focus.',
+        trigger: 'You approach a point of entry — door, window, crowd-gap, threshold — where attention is incomplete or divided.',
+        baseEffect: 'Enter without immediately becoming the scene\'s focus. Your presence is not registered unless someone actively looks.',
+        exertEffect: 'Spend 1 Exert to enter even when one observer is present, if you can name a specific gap or distraction in their attention.',
+        sceneHooks: ['ground'],
+      },
+      {
+        name: 'False Trail',
+        description: 'Leave evidence that redirects attention, suspicion, or pursuit.',
+        shortText: 'Leave evidence that redirects attention, suspicion, or pursuit.',
+        trigger: 'You have time and materials to leave a deliberate false trace before pursuit or suspicion begins.',
+        baseEffect: 'Redirect attention, suspicion, or pursuit toward a named false source. It holds until someone finds a contradiction.',
+        exertEffect: 'Spend 1 Exert to make the trail plausible enough to delay even an experienced investigator by at least one scene.',
+        sceneHooks: ['drift', 'ground'],
+      },
+      {
+        name: 'Slip the Boundary',
+        description: 'Pass through a guarded or restricted space by naming the gap in attention.',
+        shortText: 'Pass through a guarded or restricted space by naming the gap in attention.',
+        trigger: 'A guarded, watched, or socially restricted space stands between you and your objective.',
+        baseEffect: 'Name a specific gap — a shift change, a blind angle, a social threshold, a moment of distraction. If the Guide agrees it exists, you pass.',
+        exertEffect: 'Spend 1 Exert to create a plausible gap where one does not currently exist, at a cost: one consequence activates later in the scene.',
+        sceneHooks: ['ground', 'shift'],
+      },
+      {
+        name: 'Turn It Back',
+        description: 'When deception or misdirection is used against you, redirect part of it toward its source.',
+        shortText: 'When deception or misdirection is used against you, redirect part of it toward its source.',
+        trigger: 'An opponent uses deception, concealment, or misdirection in a way that targets or passes through you.',
+        baseEffect: 'Redirect part of the confusion back toward its source. Name what they now believe about you, or what false signal they receive.',
+        exertEffect: 'Spend 1 Exert to fully invert the misdirection: they receive the exact false impression you choose, and their action this round is based on it.',
+        sceneHooks: ['shift', 'will'],
+      },
+    ],
+  },
 ];
 
 export type Order = typeof ORDERS_LIST[number]['name'];

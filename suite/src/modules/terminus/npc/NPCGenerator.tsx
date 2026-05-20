@@ -93,6 +93,8 @@ export function NPCGenerator({ onSave }: NPCGeneratorProps) {
         - quirk: A memorable mannerism, speech pattern, or habit.
         - will: What they actively want right now (their Intent/Pressure in the scene).
         - drift: The executable Else statement: "At the end of each round/scene, [specific state change]." What happens if the players ignore or fail them.
+
+        Terminology Boundary: "Rupture" names a condition, not a material or energy source. Never write "Rupture energy," "Rupture power," "Rupture magic," "Rupture-infused," or similar. Describe the physical, civic, or sensory symptoms of failed coherence instead. Show the strain, not the category.
       `;
       systemInstruction += " Return ONLY valid JSON matching the exact keys requested. Do not use markdown formatting outside the JSON.";
     } else {
@@ -113,6 +115,8 @@ export function NPCGenerator({ onSave }: NPCGeneratorProps) {
         - quirk: A memorable mannerism, speech pattern, or habit.
         - will: What they actively want right now (their Intent/Pressure in the scene).
         - drift: The executable Else statement: "At the end of each round/scene, [specific state change]." What happens if the players ignore or fail them.
+
+        Terminology Boundary: "Rupture" names a condition, not a material or energy source. Never write "Rupture energy," "Rupture power," "Rupture magic," "Rupture-infused," or similar. Describe the physical, civic, or sensory symptoms of failed coherence instead. Show the strain, not the category.
       `;
       systemInstruction += " Return ONLY valid JSON containing an object with a 'npcs' array matching the requested keys. Do not use markdown formatting outside the JSON.";
     }
