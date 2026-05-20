@@ -66,6 +66,11 @@ const LINT_ICON_BY_CODE: Record<string, string> = {
   'unreachable-code': '🧹',
   'hidden-switch': '🕹️',
   'prescriptive-emotion': '🎭',
+  // Runnable State Machine diagnostics
+  'vague-ground': '🌫️',
+  'backstory-will': '📜',
+  'hazard-has-will': '🌊',
+  'trap-no-will': '🪤',
 };
 
 const LINT_LABEL_BY_CODE: Record<string, string> = {
@@ -85,6 +90,11 @@ const LINT_LABEL_BY_CODE: Record<string, string> = {
   'unreachable-code': 'Unreachable Code',
   'hidden-switch': 'Hidden Switch',
   'prescriptive-emotion': 'Prescriptive Emotion',
+  // Runnable State Machine diagnostics
+  'vague-ground': 'Vague Ground',
+  'backstory-will': 'Backstory Will',
+  'hazard-has-will': 'Hazard Has Will',
+  'trap-no-will': 'Trap No Will',
 };
 
 function isDiagnosticsLikeInput(text: string): boolean {
@@ -583,11 +593,10 @@ export default function App({ pendingScene, onPendingSceneConsumed }: { pendingS
     if (organizeBy === 'scene-type') {
       const modeRank: Record<SceneMode, number> = {
         discovery: 0,
-        trap: 1,
-        hazard: 2,
-        conflict: 3,
-        social: 4,
-        puzzle: 5,
+        hazard:    1,
+        conflict:  2,
+        social:    3,
+        puzzle:    4,
       };
 
       filtered.sort((a, b) => {
@@ -1141,7 +1150,6 @@ export default function App({ pendingScene, onPendingSceneConsumed }: { pendingS
                       >
                         <option value="all">All Types</option>
                         <option value="discovery">🔍 Discovery</option>
-                        <option value="trap">🪤 Trap</option>
                         <option value="hazard">⚡ Hazard</option>
                         <option value="conflict">⚔️ Conflict</option>
                         <option value="social">💬 Social</option>

@@ -79,6 +79,32 @@ Rupture Casting belongs to magic, but it is not a fifth Working verb. It is an u
 
 ---
 
+### Familiar Procedures, Different Authority
+
+Terminus should not feel alien to tabletop roleplaying fans.
+
+The game keeps familiar play instincts: initiative, combat, weapons, armor, searching, negotiation, movement, hazards, monsters, maps, and treasure.
+
+What changes is not whether these procedures exist.
+
+What changes is what they are allowed to solve.
+
+Initiative orders action. It does not declare the scene to be combat.
+
+An attack creates pressure. It does not automatically define the only path to victory.
+
+Armor protects the body. It does not answer every kind of threat.
+
+A map shows where things are. It does not define what reality currently permits.
+
+A Scene Card tells the Guide what kind of problem is active.
+
+The goal is not to replace traditional TRPG play. The goal is to make the hidden logic of play clearer, so familiar actions produce consequences that fit the situation.
+
+Terminus should feel like a TRPG that finally says the quiet part out loud, not like a philosophy seminar wearing dice.
+
+---
+
 ## The Lived World: Tringad
 
 The people of the world do not call it Terminus.

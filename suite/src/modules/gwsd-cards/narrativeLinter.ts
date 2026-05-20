@@ -1,5 +1,100 @@
 import type { Scene } from './types';
 
+/**
+ * GWSD Architecture: The Runnable State Machine
+ *
+ * Goal: Convert fiction into executable state — not prose that explains a room,
+ * but logic that resolves it. The adventure is a database of situations the
+ * Referee queries in real time.
+ *
+ * A "Scene" is defined by Authority, not Geometry.
+ * New state exists ONLY when player permissions change.
+ * Rule: If players move 50 feet but threats/constraints are identical → same card.
+ */
+
+/**
+ * Canonical GWSD State Definitions — the "compiler syntax" for scene design.
+ * Sources: GWSD Cockpit Spec + GWSD Runnable State Machine Spec.
+ *
+ * Fill these four fields BEFORE writing any flavor text.
+ * Box Text (read-aloud) derives from Ground + Will.
+ * GM Notes (adjudication) derive from Shift + Drift.
+ */
+export const GWSD_STATE_DEFINITIONS = {
+  ground: {
+    question: 'What actions are legally possible here?',
+    purpose: 'Decision Physics — establishes the boundary conditions. Defines what CAN happen, what is FORBIDDEN, and what COSTS something.',
+    gmUse: 'Write as a rule, not atmosphere. Executable: "Rupture Casting triggers a d6 Force Pressure Surge." Not: "Wild magic fills the chamber."',
+    terminusNote: 'Use Silhouette dice (d4–d12), Scene Pressure values, and Order permissions. Reference Threshold types (Endure/Avoid/Exert) where relevant.',
+  },
+  will: {
+    question: 'What force is applying pressure RIGHT NOW?',
+    purpose: 'Active Prioritization — the existing pressure before players act. NOT backstory or lore; the force\'s current tactic.',
+    gmUse: 'Executable: "Lich prioritizes maintaining the ritual shield over killing intruders." Not: "The lich hates mortals." Hazards have NO Will — the environment has no goal.',
+    terminusNote: 'Name the actor and their current priority. For traps/mechanisms: name what the device is trying to do. For pure hazards: leave Will empty.',
+  },
+  shift: {
+    question: 'What immediately changes if players act?',
+    purpose: 'Automatic Reaction — the If/Then conditional trigger. Guarantees action produces concrete state change.',
+    gmUse: 'Executable: "Touching the altar summons 1d4 defenders." Not: "If the players investigate carefully..." Use hard causality.',
+    terminusNote: 'Wire to Connective Triggers where the Shift hands off to another Scene Card. Prefer Force/Agility/Willpower checks over vague perception prompts.',
+  },
+  drift: {
+    question: 'What worsens if the state is not resolved?',
+    purpose: 'Rhythm Engine — the accumulator. Drives Calm → Complication → Escalation → Irreversible Change without player input.',
+    gmUse: 'Executable: "Each round, the water level rises 5 ft" or "+1 Scene Pressure per round." Not: "The ritual will eventually succeed."',
+    terminusNote: 'Drift IS the pacing engine. Every Scene Card should answer this. Empty Drift = static world = no consequence for delay.',
+  },
+} as const;
+
+/**
+ * Trap vs. Hazard — the critical linter distinction.
+ * Differentiated by Player Interaction, not damage type.
+ *
+ * TRAP (Agent of Intent)
+ *   Primary Verb: Inference — "Who placed this? How do I exploit it?"
+ *   Ground: mechanism exists but is hidden.
+ *   Will:   the mechanism attempts to trigger on specific intrusion. (NOT empty)
+ *   Shift:  trigger event → consequence (Click → Boom).
+ *   Drift:  resets, alerts guards, or locks down.
+ *   Diagnostic: Can the players negotiate with or outsmart the cause? → Trap.
+ *
+ * HAZARD (Condition of Environment)
+ *   Primary Verb: Adaptation — "How do I endure? What gear do I need?"
+ *   Ground: unstable footing / toxic air / rising water / heat.
+ *   Will:   NONE. The environment has no goal.
+ *   Shift:  entering imposes a penalty or Threshold check.
+ *   Drift:  exposure accumulates consequence (Pressure, Fatigue, or Endure).
+ *   Diagnostic: Can the players only manage their exposure to it? → Hazard.
+ */
+export const GWSD_TRAP_HAZARD_DISTINCTION = {
+  trap: {
+    primaryVerb: 'Inference',
+    question: 'Can I negotiate with or outsmart the cause?',
+    willRule: 'NOT empty — the mechanism has agentive intent.',
+  },
+  hazard: {
+    primaryVerb: 'Adaptation',
+    question: 'Can I only manage my exposure to it?',
+    willRule: 'EMPTY — the environment has no goal.',
+  },
+} as const;
+
+/**
+ * The Mercenary Workflow — four steps before any prose.
+ * 1. Paste the checklist.
+ * 2. Fill the four lines (bullet points only, no flavor yet).
+ * 3. Write Box Text (read-aloud) from Ground + Will only.
+ * 4. Write GM Notes from Shift + Drift only.
+ * 5. Move to the next room.
+ */
+export const GWSD_MERCENARY_WORKFLOW = [
+  'Ground — What actions are legally possible here? (Decision Physics)',
+  'Will   — What force is applying pressure RIGHT NOW? (Active Prioritization)',
+  'Shift  — What immediately changes if players act? (Automatic Reaction)',
+  'Drift  — What worsens if the state is not resolved? (Rhythm Engine)',
+] as const;
+
 export type LintRuleCode =
   | 'echo'
   | 'railroad'
@@ -16,7 +111,12 @@ export type LintRuleCode =
   | 'logic-conflict'
   | 'unreachable-code'
   | 'hidden-switch'
-  | 'prescriptive-emotion';
+  | 'prescriptive-emotion'
+  // Runnable State Machine diagnostics (GWSD Architecture spec)
+  | 'vague-ground'       // Ground is atmosphere, not executable Decision Physics
+  | 'backstory-will'     // Will is lore/history, not active tactic (runtime pressure)
+  | 'hazard-has-will'    // Hazard scene has agentive Will (environment has no goal)
+  | 'trap-no-will';      // Trap/Puzzle scene with trap framing but empty Will (traps need intent)
 
 export interface NarrativeSignal {
   code: LintRuleCode;
@@ -80,6 +180,38 @@ const HARD_STATE_CHANGE = /\b(trigger\s*:|if\s+all\s+three\s+cranks|if\s+any\s+c
 const IRREVERSIBLE_STATE_KEYWORDS = /\b(dead|destroyed|burned|breached|ritual\s+complete|flooded|sealed\s+forever|captured|lost\s+for\s+good|no\s+return|doomed|after\s+\d+\s+rounds?|failure\s*:|consequence\s*:|reverse\s+sluice|water\s+rises?\s+\d+\s*(?:ft|feet)\s+per\s+round)\b/i;
 const ESCALATION_STATE_KEYWORDS = /\b(alert|mobilize|reinforce|combat|attack|surge|spread|collapse|critical|outbreak|hunt|lockdown|save\s*:|dc\s*\d+|damage\s*:|swim\s+check\s+dc\s*\d+|trigger\s*:|effect\s*:)\b/i;
 
+// ── Runnable State Machine diagnostics ──────────────────────────────────────
+
+/**
+ * EXECUTABLE_CONSTRAINT: signals that Ground contains mechanical rules, not just prose.
+ * Terminus-aware: includes d-notation (d6, d10), Scene Pressure, Threshold types.
+ */
+const EXECUTABLE_CONSTRAINT = /\b(damage|penalty|bonus|check|dc\s*\d+|d\d+|prevents?|blocks?|restricts?|costs?\s*\d+|requires?|allows?|threshold|pressure|per\s+round|per\s+turn|each\s+round|cannot|can't|forbidden|maximum|minimum|force|agility|willpower|endure|avoid|exert|impact|surge|rupture|seal|nullify|expose|bridge)\b/i;
+
+/**
+ * VAGUE_ATMOSPHERE: signals that Ground is flavor/atmosphere rather than physics.
+ * These words describe the room but define no constraint.
+ */
+const VAGUE_ATMOSPHERE = /\b(fills?|permeates?|hangs?|looms?|pulses?|ancient|ornate|grand|ethereal|mystical|arcane|sacred|oppressive|ominous|foreboding|unsettling|eerie|gloomy|dreadful|vast|towering|elaborate|beautiful|dim|dark|shadowy|impressive)\b/gi;
+
+/**
+ * BACKSTORY_WILL: Will describes lore/history/emotion, not active tactic.
+ * These words suggest exposition rather than current pressure.
+ */
+const BACKSTORY_WILL = /\b(hates?|despises?|resents?|fears?\s+\w|loathes?|loves?|once\s+was|has\s+always|long\s+ago|remembers?|seeks?\s+vengeance|bears?\s+grudge|was\s+betrayed|was\s+banished|yearns?\s+for|ancient\s+grudge|long-standing|backstory|history\s+of)\b/i;
+
+/**
+ * ACTIVE_TACTIC: Will describes what the force is DOING NOW, not what it feels.
+ * At least one of these needed for Will to qualify as executable.
+ */
+const ACTIVE_TACTIC = /\b(prioritizes?|targets?|attacks?|defends?|retreats?|guards?|advances?|maintains?|attempts?|right\s+now|currently|each\s+round|every\s+round|immediately|ignores?\s+\w+\s+to|will\s+\w+\s+before|focuses?\s+on|intercepts?|repositions?|seeks\s+to|tries\s+to)\b/i;
+
+/**
+ * AGENTIVE_WILL: actor-like language that suggests intent — incompatible with Hazard mode.
+ * A Hazard\'s Will should be empty; any of these in a Hazard Will = misclassification.
+ */
+const AGENTIVE_WILL = /\b(guards?|cultists?|monster|beast|commander|patrol|faction|ritualists?|sentries?|captain|operator|npc|it\s+will|they\s+will|it\s+tries|they\s+try|seeks?\s+to|attempts?\s+to|responds?\s+to|alerts?|mobilizes?|retaliates?|hunts?)\b/i;
+
 type PressureLevel = 'calm' | 'complication' | 'escalation' | 'irreversible';
 
 const PRESSURE_META: Record<PressureLevel, { rank: number; label: string }> = {
@@ -96,24 +228,43 @@ const PRESSURE_KEYWORDS: Record<PressureLevel, RegExp> = {
   irreversible: /\b(dead|destroyed|burned|breached|ritual\s+complete|flooded|sealed\s+forever|captured|lost\s+for\s+good|no\s+return|doomed)\b/i,
 };
 
-export type SceneMode = 'conflict' | 'trap' | 'hazard' | 'social' | 'discovery' | 'puzzle';
+/**
+ * Scene Modes — editorial metadata describing the primary resolution verb.
+ * Spec: GWSD Cockpit (5 canonical modes).
+ *
+ * | Icon | Mode      | Primary Verb | Decision Space                                  |
+ * |------|-----------|--------------|--------------------------------------------------|
+ * | ⚔️   | Conflict  | Force        | Applying violence/power to remove an obstacle    |
+ * | ⚡   | Hazard    | Adaptation   | Enduring environment; managing exposure/gear     |
+ * | 💬   | Social    | Persuasion   | Trading leverage for compliance                  |
+ * | 🔍   | Discovery | Attention    | Noticing details; discerning signal from noise   |
+ * | 🧩   | Puzzle    | Inference    | Connecting logic points; outsmarting a system    |
+ *
+ * Trap/Hazard distinction is a LINTER rule, not a mode split:
+ *   - Trap content (agentive mechanism) → Puzzle (Inference)
+ *   - Hazard content (environmental condition) → Hazard (Adaptation)
+ *   - Mismatch → Trap-Hazard Collapse signal
+ * Diagnostic test: "Can I negotiate/outsmart it?" → Puzzle/Trap.
+ *                  "Can I only manage exposure?" → Hazard.
+ */
+export type SceneMode = 'conflict' | 'hazard' | 'social' | 'discovery' | 'puzzle';
 
 export const SCENE_MODE_META: Record<SceneMode, { icon: string; label: string; verb: string }> = {
-  conflict: { icon: '⚔️', label: 'Conflict', verb: 'Force' },
-  trap: { icon: '🪤', label: 'Trap', verb: 'Inference' },
-  hazard: { icon: '⚡', label: 'Hazard', verb: 'Positioning' },
-  social: { icon: '💬', label: 'Social', verb: 'Persuasion' },
-  discovery: { icon: '🔍', label: 'Discovery', verb: 'Attention' },
-  puzzle: { icon: '🧩', label: 'Puzzle', verb: 'Inference' },
+  conflict:  { icon: '⚔️', label: 'Conflict',  verb: 'Force'      },
+  hazard:    { icon: '⚡', label: 'Hazard',    verb: 'Adaptation'  },
+  social:    { icon: '💬', label: 'Social',    verb: 'Persuasion'  },
+  discovery: { icon: '🔍', label: 'Discovery', verb: 'Attention'   },
+  puzzle:    { icon: '🧩', label: 'Puzzle',    verb: 'Inference'   },
 };
 
 const SCENE_MODE_KEYWORDS: Record<SceneMode, RegExp> = {
-  conflict: /\b(attack|combat|fight|ambush|battle|kill|wound|blood|weapon|strike|slay|defeat|ghoul|monster|swarm|crossbow)\b/i,
-  trap: /\b(trap|tripwire|snare|pressure\s+plate|glyph|ward|alarm|trigger|disarm|bypass|countermeasure|reset)\b/i,
-  hazard: /\b(hazard|collapse|fall|drop|filth|disease|poison|acid|fire|flood|slippery|sink|swim|position|terrain|web|toxic|heat|cold|fumes?)\b/i,
-  social: /\b(negotiat|parley|convince|persuade|threaten|bargain|offer|audience|crowd|marshal|commander|rat king|leverage|compliance|conversation|talk|speak|ask|answer|rumor|gossip|listen|chat|warn|introduc)\b/i,
+  conflict:  /\b(attack|combat|fight|ambush|battle|kill|wound|blood|weapon|strike|slay|defeat|ghoul|monster|swarm|crossbow)\b/i,
+  // Hazard: environmental danger (where to be, not what to infer)
+  hazard:    /\b(hazard|collapse|fall|drop|filth|disease|poison|acid|fire|flood|slippery|sink|swim|position|terrain|web|toxic|heat|cold|fumes?)\b/i,
+  social:    /\b(negotiat|parley|convince|persuade|threaten|bargain|offer|audience|crowd|marshal|commander|rat king|leverage|compliance|conversation|talk|speak|ask|answer|rumor|gossip|listen|chat|warn|introduc)\b/i,
   discovery: /\b(find|notice|clue|discover|search|hidden|observe|read|track|inspect|reveal|secret|signs|map\b|manual|scan|hear|glimpse|spot)\b/i,
-  puzzle: /\b(puzzle|riddle|mechanism|crank|lever|sequence|simultaneous|logic|solve|inference|setting|configuration|system|reset)\b/i,
+  // Puzzle: trap/mechanism/inference content (trap keywords absorbed here)
+  puzzle:    /\b(puzzle|riddle|mechanism|crank|lever|sequence|simultaneous|logic|solve|inference|setting|configuration|system|reset|trap|tripwire|snare|pressure\s+plate|glyph|ward|disarm|bypass|countermeasure)\b/i,
 };
 
 function sceneBody(scene: Scene): Record<'ground' | 'will' | 'shift' | 'drift', string> {
@@ -200,6 +351,10 @@ function baseRuleCounts(): Record<LintRuleCode, number> {
     'unreachable-code': 0,
     'hidden-switch': 0,
     'prescriptive-emotion': 0,
+    'vague-ground': 0,
+    'backstory-will': 0,
+    'hazard-has-will': 0,
+    'trap-no-will': 0,
   };
 }
 
@@ -438,6 +593,88 @@ export function runNarrativeDiagnostics(scenes: Scene[]): NarrativeDiagnosticsRe
       });
     }
 
+    // ── Runnable State Machine diagnostics ─────────────────────────────────
+
+    // Vague Ground: atmospheric prose with no executable constraint.
+    // Spec: "Not Flavor: 'Wild magic fills the chamber.' (Vague)
+    //        Executable: 'Casting spells triggers immediate 1d6 force damage.' (Rule)"
+    // Terminus: check for d-notation, Scene Pressure, Threshold keywords.
+    if (!isLatent && body.ground.trim()) {
+      const groundWc = wordCount(body.ground);
+      const atmosphereMatches = (body.ground.match(VAGUE_ATMOSPHERE) || []).length;
+      const hasExecutable = EXECUTABLE_CONSTRAINT.test(body.ground);
+      if (groundWc >= 12 && !hasExecutable && atmosphereMatches >= 2) {
+        signals.push({
+          code: 'vague-ground',
+          icon: '🌫️',
+          name: 'Vague Ground',
+          diagnosis: 'Ground is atmospheric description, not executable Decision Physics.',
+          fix: 'State the actual constraint as a rule: what is prevented, what costs something, what triggers a Threshold check. Use Terminus dice notation (d6, d10) or Scene Pressure values.',
+          severity: 'medium',
+          sceneTitle: scene.title,
+          sceneOrder: scene.order,
+          confidence: atmosphereMatches >= 4 ? 'high' : 'medium',
+          evidence: `${groundWc}-word Ground with ${atmosphereMatches} atmospheric terms and no executable constraint signals.`,
+        });
+      }
+    }
+
+    // Backstory Will: Will describes lore/emotion/history, not active tactic.
+    // Spec: "Not Backstory: 'The lich hates mortals.' (Lore)
+    //        Executable: 'Lich prioritizes maintaining the ritual shield over killing intruders.' (Tactic)"
+    if (!isLatent && body.will.trim() && BACKSTORY_WILL.test(body.will) && !ACTIVE_TACTIC.test(body.will)) {
+      signals.push({
+        code: 'backstory-will',
+        icon: '📜',
+        name: 'Backstory Will',
+        diagnosis: 'Will describes history or emotion rather than active prioritization.',
+        fix: 'State what the force is doing RIGHT NOW and what it prioritizes. E.g., "The warden targets the nearest spellcaster before retreating to the altar."',
+        severity: 'medium',
+        sceneTitle: scene.title,
+        sceneOrder: scene.order,
+        confidence: 'medium',
+        evidence: 'Historical/emotional language in Will with no current-tactic signal.',
+      });
+    }
+
+    // Hazard-Has-Will: Hazard mode with agentive Will.
+    // Spec: "Hazard: Will = None. The environment has no goal."
+    // Diagnostic: "Can I only manage my exposure to it? → Hazard."
+    // If Will contains agent language in a Hazard scene, the scene is misclassified
+    // and should be a Trap/Puzzle (where the mechanism has intent).
+    if (!isLatent && mode === 'hazard' && body.will.trim() && AGENTIVE_WILL.test(body.will)) {
+      signals.push({
+        code: 'hazard-has-will',
+        icon: '🌊⚙️',
+        name: 'Hazard Has Will',
+        diagnosis: 'Hazard scene contains agentive Will. Environments have no goal — only traps and creatures do.',
+        fix: 'If someone set this up, reclassify as Puzzle (Inference). Clear Will and rely on Drift to accumulate exposure pressure. Diagnostic: "Can I outsmart the cause?" = Puzzle/Trap. "Can I only manage exposure?" = Hazard.',
+        severity: 'high',
+        sceneTitle: scene.title,
+        sceneOrder: scene.order,
+        confidence: 'medium',
+        evidence: 'Agentive language (actor, intent verb) detected in Will of a Hazard-mode scene.',
+      });
+    }
+
+    // Trap-No-Will: Trap/Puzzle scene with trap framing but no Will.
+    // Spec: "Trap Will: the mechanism attempts to trigger on specific intrusion. (NOT empty)"
+    // A trap without Will has no stated intent — it collapses into a generic damage effect.
+    if (!isLatent && mode === 'puzzle' && trapIntent && !body.will.trim()) {
+      signals.push({
+        code: 'trap-no-will',
+        icon: '🪤',
+        name: 'Trap No Will',
+        diagnosis: 'Trap framing with no Will. Traps have agent intent — the mechanism is trying to do something.',
+        fix: 'Write Will as the mechanism\'s current goal: "The pressure plate attempts to trigger when weight exceeds its threshold." This lets players infer, bypass, or exploit it.',
+        severity: 'high',
+        sceneTitle: scene.title,
+        sceneOrder: scene.order,
+        confidence: 'high',
+        evidence: 'Trap keywords in scene body but Will field is empty.',
+      });
+    }
+
     if (/\b(only\s+exit|sealed\s+exit|lethal\s+trap|deadly\s+gauntlet)\b/i.test(body.ground) && /\b(guards?\s+patrol|live\s+here|regular\s+traffic|come\s+and\s+go)\b/i.test(body.will)) {
       signals.push({
         code: 'logic-conflict',
@@ -482,18 +719,20 @@ export function runNarrativeDiagnostics(scenes: Scene[]): NarrativeDiagnosticsRe
     const driftChannel = detectDriftChannel(body.drift);
     const hpTaxOnly = !isLatent && HP_TAX_PATTERN.test(`${body.shift} ${body.drift}`) && !trapTrigger && !hazardExposure;
 
-    if (!isLatent && mode === 'trap' && (!trapIntent || !trapTrigger)) {
+    // Puzzle-mode scenes with trap framing: ensure inference pathway is specified.
+    // (Trap content classifies as Puzzle since both use the Inference verb.)
+    if (!isLatent && mode === 'puzzle' && trapIntent && (!trapTrigger)) {
       signals.push({
         code: 'trap-hazard-collapse',
         icon: '🪫',
         name: 'Trap-Hazard Collapse',
-        diagnosis: 'Trap framing is present, but intent/trigger logic is underspecified.',
-        fix: 'Encode an agentive Will and explicit trigger in Shift so players can infer, bypass, disarm, or exploit.',
+        diagnosis: 'Trap framing detected in a Puzzle scene but trigger logic is underspecified.',
+        fix: 'Encode an explicit trigger in Shift so players can infer, bypass, disarm, or exploit the mechanism.',
         severity: 'high',
         sceneTitle: scene.title,
         sceneOrder: scene.order,
         confidence: 'high',
-        evidence: `Trap mode detected but trap intent=${trapIntent ? 'yes' : 'no'} and trigger=${trapTrigger ? 'yes' : 'no'}.`,
+        evidence: `Puzzle/trap inference scene — trap intent present but trigger=${trapTrigger ? 'yes' : 'no'}.`,
       });
     }
 
@@ -527,18 +766,19 @@ export function runNarrativeDiagnostics(scenes: Scene[]): NarrativeDiagnosticsRe
       });
     }
 
-    if (!isLatent && mode === 'trap' && driftChannel === 'inevitability') {
+    // Puzzle/trap scene whose Drift reads as pure environmental inevitability blurs into hazard.
+    if (!isLatent && mode === 'puzzle' && trapIntent && driftChannel === 'inevitability') {
       signals.push({
         code: 'trap-hazard-collapse',
         icon: '🪫',
         name: 'Trap-Hazard Collapse',
-        diagnosis: 'Trap Drift escalates inevitability without adversarial response, blurring trap into hazard behavior.',
-        fix: 'For true trap behavior, Drift should escalate response (alerts, mobilization, reset, lockout).',
+        diagnosis: 'Trap/Puzzle Drift escalates inevitability without adversarial response, blurring trap into hazard behavior.',
+        fix: 'For trap-Puzzle behavior, Drift should escalate response (alerts, mobilization, reset, lockout) rather than environmental decay.',
         severity: 'medium',
         sceneTitle: scene.title,
         sceneOrder: scene.order,
         confidence: 'medium',
-        evidence: 'Trap mode with inevitability-shaped Drift.',
+        evidence: 'Puzzle/trap scene with inevitability-shaped Drift.',
       });
     }
 
@@ -759,6 +999,11 @@ export function narrativeDiagnosticsReportToMarkdown(
     'unreachable-code': '🧹 Unreachable Code',
     'hidden-switch': '🕹️ The Hidden Switch',
     'prescriptive-emotion': '🎭 Prescriptive Emotion',
+    // Runnable State Machine diagnostics
+    'vague-ground': '🌫️ Vague Ground',
+    'backstory-will': '📜 Backstory Will',
+    'hazard-has-will': '🌊⚙️ Hazard Has Will',
+    'trap-no-will': '🪤 Trap No Will',
   };
 
   for (const code of Object.keys(report.byRule) as LintRuleCode[]) {

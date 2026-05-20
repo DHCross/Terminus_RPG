@@ -20,6 +20,7 @@ export function MonsterGenerator({ onSave }: MonsterGeneratorProps) {
     threatLevel: 'Standard',
     category: 'Beast',
     combatRole: 'Brute',
+    settingTexture: 'None',
     appearance: '',
     will: '',
     drift: '',
@@ -64,6 +65,9 @@ export function MonsterGenerator({ onSave }: MonsterGeneratorProps) {
       Threat Level: ${formData.threatLevel}
       Category: ${formData.category}
       Combat Role: ${formData.combatRole}
+      Setting Texture: ${formData.settingTexture === 'None' ? 'standard fantasy, no special Terminus flavor' : formData.settingTexture}
+      
+      When applying Setting Texture, describe visible symptoms and behavior only. Do not name hidden setting doctrine, institutions, or protocols. Avoid the words "Terminus," "protocol," "simulation," "Accord," or "Rupture" in any generated prose field. Show what the texture looks like on the creature — marks, behaviors, habits, physical signs — not what caused it.
       
       Please provide rich, concise, and game-actionable text for the following fields. Follow the Terminus mechanics strictly:
       - name: The creature's name.
@@ -175,7 +179,7 @@ export function MonsterGenerator({ onSave }: MonsterGeneratorProps) {
 
         <div className="bg-slate-950 border border-slate-800 rounded p-4 mb-6">
           <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-4 border-b border-slate-800 pb-2">Generation Parameters</h4>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-5 gap-4">
             <div className="space-y-1">
               <label className="text-xs text-slate-400 font-inter font-semibold">Concept / Name (Optional)</label>
               <input type="text" name="name" value={formData.name} onChange={handleInputChange} className="w-full bg-slate-900 border border-slate-700 rounded p-2 text-sm text-slate-200 focus:border-red-500 outline-none transition-all placeholder:text-slate-600" placeholder="e.g. Glass Hound" />
@@ -190,23 +194,44 @@ export function MonsterGenerator({ onSave }: MonsterGeneratorProps) {
               </select>
             </div>
             <div className="space-y-1">
-              <label className="text-xs text-slate-400 font-inter font-semibold">Category</label>
+              <label className="text-xs text-slate-400 font-inter font-semibold">Creature Type</label>
               <select name="category" value={formData.category} onChange={handleInputChange} className="w-full bg-slate-900 border border-slate-700 rounded p-2 text-sm text-slate-200 focus:border-red-500 outline-none transition-all">
                 <option value="Beast">Beast / Predator</option>
-                <option value="Cultist">Cultist / Humanoid</option>
-                <option value="Rupture Entity">Rupture Entity</option>
-                <option value="Automaton">Automaton / Construct</option>
+                <option value="Humanoid">Humanoid / Cultist</option>
+                <option value="Undead">Undead / Restless</option>
+                <option value="Construct">Construct / Automaton</option>
+                <option value="Spirit">Spirit / Apparition</option>
+                <option value="Aberration">Aberration / Mutant</option>
+                <option value="Hazard">Hazard / Living Place</option>
+                <option value="Custom">Custom</option>
               </select>
             </div>
             <div className="space-y-1">
               <label className="text-xs text-slate-400 font-inter font-semibold">Combat Role</label>
               <select name="combatRole" value={formData.combatRole} onChange={handleInputChange} className="w-full bg-slate-900 border border-slate-700 rounded p-2 text-sm text-slate-200 focus:border-red-500 outline-none transition-all">
-                <option value="Brute">Brute (High Force, straightforward)</option>
-                <option value="Skirmisher">Skirmisher (High Agility, mobile)</option>
-                <option value="Artillery">Artillery (Ranged, high damage)</option>
-                <option value="Controller">Controller (Manipulates, debuffs)</option>
-                <option value="Lurker">Lurker (Stealth, ambush)</option>
-                <option value="Sentinel">Sentinel (Protects others, tough)</option>
+                <option value="Brute">Brute</option>
+                <option value="Stalker">Stalker</option>
+                <option value="Swarm">Swarm</option>
+                <option value="Controller">Controller</option>
+                <option value="Skirmisher">Skirmisher</option>
+                <option value="Guardian">Guardian</option>
+                <option value="Lurker">Lurker</option>
+                <option value="Support">Support</option>
+                <option value="Custom">Custom</option>
+              </select>
+            </div>
+            <div className="space-y-1">
+              <label className="text-xs text-slate-400 font-inter font-semibold">Setting Texture</label>
+              <select name="settingTexture" value={formData.settingTexture} onChange={handleInputChange} className="w-full bg-slate-900 border border-slate-700 rounded p-2 text-sm text-slate-200 focus:border-red-500 outline-none transition-all">
+                <option value="None">None / standard fantasy</option>
+                <option value="Civic ruin">Civic ruin</option>
+                <option value="Rupture-touched">Rupture-touched</option>
+                <option value="Old Office influence">Old Office influence</option>
+                <option value="Accord experiment">Accord experiment</option>
+                <option value="Failed ward">Failed ward</option>
+                <option value="Broken routine">Broken routine</option>
+                <option value="Deep foundation">Deep foundation</option>
+                <option value="Wild verge">Wild verge</option>
               </select>
             </div>
           </div>

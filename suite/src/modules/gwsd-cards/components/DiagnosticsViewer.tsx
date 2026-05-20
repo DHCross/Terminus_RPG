@@ -1,5 +1,7 @@
 import { useState, useMemo } from 'react';
 import type { ParsedDiagnosticsReport, ParsedSignal } from '../diagnosticsParser';
+import type { SceneMode } from '../narrativeLinter';
+import { SCENE_MODE_META } from '../narrativeLinter';
 
 const SEV_COLORS: Record<string, { bg: string; text: string; border: string }> = {
   high:   { bg: '#7f1d1d', text: '#fca5a5', border: '#dc2626' },
@@ -13,10 +15,133 @@ const CONF_DOT: Record<string, string> = {
   low: '#6b7280',
 };
 
+/** Color accent for each scene mode in the pacing graph */
+const MODE_PACING_COLOR: Record<SceneMode, string> = {
+  conflict:  '#dc2626', // red
+  hazard:    '#d97706', // amber
+  social:    '#2563eb', // blue
+  discovery: '#16a34a', // green
+  puzzle:    '#7c3aed', // violet
+};
+
+/** One block in the Pacing Graph */
+function PacingBlock({ mode, sceneTitle, index }: { mode: SceneMode; sceneTitle: string; index: number }) {
+  const meta = SCENE_MODE_META[mode];
+  const color = MODE_PACING_COLOR[mode];
+  return (
+    <div
+      title={`#${index + 1} ${sceneTitle} — ${meta.icon} ${meta.label} (${meta.verb})`}
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: 2,
+        cursor: 'default',
+      }}
+    >
+      <div
+        style={{
+          width: 28,
+          height: 28,
+          borderRadius: 4,
+          background: color,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: 14,
+          lineHeight: 1,
+          border: '1px solid rgba(255,255,255,0.1)',
+        }}
+      >
+        {meta.icon}
+      </div>
+      <span style={{ fontSize: 9, color: '#6B7280', textAlign: 'center', maxWidth: 28, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+        {index + 1}
+      </span>
+    </div>
+  );
+}
+
+/** Pacing Graph — visual bar showing the sequence of Scene Modes */
+function PacingGraph({ modeSequence }: { modeSequence: Array<{ mode: SceneMode; title: string }> }) {
+  if (modeSequence.length === 0) return null;
+
+  // Detect monotony runs (3+) to highlight them
+  const monotonyStarts = new Set<number>();
+  for (let i = 0; i <= modeSequence.length - 3; i++) {
+    if (
+      modeSequence[i].mode === modeSequence[i + 1].mode &&
+      modeSequence[i + 1].mode === modeSequence[i + 2].mode
+    ) {
+      monotonyStarts.add(i);
+      monotonyStarts.add(i + 1);
+      monotonyStarts.add(i + 2);
+    }
+  }
+
+  return (
+    <div style={{ marginBottom: 20 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+        <span style={{ fontSize: 12, fontWeight: 600, color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+          Pacing Graph
+        </span>
+        <span style={{ fontSize: 11, color: '#6B7280' }}>
+          {modeSequence.length} scene{modeSequence.length !== 1 ? 's' : ''}
+        </span>
+      </div>
+      {/* Mode legend */}
+      <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 8 }}>
+        {(Object.keys(SCENE_MODE_META) as SceneMode[]).map((m) => (
+          <span key={m} style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: '#9CA3AF' }}>
+            <span style={{ width: 10, height: 10, borderRadius: 2, background: MODE_PACING_COLOR[m], display: 'inline-block' }} />
+            {SCENE_MODE_META[m].icon} {SCENE_MODE_META[m].label}
+          </span>
+        ))}
+      </div>
+      {/* Sequence blocks */}
+      <div
+        style={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: 4,
+          padding: '10px 12px',
+          background: '#111827',
+          borderRadius: 8,
+          border: '1px solid #374151',
+        }}
+      >
+        {modeSequence.map((item, i) => (
+          <div
+            key={i}
+            style={{
+              outline: monotonyStarts.has(i) ? '2px solid #d97706' : 'none',
+              outlineOffset: 2,
+              borderRadius: 6,
+            }}
+          >
+            <PacingBlock mode={item.mode} sceneTitle={item.title} index={i} />
+          </div>
+        ))}
+      </div>
+      {monotonyStarts.size > 0 && (
+        <p style={{ fontSize: 11, color: '#d97706', margin: '6px 0 0', display: 'flex', alignItems: 'center', gap: 4 }}>
+          💤 Orange outline = Solution Monotony run (3+ same-verb scenes)
+        </p>
+      )}
+    </div>
+  );
+}
+
 type SevFilter = 'all' | 'high' | 'medium' | 'low';
 type GroupBy = 'scene' | 'signal' | 'severity';
 
-export default function DiagnosticsViewer({ report }: { report: ParsedDiagnosticsReport }) {
+export default function DiagnosticsViewer({
+  report,
+  modeSequence,
+}: {
+  report: ParsedDiagnosticsReport;
+  modeSequence?: Array<{ mode: SceneMode; title: string }>;
+}) {
   const [sevFilter, setSevFilter] = useState<SevFilter>('all');
   const [groupBy, setGroupBy] = useState<GroupBy>('scene');
   const [expandedIdx, setExpandedIdx] = useState<Set<number>>(new Set());
@@ -69,13 +194,18 @@ export default function DiagnosticsViewer({ report }: { report: ParsedDiagnostic
             margin: 0,
           }}
         >
-          {report.title} — Narrative Diagnostics
+          Narrative Diagnostics Report
         </h2>
         <p style={{ fontSize: 12, color: '#9CA3AF', margin: '4px 0 0' }}>
           Generated {new Date(report.generatedAt).toLocaleString()} · {report.sceneCount} scenes
           analyzed · {report.signalCount} signals found
         </p>
       </div>
+
+      {/* Pacing Graph — mode sequence visualization */}
+      {modeSequence && modeSequence.length > 0 && (
+        <PacingGraph modeSequence={modeSequence} />
+      )}
 
       {/* Severity summary bar */}
       <div
@@ -150,7 +280,7 @@ export default function DiagnosticsViewer({ report }: { report: ParsedDiagnostic
 
       {filtered.length === 0 ? (
         <p style={{ color: '#6B7280', textAlign: 'center', padding: 40 }}>
-          No signals match the current filter.
+          {sevFilter === 'all' ? 'No narrative signals detected.' : 'No signals match the current filter.'}
         </p>
       ) : (
         /* Grouped findings */

@@ -45,3 +45,15 @@ Use these one-sentence definitions early in public-facing material to reduce ter
 **Rupture Casting:** An unlicensed Working that costs no Exert but increases Scene Drift and may leave a Hostile Trace.
 
 **Hostile Trace:** A systemic signal created by Rupture Casting that may draw monsters, rival agents, or deeper architectural response.
+
+**Corrections:** The hidden function by which the buried order attempts to repair, erase, isolate, or reassign incoherent regions. Guide-side term only; not used in-world.
+
+**Correction Body:** Accord field classification for a manifested enforcement form. Humanoid or near-humanoid.
+
+**Correction Instrument:** Accord classification for a tool-like manifested form, not necessarily humanoid, that appears to perform a function rather than enact a will.
+
+**Correction Writ:** A nonphysical or semi-legal manifestation: impossible notices, unsigned seals, unreceived summons, documents with no sender, redactions already performed.
+
+**Correction Office:** A location that has begun enforcing its own reality; the correction is architectural rather than embodied.
+
+**Unauthorized Correction:** Accord classification for an entity acting without a traceable civic source. An admission of ignorance, not a description of behavior.
