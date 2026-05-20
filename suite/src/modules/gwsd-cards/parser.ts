@@ -18,6 +18,10 @@ import type {
   NarrativeDepth,
   Scene,
   SceneChunk,
+  StoryFunction,
+  ConnectiveTrigger,
+  TerminusSceneMeta,
+  TerminusSceneMode,
 } from './types';
 import { ACTIVE_STATE_ORDER, LATENT_STATE_ORDER, isLatentBody } from './types';
 import { detectScenes } from './sceneDetector';
@@ -385,6 +389,7 @@ function createSceneRecord(args: {
   sceneId: string;
   title: string;
   adventure: string;
+  act?: string;
   order: number;
   body: GWSDBody;
   cards: [GWSDCard, GWSDCard, GWSDCard, GWSDCard];
@@ -392,11 +397,15 @@ function createSceneRecord(args: {
   scope?: GWSDScope;
   contentType?: ContentType;
   validationWarnings?: string[];
+  terminus?: TerminusSceneMeta;
+  storyFunction?: StoryFunction;
+  connectiveTriggers?: ConnectiveTrigger[];
 }): Scene {
   const {
     sceneId,
     title,
     adventure,
+    act,
     order,
     body,
     cards,
@@ -404,12 +413,16 @@ function createSceneRecord(args: {
     scope,
     contentType,
     validationWarnings,
+    terminus,
+    storyFunction,
+    connectiveTriggers,
   } = args;
 
   return {
     id: sceneId,
     title,
     adventure,
+    act,
     order,
     stateType: body.stateType,
     cards,
@@ -425,7 +438,111 @@ function createSceneRecord(args: {
       raw,
       scope,
     }),
+    terminus,
+    storyFunction,
+    connectiveTriggers,
   };
+}
+
+export function extractConnectiveTriggers(text: string, sourceId: string): ConnectiveTrigger[] {
+  const triggers: ConnectiveTrigger[] = [];
+  const regex = /(?:->|\bGo\s+to|\bTransition\s+to|\bLeads\s+to)\s*#([\w-]+)/gi;
+  
+  const lines = text.split('\n');
+  
+  for (const line of lines) {
+    regex.lastIndex = 0;
+    let match: RegExpExecArray | null;
+    while ((match = regex.exec(line)) !== null) {
+      const targetNodeId = match[1];
+      const matchIndex = match.index;
+      const matchText = match[0];
+      
+      let label = line.substring(0, matchIndex)
+        .replace(/^[-\*\s\s]+(IF|ELSE)?/i, '')
+        .trim();
+        
+      if (!label) {
+        label = `Transition to #${targetNodeId}`;
+      }
+      
+      const triggerId = `${sourceId}-to-${targetNodeId}-${triggers.length}`;
+      const trigger: ConnectiveTrigger = {
+        id: triggerId,
+        label,
+        triggerType: 'bound',
+        targetNodeId
+      };
+      
+      const remainingString = line.substring(matchIndex + matchText.length);
+      const firstParenMatch = remainingString.match(/^\s*\(/);
+      
+      if (firstParenMatch) {
+        const parenStartIdx = remainingString.indexOf('(');
+        let depth = 1;
+        let parenEndIdx = -1;
+        let inDoubleQuotes = false;
+        let inSingleQuotes = false;
+        let escapeActive = false;
+        
+        for (let i = parenStartIdx + 1; i < remainingString.length; i++) {
+          const char = remainingString[i];
+          if (escapeActive) {
+            escapeActive = false;
+            continue;
+          }
+          if (char === '\\') {
+            escapeActive = true;
+            continue;
+          }
+          if (char === '"') {
+            if (!inSingleQuotes) inDoubleQuotes = !inDoubleQuotes;
+            continue;
+          }
+          if (char === "'") {
+            if (!inDoubleQuotes) inSingleQuotes = !inSingleQuotes;
+            continue;
+          }
+          if (!inDoubleQuotes && !inSingleQuotes) {
+            if (char === '(') {
+              depth++;
+            } else if (char === ')') {
+              depth--;
+              if (depth === 0) {
+                parenEndIdx = i;
+                break;
+              }
+            }
+          }
+        }
+        
+        if (parenEndIdx !== -1) {
+          const payload = remainingString.substring(parenStartIdx + 1, parenEndIdx);
+          
+          const pressureMatch = payload.match(/pressure\s*:\s*([+-]?\d+)/i);
+          const groundMatch = payload.match(/ground\s*:\s*(?:"([^"\\]*(?:\\.[^"\\]*)*)"|'([^'\\]*(?:\\.[^'\\]*)*)'|([^,)]+))/i);
+          const injectMatch = payload.match(/(?:inject|latent|latentConditionId)\s*:\s*#?([\w-]+)/i);
+          
+          if (pressureMatch || groundMatch || injectMatch) {
+            trigger.stateHandoff = {};
+            if (pressureMatch) {
+              trigger.stateHandoff.pressureModifier = parseInt(pressureMatch[1], 10);
+            }
+            if (groundMatch) {
+              trigger.stateHandoff.groundInject = (groundMatch[1] ?? groundMatch[2] ?? groundMatch[3] ?? '').trim();
+            }
+            if (injectMatch) {
+              trigger.stateHandoff.latentConditionId = injectMatch[1];
+            }
+          }
+        }
+      }
+      
+      triggers.push(trigger);
+    }
+  }
+  
+  return triggers;
 }
 
 function bodyFromSentenceSequence(sentences: string[]): ActiveGWSDBody {
@@ -785,12 +902,58 @@ export function parseCanonicalMarkdown(text: string, adventureName = 'Adventure'
       return section.trim();
     };
 
+    // Metadata Parsing
+    const metadataSection = extractSection(/^## Metadata\s*$/m);
+    const searchBlock = metadataSection || block;
+
+    // Story Function
+    let storyFunction: StoryFunction = 'obstacle';
+    const storyFuncMatch = searchBlock.match(/(?:-\s*)?\*\*(?:Story\s+Function|Function)\*\*:\s*([^\n]+)/i);
+    if (storyFuncMatch) {
+      const val = storyFuncMatch[1].trim().toLowerCase();
+      if (['hook', 'obstacle', 'prospect', 'latent'].includes(val)) {
+        storyFunction = val as StoryFunction;
+      }
+    } else {
+      if (isLatent || /^Latent\s*(?:Condition)?\s*:/i.test(title)) {
+        storyFunction = 'latent';
+      } else if (/^Hook\s*:/i.test(title)) {
+        storyFunction = 'hook';
+      } else if (/^Prospect\s*:/i.test(title)) {
+        storyFunction = 'prospect';
+      }
+    }
+
+    // Location
+    const locationMatch = searchBlock.match(/(?:-\s*)?\*\*(?:Location)\*\*:\s*([^\n]+)/i);
+    const location = locationMatch ? locationMatch[1].trim() : undefined;
+
+    // Act
+    const actMatch = searchBlock.match(/(?:-\s*)?\*\*(?:Act)\*\*:\s*([^\n]+)/i);
+    const act = actMatch ? actMatch[1].trim() : undefined;
+
+    // Adventure
+    const adventureMatch = searchBlock.match(/(?:-\s*)?\*\*(?:Adventure)\*\*:\s*([^\n]+)/i);
+    const finalAdventure = adventureMatch ? adventureMatch[1].trim() : adventureName;
+
+    // Scene Mode
+    const modeMatch = searchBlock.match(/(?:-\s*)?\*\*(?:Scene\s+Mode|Mode)\*\*:\s*([^\n]+)/i);
+    const sceneModeRaw = modeMatch ? modeMatch[1].trim().toLowerCase() : undefined;
+    let finalSceneMode: TerminusSceneMode | undefined;
+    if (sceneModeRaw && ['social', 'kinetic', 'hazard', 'confrontation', 'discovery', 'puzzle'].includes(sceneModeRaw)) {
+      finalSceneMode = sceneModeRaw as TerminusSceneMode;
+    }
+
+    // Scene Pressure
+    const pressureMatch = searchBlock.match(/(?:-\s*)?\*\*(?:Scene\s+Pressure|Pressure)\*\*:\s*(\d+)/i);
+    const scenePressure = pressureMatch ? parseInt(pressureMatch[1], 10) : undefined;
+
     let parsedBody: GWSDBody;
-    if (isLatent) {
+    if (storyFunction === 'latent') {
       parsedBody = qualifyGWSD({
         stateType: 'latent',
         ground: extractSection(/^## Ground\s*$/m),
-        will: extractSection(/^## (?:Will \| )?Hidden Pressure\s*$/m),
+        will: extractSection(/^## (?:Will \| )?Hidden Pressure\s*$/m) || extractSection(/^## Will\s*$/m),
         trigger: extractSection(/^## Trigger\s*$/m),
         accumulation: extractSection(/^## Accumulation\s*$/m),
         reveal: extractSection(/^## Reveal Condition\s*$/m) || undefined,
@@ -808,16 +971,29 @@ export function parseCanonicalMarkdown(text: string, adventureName = 'Adventure'
     const sceneId = uid();
     const cards = createCardsFromBody(sceneId, parsedBody, 'parsed');
     const validation = validateGWSDBody(parsedBody);
+    const connectiveTriggers = extractConnectiveTriggers(block, sceneId);
+
+    const terminus: TerminusSceneMeta = {
+      location,
+      sceneMode: finalSceneMode,
+      scenePressure,
+      storyFunction,
+      connectiveTriggers,
+    };
 
     scenes.push(createSceneRecord({
       sceneId,
       title,
-      adventure: adventureName,
+      adventure: finalAdventure,
+      act,
       order: order++,
       body: parsedBody,
       cards,
       raw: block.trim(),
       validationWarnings: validation.warnings,
+      terminus,
+      storyFunction,
+      connectiveTriggers,
     }));
   }
   return scenes;

@@ -27,6 +27,8 @@ interface Props {
   lintWarnings?: Array<{ icon: string; name: string; severity: 'high' | 'medium' | 'low' }>;
   sceneMode?: { icon: string; label: string; verb: string };
   validationWarnings?: string[];
+  pressureOverride?: number;
+  carryoverBadges?: string[];
 }
 
 export default function Card({
@@ -38,6 +40,8 @@ export default function Card({
   lintWarnings = [],
   sceneMode,
   validationWarnings = [],
+  pressureOverride,
+  carryoverBadges = [],
 }: Props) {
   const isLatent = scene.stateType === 'latent';
   const useSilhouetteRules = Boolean(scene.silhouette) && !editable;
@@ -61,11 +65,12 @@ export default function Card({
       }));
 
   const headerBadges: Array<{ key: string; label: string; title: string }> = [];
-  if (scene.scenePressure !== undefined) {
+  const currentPressure = pressureOverride !== undefined ? pressureOverride : scene.scenePressure;
+  if (currentPressure !== undefined) {
     headerBadges.push({
       key: 'scene-pressure',
-      label: `PRESSURE: ${scene.scenePressure}`,
-      title: `Current Scene Pressure Level: ${scene.scenePressure}`,
+      label: `PRESSURE: ${currentPressure}`,
+      title: `Current Scene Pressure Level: ${currentPressure}${pressureOverride !== undefined ? ' (Modified)' : ''}`,
     });
   }
   if (sceneMode) {
@@ -318,6 +323,30 @@ export default function Card({
                     justifyContent: useBalancedPrintSpacing ? 'center' : 'flex-start',
                   }}
                 >
+                  {(section.key === 'ground' || section.key === 'agency') && carryoverBadges && carryoverBadges.length > 0 && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 8, flexShrink: 0 }}>
+                      {carryoverBadges.map((badge, bIdx) => (
+                        <div
+                          key={bIdx}
+                          style={{
+                            fontSize: printMode ? 8 : 11,
+                            fontWeight: 600,
+                            padding: '4px 8px',
+                            background: printMode ? '#F0E6D2' : 'linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(217, 119, 6, 0.08) 100%)',
+                            color: printMode ? '#78350F' : '#D97706',
+                            border: printMode ? '1px solid #B8A789' : '1px solid rgba(217, 119, 6, 0.25)',
+                            borderRadius: 4,
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 6,
+                          }}
+                        >
+                          <span style={{ color: '#D97706', fontSize: '12px' }}>✦</span>
+                          <span>{badge}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                   <div
                     style={{
                       fontSize: printMode ? 10 : 13,

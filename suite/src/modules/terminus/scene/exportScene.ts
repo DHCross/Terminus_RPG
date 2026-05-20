@@ -21,6 +21,7 @@ export function exportCanonicalMarkdown(scene: Scene): string {
   if (scene.act) lines.push(`**Act:** ${scene.act}`);
   if (meta?.location) lines.push(`**Location:** ${meta.location}`);
   if (meta?.sceneMode) lines.push(`**Mode:** ${meta.sceneMode.charAt(0).toUpperCase() + meta.sceneMode.slice(1)}`);
+  if (scene.storyFunction) lines.push(`**Story Function:** ${scene.storyFunction}`);
   lines.push(`**State:** ${scene.stateType === 'active' ? 'Active Scene' : 'Latent Condition'}`);
   lines.push('');
 

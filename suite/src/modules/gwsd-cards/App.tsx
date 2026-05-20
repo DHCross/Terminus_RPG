@@ -1,7 +1,8 @@
 /* ── GWSD Card Generator — Main Application ── */
 
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
-import type { Scene, SilhouetteSectionKey } from './types';
+import type { Scene, SilhouetteSectionKey, StoryFunction, ConnectiveTrigger } from './types';
+import Card from './components/Card';
 import { smartParse, type DetectedMode } from './parser';
 import { detectScenes } from './sceneDetector';
 import { buildExtractionPrompt } from './aiExtractor';
@@ -23,7 +24,7 @@ import MonsterStudio from './components/MonsterStudio';
 import { parseDiagnosticsReport, type ParsedDiagnosticsReport } from './diagnosticsParser';
 import { SceneCardBuilder } from '../terminus/scene/SceneCardBuilder';
 
-type View = 'deck' | 'print';
+type View = 'deck' | 'print' | 'play';
 type DeckOrganize = 'scene-order' | 'scene-type';
 type Workspace = 'cards' | 'characters' | 'monsters';
 type CardsMode = 'parse' | 'builder';
@@ -121,20 +122,411 @@ function pressureTypeLabel(scene: Scene): string {
     : 'Unknown';
 }
 
+const DEMO_MANUSCRIPT = `[gwsd]
+# ## Scene: Foyer of the Ministry
+**Story Function**: hook
+**Scene Mode**: social
+**Scene Pressure**: 1
+**Location**: Ministry entrance
+**Act**: ACT I
+
+## Ground
+You stand in the crowded foyer of the Civic Ministry. The air is thick with the smell of wet wool and ozone from the scanner grates. Refraction guards filter the line.
+
+## Will
+Pass the security checkpoint without triggering the silent civic alarm.
+
+## Shift
+If you slip past the refraction guard unnoticed -> Go to #vault-archives (Ground: "Deep inside the vault rooms.")
+If the wardens identify your counterfeit credentials -> Go to #ministry-alarm (latentConditionId: #ministry-alarm)
+
+## Drift
+Slow line progression increases security suspicion levels.
+[/gwsd]
+
+[gwsd]
+# ## Scene: Vault Archives
+**Story Function**: obstacle
+**Scene Mode**: puzzle
+**Scene Pressure**: 2
+**Location**: Archival sub-level
+**Act**: ACT I
+
+## Ground
+A massive brass runic dial blocks access to the ledger index. Secondary capacitors pulse with active kinetic energy.
+
+## Will
+Align the harmonic dials before mechanical lockouts seal the chamber.
+
+## Shift
+If you align the rune gears successfully -> Go to #vault-safehouse (Pressure: -1, Ground: "The central vault seals click open.")
+If the capacitors discharge and trigger a containment alarm -> Go to #civic-strain (latentConditionId: #civic-strain)
+
+## Drift
+The brass gear rings slip out of alignment, grinding under pressure.
+[/gwsd]
+
+[gwsd]
+# ## Scene: Vault Safehouse
+**Story Function**: prospect
+**Scene Mode**: social
+**Scene Pressure**: 0
+**Location**: Sanctuary archives
+**Act**: ACT I
+
+## Ground
+A quiet, dusty sanctuary sub-level smelling of parchment and hot grease. Safe from the high-threat sweep squads outside.
+
+## Will
+Secure the encrypted ledger and activate the emergency extraction panel.
+
+## Shift
+Securing the primary ledger allows a clean extraction -> Go to #mission-complete
+
+## Drift
+Sweep squads slowly triangulate your acoustic signature.
+[/gwsd]
+
+[gwsd]
+# ### Latent Condition: Civic Strain (Lockout)
+**Story Function**: latent
+**Scene Mode**: hazard
+**Scene Pressure**: 3
+**Location**: Sector-wide
+**Act**: ACT I
+
+## Ground
+The civic energy grid drops, sealing all main corridors under amber emergency barriers.
+
+## Will
+Bypass the localized power grates or hotwire a substation to lift the containment gates.
+
+## Trigger
+Armed when vault archive capacitors discharge.
+
+## Accumulation
+Securing security sectors locks out successive corridors.
+[/gwsd]
+
+[gwsd]
+# ### Latent Condition: Ministry Alarm
+**Story Function**: latent
+**Scene Mode**: confrontation
+**Scene Pressure**: 4
+**Location**: Structural
+**Act**: ACT I
+
+## Ground
+Bells toll loudly throughout the sub-sectors. Refraction guards deploy reinforced shields to isolate exits.
+
+## Will
+Evade tactical search sweeps or brace for physical guard patrols.
+
+## Trigger
+Armed when counterfeit credentials are flag-detected at the gate.
+
+## Accumulation
+Corridor alarm levels increase, summoning heavy interceptor units.
+[/gwsd]`;
+
 export default function App({ pendingScene, onPendingSceneConsumed }: { pendingScene?: Scene | null; onPendingSceneConsumed?: () => void }) {
-  const [scenes, setScenes] = useState<Scene[]>([]);
+  const [scenes, setScenes] = useState<Scene[]>(() => {
+    const parsed = smartParse(DEMO_MANUSCRIPT);
+    return parsed.scenes;
   const [deckName, setDeckName] = useState('Silhouette GWSD Deck');
-  const [view, setView] = useState<View>('deck');
+  const [view, setView] = useState<View>('play');
   const [workspace, setWorkspace] = useState<Workspace>('cards');
   const [organizeBy, setOrganizeBy] = useState<DeckOrganize>('scene-order');
   const [modeFilter, setModeFilter] = useState<'all' | SceneMode>('all');
   const [selectedSceneId, setSelectedSceneId] = useState<string | null>(null);
   const [editable, setEditable] = useState(false);
-  const [detectedMode, setDetectedMode] = useState<DetectedMode | null>(null);
-  const [sourceText, setSourceText] = useState('');
+  const [detectedMode, setDetectedMode] = useState<DetectedMode | null>('tagged');
+  const [sourceText, setSourceText] = useState(DEMO_MANUSCRIPT);
   const [promptCopied, setPromptCopied] = useState(false);
   const [parsedDiagnostics, setParsedDiagnostics] = useState<ParsedDiagnosticsReport | null>(null);
   const [cardsMode, setCardsMode] = useState<CardsMode>('parse');
+
+  interface PlayState {
+    activeNodeId: string | null;
+    runwayNodeIds: string[];
+    scenePressureOverrides: Record<string, number>;
+    activeCarryovers: Record<string, string[]>;
+    unlockedLatentIds: string[];
+  }
+
+  const [playState, setPlayState] = useState<PlayState>({
+    activeNodeId: null,
+    runwayNodeIds: [],
+    scenePressureOverrides: {},
+    activeCarryovers: {},
+    unlockedLatentIds: [],
+  });
+
+  const [playHistory, setPlayHistory] = useState<PlayState[]>([]);
+
+  const resetPlayState = useCallback((currentScenes: Scene[]) => {
+    if (currentScenes.length === 0) {
+      setPlayState({
+        activeNodeId: null,
+        runwayNodeIds: [],
+        scenePressureOverrides: {},
+        activeCarryovers: {},
+        unlockedLatentIds: [],
+      });
+      setPlayHistory([]);
+      return;
+    }
+
+    const runwayScenes = currentScenes.filter(
+      (s) =>
+        s.storyFunction !== 'latent' &&
+        s.contentType !== 'diagnostic' &&
+        s.contentType !== 'reference'
+    );
+    const runwayNodeIds = runwayScenes.map((s) => s.id);
+    const activeNodeId = runwayNodeIds.length > 0 ? runwayNodeIds[0] : currentScenes[0].id;
+
+    setPlayState({
+      activeNodeId,
+      runwayNodeIds,
+      scenePressureOverrides: {},
+      activeCarryovers: {},
+      unlockedLatentIds: [],
+    });
+    setPlayHistory([]);
+  }, []);
+
+  useEffect(() => {
+    resetPlayState(scenes);
+  }, [scenes, resetPlayState]);
+
+  // Keybindings for Play Cockpit
+  useEffect(() => {
+    if (view !== 'play') return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (
+        document.activeElement?.tagName === 'INPUT' ||
+        document.activeElement?.tagName === 'TEXTAREA'
+      ) {
+        return;
+      }
+
+      if (e.key === 'ArrowLeft') {
+        setPlayState((prev) => {
+          const idx = prev.runwayNodeIds.indexOf(prev.activeNodeId || '');
+          if (idx > 0) {
+            return { ...prev, activeNodeId: prev.runwayNodeIds[idx - 1] };
+          }
+          return prev;
+        });
+      } else if (e.key === 'ArrowRight') {
+        setPlayState((prev) => {
+          const idx = prev.runwayNodeIds.indexOf(prev.activeNodeId || '');
+          if (idx !== -1 && idx < prev.runwayNodeIds.length - 1) {
+            return { ...prev, activeNodeId: prev.runwayNodeIds[idx + 1] };
+          }
+          return prev;
+        });
+      } else if (
+        e.key === 'u' ||
+        e.key === 'U' ||
+        (e.ctrlKey && e.key === 'z') ||
+        (e.metaKey && e.key === 'z')
+      ) {
+        if (playHistory.length > 0) {
+          e.preventDefault();
+          const prev = playHistory[playHistory.length - 1];
+          setPlayState(prev);
+          setPlayHistory((hist) => hist.slice(0, -1));
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [view, playHistory]);
+
+  const getColorForStoryFunction = useCallback((func?: StoryFunction) => {
+    switch (func) {
+      case 'hook':
+        return {
+          border: '#10B981',
+          bg: 'rgba(16, 185, 129, 0.08)',
+          text: '#34D399',
+          glow: 'rgba(16, 185, 129, 0.15)',
+        };
+      case 'obstacle':
+        return {
+          border: '#F59E0B',
+          bg: 'rgba(245, 158, 11, 0.08)',
+          text: '#FBBF24',
+          glow: 'rgba(245, 158, 11, 0.15)',
+        };
+      case 'prospect':
+        return {
+          border: '#06B6D4',
+          bg: 'rgba(6, 182, 212, 0.08)',
+          text: '#22D3EE',
+          glow: 'rgba(6, 182, 212, 0.15)',
+        };
+      case 'latent':
+        return {
+          border: '#8B5CF6',
+          bg: 'rgba(139, 92, 246, 0.08)',
+          text: '#A78BFA',
+          glow: 'rgba(139, 92, 246, 0.15)',
+        };
+      default:
+        return {
+          border: '#4B5563',
+          bg: 'rgba(75, 85, 99, 0.08)',
+          text: '#9CA3AF',
+          glow: 'rgba(75, 85, 99, 0.15)',
+        };
+    }
+  }, []);
+
+  const handleTransition = useCallback(
+    (trigger: ConnectiveTrigger) => {
+      const targetId = trigger.targetNodeId;
+      const targetScene = scenes.find((s) => s.id === targetId);
+      if (!targetScene) return;
+
+      setPlayHistory((prev) => [...prev, playState]);
+
+      setPlayState((prev) => {
+        const nextPressureOverrides = { ...prev.scenePressureOverrides };
+        const nextCarryovers = { ...prev.activeCarryovers };
+        const nextUnlocked = [...prev.unlockedLatentIds];
+
+        if (trigger.stateHandoff?.pressureModifier !== undefined) {
+          const basePressure = targetScene.scenePressure || 0;
+          const currentOverride =
+            nextPressureOverrides[targetId] !== undefined
+              ? nextPressureOverrides[targetId]
+              : basePressure;
+          nextPressureOverrides[targetId] = currentOverride + trigger.stateHandoff.pressureModifier;
+        }
+
+        if (trigger.stateHandoff?.groundInject) {
+          const currentBadges = nextCarryovers[targetId] || [];
+          if (!currentBadges.includes(trigger.stateHandoff.groundInject)) {
+            nextCarryovers[targetId] = [...currentBadges, trigger.stateHandoff.groundInject];
+          }
+        }
+
+        if (trigger.stateHandoff?.latentConditionId) {
+          const latentId = trigger.stateHandoff.latentConditionId;
+          if (!nextUnlocked.includes(latentId)) {
+            nextUnlocked.push(latentId);
+          }
+        }
+
+        let nextRunway = [...prev.runwayNodeIds];
+        if (!nextRunway.includes(targetId) && targetScene.storyFunction !== 'latent') {
+          const activeIdx = nextRunway.indexOf(prev.activeNodeId || '');
+          if (activeIdx !== -1) {
+            nextRunway.splice(activeIdx + 1, 0, targetId);
+          } else {
+            nextRunway.push(targetId);
+          }
+        }
+
+        return {
+          ...prev,
+          activeNodeId: targetId,
+          runwayNodeIds: nextRunway,
+          scenePressureOverrides: nextPressureOverrides,
+          activeCarryovers: nextCarryovers,
+          unlockedLatentIds: nextUnlocked,
+        };
+      });
+    },
+    [scenes, playState]
+  );
+
+  const handleRunwayDragStart = (e: React.DragEvent, id: string) => {
+    e.dataTransfer.setData('text/plain', `runway:${id}`);
+  };
+
+  const handleUnboundDragStart = (e: React.DragEvent, id: string) => {
+    e.dataTransfer.setData('text/plain', `unbound:${id}`);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
+
+  const handleRunwayDrop = (e: React.DragEvent, targetId: string) => {
+    e.preventDefault();
+    const data = e.dataTransfer.getData('text/plain');
+    if (!data) return;
+
+    const [sourceType, sourceId] = data.split(':');
+    if (!sourceId) return;
+
+    setPlayHistory((prev) => [...prev, playState]);
+
+    setPlayState((prev) => {
+      let nextRunway = [...prev.runwayNodeIds];
+
+      if (sourceType === 'runway') {
+        const sourceIdx = nextRunway.indexOf(sourceId);
+        const targetIdx = nextRunway.indexOf(targetId);
+        if (sourceIdx !== -1 && targetIdx !== -1) {
+          nextRunway.splice(sourceIdx, 1);
+          nextRunway.splice(targetIdx, 0, sourceId);
+        }
+      } else if (sourceType === 'unbound') {
+        if (!nextRunway.includes(sourceId)) {
+          const targetIdx = nextRunway.indexOf(targetId);
+          if (targetIdx !== -1) {
+            nextRunway.splice(targetIdx, 0, sourceId);
+          } else {
+            nextRunway.push(sourceId);
+          }
+        }
+      }
+
+      return {
+        ...prev,
+        runwayNodeIds: nextRunway,
+      };
+    });
+  };
+
+  const handleRunwayEndDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    const data = e.dataTransfer.getData('text/plain');
+    if (!data) return;
+
+    const [sourceType, sourceId] = data.split(':');
+    if (!sourceId) return;
+
+    setPlayHistory((prev) => [...prev, playState]);
+
+    setPlayState((prev) => {
+      let nextRunway = [...prev.runwayNodeIds];
+
+      if (sourceType === 'runway') {
+        const sourceIdx = nextRunway.indexOf(sourceId);
+        if (sourceIdx !== -1) {
+          nextRunway.splice(sourceIdx, 1);
+          nextRunway.push(sourceId);
+        }
+      } else if (sourceType === 'unbound') {
+        if (!nextRunway.includes(sourceId)) {
+          nextRunway.push(sourceId);
+        }
+      }
+
+      return {
+        ...prev,
+        runwayNodeIds: nextRunway,
+      };
+    });
+  };
 
   const workspaceMeta = WORKSPACE_META[workspace];
   const isCardsWorkspace = workspace === 'cards';
@@ -484,6 +876,20 @@ export default function App({ pendingScene, onPendingSceneConsumed }: { pendingS
                       }}
                     >
                       🃏 Deck
+                    </button>
+                    <button
+                      onClick={() => setView('play')}
+                      style={{
+                        padding: '6px 14px',
+                        fontSize: 13,
+                        border: 'none',
+                        cursor: 'pointer',
+                        background: view === 'play' ? '#374151' : 'transparent',
+                        color: view === 'play' ? 'white' : '#9CA3AF',
+                        fontWeight: view === 'play' ? 600 : 400,
+                      }}
+                    >
+                      🕹️ Play Cockpit
                     </button>
                     <button
                       onClick={() => setView('print')}
@@ -860,6 +1266,712 @@ export default function App({ pendingScene, onPendingSceneConsumed }: { pendingS
                       />
                     </div>
                   ))}
+                </div>
+              </div>
+            ) : view === 'play' ? (
+              <div
+                className="no-print"
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 20,
+                  minHeight: 'calc(100vh - 160px)',
+                }}
+              >
+                {/* RUNWAY TIMELINE */}
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 8,
+                    background: '#111827',
+                    border: '1px solid #1E293B',
+                    borderRadius: 12,
+                    padding: 16,
+                  }}
+                >
+                  <div style={{ fontSize: 11, fontWeight: 700, color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    THE RUNWAY (Active Scenario Timeline) — Drag & Drop to Reorder
+                  </div>
+                  
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      overflowX: 'auto',
+                      gap: 12,
+                      padding: '8px 4px',
+                      position: 'relative',
+                    }}
+                  >
+                    {playState.runwayNodeIds.length === 0 ? (
+                      <div style={{ fontSize: 13, color: '#6B7280', fontStyle: 'italic', padding: '12px 0' }}>
+                        No nodes on the Runway. Drag latent conditions from the sidebar onto the runway or parse a full manuscript.
+                      </div>
+                    ) : (
+                      playState.runwayNodeIds.map((id, idx) => {
+                        const scene = scenes.find((s) => s.id === id);
+                        if (!scene) return null;
+                        const colors = getColorForStoryFunction(scene.storyFunction);
+                        const isActive = playState.activeNodeId === scene.id;
+
+                        const nodeContent = (
+                          <div
+                            key={scene.id}
+                            draggable
+                            onDragStart={(e) => handleRunwayDragStart(e, scene.id)}
+                            onDragOver={handleDragOver}
+                            onDrop={(e) => handleRunwayDrop(e, scene.id)}
+                            onClick={() => setPlayState((prev) => ({ ...prev, activeNodeId: scene.id }))}
+                            style={{
+                              flexShrink: 0,
+                              width: 190,
+                              padding: '12px 14px',
+                              borderRadius: 8,
+                              background: isActive ? '#1E293B' : 'rgba(15, 23, 42, 0.6)',
+                              border: isActive ? '2px solid #F59E0B' : `1px solid ${colors.border}`,
+                              boxShadow: isActive ? '0 0 12px rgba(245, 158, 11, 0.3)' : `0 0 8px ${colors.glow}`,
+                              cursor: 'pointer',
+                              display: 'flex',
+                              flexDirection: 'column',
+                              gap: 6,
+                              transition: 'all 0.2s ease',
+                              position: 'relative',
+                            }}
+                          >
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                              <span style={{ fontSize: 9, fontWeight: 'bold', color: colors.text, letterSpacing: '0.05em' }}>
+                                {scene.storyFunction?.toUpperCase() || 'SCENE'}
+                              </span>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setPlayHistory((prev) => [...prev, playState]);
+                                  setPlayState((prev) => {
+                                    const nextRunway = prev.runwayNodeIds.filter((x) => x !== scene.id);
+                                    let nextActive = prev.activeNodeId;
+                                    if (nextActive === scene.id) {
+                                      nextActive = nextRunway.length > 0 ? nextRunway[0] : null;
+                                    }
+                                    return { ...prev, runwayNodeIds: nextRunway, activeNodeId: nextActive };
+                                  });
+                                }}
+                                style={{
+                                  background: 'transparent',
+                                  border: 'none',
+                                  color: '#6B7280',
+                                  cursor: 'pointer',
+                                  fontSize: 12,
+                                  padding: 0,
+                                  lineHeight: 1,
+                                }}
+                                title="Remove from Runway"
+                              >
+                                ×
+                              </button>
+                            </div>
+                            <div
+                              style={{
+                                fontSize: 13,
+                                fontWeight: 600,
+                                color: '#F3F4F6',
+                                whiteSpace: 'nowrap',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                              }}
+                            >
+                              {scene.title}
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 10, color: '#9CA3AF' }}>
+                              <span>
+                                Pressure:{' '}
+                                {playState.scenePressureOverrides[scene.id] !== undefined
+                                  ? playState.scenePressureOverrides[scene.id]
+                                  : scene.scenePressure || 0}
+                              </span>
+                            </div>
+                          </div>
+                        );
+
+                        if (idx < playState.runwayNodeIds.length - 1) {
+                          return (
+                            <div key={`runway-grp-${scene.id}`} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                              {nodeContent}
+                              <div style={{ color: '#4B5563', fontWeight: 'bold', fontSize: 18, userSelect: 'none' }}>→</div>
+                            </div>
+                          );
+                        }
+                        return nodeContent;
+                      })
+                    )}
+
+                    <div
+                      onDragOver={handleDragOver}
+                      onDrop={handleRunwayEndDrop}
+                      style={{
+                        flexShrink: 0,
+                        width: 100,
+                        height: 50,
+                        border: '1px dashed #374151',
+                        borderRadius: 6,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: 10,
+                        color: '#4B5563',
+                        textAlign: 'center',
+                        padding: 4,
+                        userSelect: 'none',
+                      }}
+                    >
+                      Drop Unbound Card here to append
+                    </div>
+                  </div>
+                </div>
+
+                {/* WORKSPACE & SIDEBAR */}
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: '1fr 340px',
+                    gap: 24,
+                    alignItems: 'start',
+                  }}
+                >
+                  {/* ACTIVE DECK COCKPIT */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+                    {(() => {
+                      const activeScene = scenes.find((s) => s.id === playState.activeNodeId);
+                      if (!activeScene) {
+                        return (
+                          <div
+                            style={{
+                              border: '1px dashed #374151',
+                              borderRadius: 8,
+                              padding: 40,
+                              textAlign: 'center',
+                              color: '#6B7280',
+                              background: '#111827',
+                            }}
+                          >
+                            <p style={{ fontSize: 16, margin: 0 }}>
+                              Select a node from the Runway timeline or drag an Unbound card to get started.
+                            </p>
+                          </div>
+                        );
+                      }
+
+                      const currentPress =
+                        playState.scenePressureOverrides[activeScene.id] !== undefined
+                          ? playState.scenePressureOverrides[activeScene.id]
+                          : activeScene.scenePressure || 0;
+
+                      return (
+                        <div
+                          style={{
+                            display: 'grid',
+                            gridTemplateColumns: '350px 1fr',
+                            gap: 24,
+                            alignItems: 'start',
+                          }}
+                        >
+                          <div>
+                            <Card
+                              scene={activeScene}
+                              editable={false}
+                              redundant={redundantIds.has(activeScene.id)}
+                              lintWarnings={diagnosticsBySceneOrder.get(activeScene.order) || []}
+                              sceneMode={sceneModeById.get(activeScene.id)}
+                              pressureOverride={playState.scenePressureOverrides[activeScene.id]}
+                              carryoverBadges={playState.activeCarryovers[activeScene.id]}
+                            />
+                          </div>
+
+                          <div
+                            style={{
+                              background: '#111827',
+                              border: '1px solid #1E293B',
+                              borderRadius: 12,
+                              padding: 20,
+                              display: 'flex',
+                              flexDirection: 'column',
+                              gap: 16,
+                              boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+                            }}
+                          >
+                            {/* Cockpit Actions */}
+                            <div style={{ display: 'flex', gap: 8, borderBottom: '1px solid #1E293B', paddingBottom: 12 }}>
+                              <button
+                                onClick={() => {
+                                  if (playHistory.length > 0) {
+                                    const prev = playHistory[playHistory.length - 1];
+                                    setPlayState(prev);
+                                    setPlayHistory((hist) => hist.slice(0, -1));
+                                  }
+                                }}
+                                disabled={playHistory.length === 0}
+                                style={{
+                                  flex: 1,
+                                  padding: '8px 12px',
+                                  background: playHistory.length > 0 ? '#1E293B' : '#0F172A',
+                                  color: playHistory.length > 0 ? '#CBD5E1' : '#4B5563',
+                                  border: '1px solid #374151',
+                                  borderRadius: 6,
+                                  fontSize: 12,
+                                  fontWeight: 'bold',
+                                  cursor: playHistory.length > 0 ? 'pointer' : 'not-allowed',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  gap: 6,
+                                }}
+                                title="Undo the last transition or state change (Hotkey: Ctrl+Z)"
+                              >
+                                ↩ Undo Transition {playHistory.length > 0 ? `(${playHistory.length})` : ''}
+                              </button>
+                              <button
+                                onClick={() => {
+                                  if (
+                                    confirm(
+                                      'Are you sure you want to reset the entire tabletop state machine? This will clear all pressure modifications and carryover badges.'
+                                    )
+                                  ) {
+                                    resetPlayState(scenes);
+                                  }
+                                }}
+                                style={{
+                                  padding: '8px 12px',
+                                  background: 'rgba(239, 68, 68, 0.1)',
+                                  color: '#FCA5A5',
+                                  border: '1px solid rgba(239, 68, 68, 0.3)',
+                                  borderRadius: 6,
+                                  fontSize: 12,
+                                  fontWeight: 'bold',
+                                  cursor: 'pointer',
+                                }}
+                              >
+                                Reset
+                              </button>
+                            </div>
+
+                            {/* Adjusters Panel */}
+                            <div
+                              style={{
+                                border: '1px solid #1E293B',
+                                borderRadius: 8,
+                                padding: 12,
+                                background: 'rgba(15, 23, 42, 0.4)',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: 10,
+                              }}
+                            >
+                              <div style={{ fontSize: 11, fontWeight: 'bold', color: '#9CA3AF', textTransform: 'uppercase' }}>
+                                Tabletop Adjusters
+                              </div>
+
+                              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                <span style={{ fontSize: 12, color: '#E5E7EB' }}>Scene Pressure</span>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                  <button
+                                    onClick={() => {
+                                      setPlayHistory((prev) => [...prev, playState]);
+                                      setPlayState((prev) => {
+                                        const nextOverrides = { ...prev.scenePressureOverrides };
+                                        const current =
+                                          nextOverrides[activeScene.id] !== undefined
+                                            ? nextOverrides[activeScene.id]
+                                            : activeScene.scenePressure || 0;
+                                        nextOverrides[activeScene.id] = Math.max(0, current - 1);
+                                        return { ...prev, scenePressureOverrides: nextOverrides };
+                                      });
+                                    }}
+                                    style={{
+                                      width: 24,
+                                      height: 24,
+                                      background: '#374151',
+                                      border: 'none',
+                                      borderRadius: 4,
+                                      color: 'white',
+                                      cursor: 'pointer',
+                                      fontWeight: 'bold',
+                                      fontSize: 14,
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center',
+                                    }}
+                                  >
+                                    -
+                                  </button>
+                                  <span style={{ fontSize: 14, fontWeight: 'bold', color: '#F59E0B', minWidth: 20, textAlign: 'center' }}>
+                                    {currentPress}
+                                  </span>
+                                  <button
+                                    onClick={() => {
+                                      setPlayHistory((prev) => [...prev, playState]);
+                                      setPlayState((prev) => {
+                                        const nextOverrides = { ...prev.scenePressureOverrides };
+                                        const current =
+                                          nextOverrides[activeScene.id] !== undefined
+                                            ? nextOverrides[activeScene.id]
+                                            : activeScene.scenePressure || 0;
+                                        nextOverrides[activeScene.id] = current + 1;
+                                        return { ...prev, scenePressureOverrides: nextOverrides };
+                                      });
+                                    }}
+                                    style={{
+                                      width: 24,
+                                      height: 24,
+                                      background: '#374151',
+                                      border: 'none',
+                                      borderRadius: 4,
+                                      color: 'white',
+                                      cursor: 'pointer',
+                                      fontWeight: 'bold',
+                                      fontSize: 14,
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center',
+                                    }}
+                                  >
+                                    +
+                                  </button>
+                                </div>
+                              </div>
+
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                                <span style={{ fontSize: 11, color: '#9CA3AF' }}>Inject Custom Carryover Badge</span>
+                                <form
+                                  onSubmit={(e) => {
+                                    e.preventDefault();
+                                    const form = e.currentTarget;
+                                    const input = form.elements.namedItem('badgeText') as HTMLInputElement;
+                                    const text = input.value.trim();
+                                    if (!text) return;
+
+                                    setPlayHistory((prev) => [...prev, playState]);
+                                    setPlayState((prev) => {
+                                      const nextCarryovers = { ...prev.activeCarryovers };
+                                      const current = nextCarryovers[activeScene.id] || [];
+                                      if (!current.includes(text)) {
+                                        nextCarryovers[activeScene.id] = [...current, text];
+                                      }
+                                      return { ...prev, activeCarryovers: nextCarryovers };
+                                    });
+                                    input.value = '';
+                                  }}
+                                  style={{ display: 'flex', gap: 6 }}
+                                >
+                                  <input
+                                    name="badgeText"
+                                    placeholder="e.g. Broken Archway, Rupture Caste..."
+                                    style={{
+                                      flex: 1,
+                                      padding: '4px 8px',
+                                      fontSize: 11,
+                                      background: '#0F172A',
+                                      color: '#E5E7EB',
+                                      border: '1px solid #374151',
+                                      borderRadius: 4,
+                                      outline: 'none',
+                                    }}
+                                  />
+                                  <button
+                                    type="submit"
+                                    style={{
+                                      padding: '4px 8px',
+                                      background: '#4F46E5',
+                                      border: 'none',
+                                      borderRadius: 4,
+                                      color: 'white',
+                                      fontSize: 11,
+                                      fontWeight: 'bold',
+                                      cursor: 'pointer',
+                                    }}
+                                  >
+                                    Inject
+                                  </button>
+                                </form>
+                              </div>
+                            </div>
+
+                            {/* connective transitions */}
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                              <div style={{ fontSize: 11, fontWeight: 'bold', color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                                Connective State Routing
+                              </div>
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 4 }}>
+                                {activeScene.connectiveTriggers && activeScene.connectiveTriggers.length > 0 ? (
+                                  activeScene.connectiveTriggers.map((trigger, tIdx) => {
+                                    const targetScene = scenes.find((s) => s.id === trigger.targetNodeId);
+                                    
+                                    const isSuccess =
+                                      trigger.label.toLowerCase().includes('success') ||
+                                      trigger.label.toLowerCase().includes('clear') ||
+                                      targetScene?.storyFunction === 'prospect';
+                                    const isFailure =
+                                      trigger.label.toLowerCase().includes('fail') ||
+                                      trigger.label.toLowerCase().includes('drift') ||
+                                      trigger.label.toLowerCase().includes('hazard') ||
+                                      targetScene?.storyFunction === 'latent';
+
+                                    let borderCol = '#374151';
+                                    let bgCol = 'rgba(30, 41, 59, 0.4)';
+                                    let textCol = '#CBD5E1';
+                                    let glowCol = 'transparent';
+
+                                    if (isSuccess) {
+                                      borderCol = '#059669';
+                                      bgCol = 'rgba(5, 150, 105, 0.12)';
+                                      textCol = '#34D399';
+                                      glowCol = 'rgba(5, 150, 105, 0.15)';
+                                    } else if (isFailure) {
+                                      borderCol = '#DC2626';
+                                      bgCol = 'rgba(220, 38, 38, 0.12)';
+                                      textCol = '#FCA5A5';
+                                      glowCol = 'rgba(220, 38, 38, 0.15)';
+                                    }
+
+                                    return (
+                                      <button
+                                        key={trigger.id || tIdx}
+                                        onClick={() => handleTransition(trigger)}
+                                        style={{
+                                          width: '100%',
+                                          textAlign: 'left',
+                                          padding: '12px 16px',
+                                          borderRadius: 8,
+                                          border: `1px solid ${borderCol}`,
+                                          background: bgCol,
+                                          color: textCol,
+                                          cursor: 'pointer',
+                                          boxShadow: `0 2px 6px ${glowCol}`,
+                                          transition: 'all 0.2s ease',
+                                          display: 'flex',
+                                          flexDirection: 'column',
+                                          gap: 6,
+                                        }}
+                                      >
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', gap: 8 }}>
+                                          <span style={{ fontSize: 13, fontWeight: 600 }}>{trigger.label}</span>
+                                          <span style={{ fontSize: 11, fontWeight: 'bold', color: '#9CA3AF', whiteSpace: 'nowrap' }}>
+                                            → {targetScene ? targetScene.title : `[Missing: ${trigger.targetNodeId}]`}
+                                          </span>
+                                        </div>
+                                        {trigger.stateHandoff && (
+                                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 2 }}>
+                                            {trigger.stateHandoff.pressureModifier !== undefined && (
+                                              <span style={{ fontSize: 9, background: 'rgba(239, 68, 68, 0.2)', color: '#FCA5A5', padding: '1px 5px', borderRadius: 4, border: '1px solid rgba(239, 68, 68, 0.3)' }}>
+                                                Pressure:{' '}
+                                                {trigger.stateHandoff.pressureModifier > 0
+                                                  ? `+${trigger.stateHandoff.pressureModifier}`
+                                                  : trigger.stateHandoff.pressureModifier}
+                                              </span>
+                                            )}
+                                            {trigger.stateHandoff.groundInject && (
+                                              <span style={{ fontSize: 9, background: 'rgba(245, 158, 11, 0.2)', color: '#FDE047', padding: '1px 5px', borderRadius: 4, border: '1px solid rgba(245, 158, 11, 0.3)' }}>
+                                                Ground: "{trigger.stateHandoff.groundInject}"
+                                              </span>
+                                            )}
+                                            {trigger.stateHandoff.latentConditionId && (
+                                              <span style={{ fontSize: 9, background: 'rgba(139, 92, 246, 0.2)', color: '#C084FC', padding: '1px 5px', borderRadius: 4, border: '1px solid rgba(139, 92, 246, 0.3)' }}>
+                                                Arms: {trigger.stateHandoff.latentConditionId}
+                                              </span>
+                                            )}
+                                          </div>
+                                        )}
+                                      </button>
+                                    );
+                                  })
+                                ) : (
+                                  <div style={{ fontSize: 12, color: '#6B7280', fontStyle: 'italic', padding: '4px 0' }}>
+                                    No bound triggers parsed for this scene.
+                                    <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
+                                      <button
+                                        onClick={() => {
+                                          const idx = playState.runwayNodeIds.indexOf(playState.activeNodeId || '');
+                                          if (idx !== -1 && idx < playState.runwayNodeIds.length - 1) {
+                                            setPlayState((p) => ({ ...p, activeNodeId: p.runwayNodeIds[idx + 1] }));
+                                          }
+                                        }}
+                                        disabled={
+                                          playState.runwayNodeIds.indexOf(playState.activeNodeId || '') ===
+                                          playState.runwayNodeIds.length - 1
+                                        }
+                                        style={{
+                                          flex: 1,
+                                          padding: '6px 12px',
+                                          fontSize: 11,
+                                          background: '#1E293B',
+                                          color: '#CBD5E1',
+                                          border: '1px solid #374151',
+                                          borderRadius: 4,
+                                          cursor: 'pointer',
+                                        }}
+                                      >
+                                        Next Runway Node →
+                                      </button>
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+
+                            {/* Read Aloud block if available */}
+                            {activeScene.terminus?.readAloud && (
+                              <div
+                                style={{
+                                  borderTop: '1px solid #1E293B',
+                                  paddingTop: 12,
+                                  display: 'flex',
+                                  flexDirection: 'column',
+                                  gap: 6,
+                                }}
+                              >
+                                <div style={{ fontSize: 11, fontWeight: 'bold', color: '#9CA3AF', textTransform: 'uppercase' }}>
+                                  Guide Read-Aloud
+                                </div>
+                                <div
+                                  style={{
+                                    fontSize: 12,
+                                    lineHeight: 1.5,
+                                    fontStyle: 'italic',
+                                    color: '#CBD5E1',
+                                    background: 'rgba(255,255,255,0.03)',
+                                    padding: 10,
+                                    borderRadius: 6,
+                                    borderLeft: '2px solid #8B5CF6',
+                                  }}
+                                >
+                                  {activeScene.terminus.readAloud}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })()}
+                  </div>
+
+                  {/* UNBOUND DOCK SIDEBAR */}
+                  <div
+                    style={{
+                      background: '#111827',
+                      border: '1px solid #1E293B',
+                      borderRadius: 12,
+                      padding: 16,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: 12,
+                      maxHeight: 'calc(100vh - 160px)',
+                      overflowY: 'auto',
+                      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.4)',
+                    }}
+                  >
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                      <div style={{ fontSize: 12, fontWeight: 700, color: '#F9FAFB', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                        UNBOUND DOCK
+                      </div>
+                      <span style={{ fontSize: 11, color: '#6B7280' }}>
+                        Background latent conditions. Click to manual Arm/Disarm, or drag to the Runway sequence.
+                      </span>
+                    </div>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 4 }}>
+                      {(() => {
+                        const latentScenes = scenes.filter((s) => s.storyFunction === 'latent');
+                        if (latentScenes.length === 0) {
+                          return (
+                            <div style={{ fontSize: 11, color: '#4B5563', fontStyle: 'italic', textAlign: 'center', padding: '16px 0' }}>
+                              No Latent Conditions found. Declare latent conditions starting with "### Latent Condition: [Title]" at the bottom of your draft.
+                            </div>
+                          );
+                        }
+
+                        return latentScenes.map((scene) => {
+                          const isArmed = playState.unlockedLatentIds.includes(scene.id);
+                          const triggerText = scene.cards.find((c) => c.state === 'trigger')?.text || '';
+                          const groundText = scene.cards.find((c) => c.state === 'ground')?.text || '';
+
+                          return (
+                            <div
+                              key={scene.id}
+                              draggable
+                              onDragStart={(e) => handleUnboundDragStart(e, scene.id)}
+                              onClick={() => {
+                                setPlayHistory((prev) => [...prev, playState]);
+                                setPlayState((prev) => {
+                                  const nextUnlocked = prev.unlockedLatentIds.includes(scene.id)
+                                    ? prev.unlockedLatentIds.filter((id) => id !== scene.id)
+                                    : [...prev.unlockedLatentIds, scene.id];
+                                  return { ...prev, unlockedLatentIds: nextUnlocked };
+                                });
+                              }}
+                              style={{
+                                padding: 12,
+                                borderRadius: 8,
+                                background: 'rgba(15, 23, 42, 0.6)',
+                                border: isArmed ? '2px solid #8B5CF6' : '1px solid #374151',
+                                boxShadow: isArmed ? '0 0 12px rgba(139, 92, 246, 0.3)' : 'none',
+                                cursor: 'pointer',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: 6,
+                                transition: 'all 0.2s ease',
+                                opacity: isArmed ? 1 : 0.7,
+                              }}
+                            >
+                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <span style={{ fontSize: 9, fontWeight: 'bold', color: isArmed ? '#A78BFA' : '#9CA3AF', letterSpacing: '0.05em' }}>
+                                  {isArmed ? '⚡ ARMED LATENT' : '💤 LATENT CONDITION'}
+                                </span>
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setPlayHistory((prev) => [...prev, playState]);
+                                    setPlayState((prev) => {
+                                      let nextRunway = [...prev.runwayNodeIds];
+                                      if (!nextRunway.includes(scene.id)) {
+                                        nextRunway.push(scene.id);
+                                      }
+                                      return { ...prev, runwayNodeIds: nextRunway };
+                                    });
+                                  }}
+                                  style={{
+                                    background: '#1F2937',
+                                    border: '1px solid #374151',
+                                    borderRadius: 4,
+                                    color: '#CBD5E1',
+                                    fontSize: 9,
+                                    padding: '2px 6px',
+                                    cursor: 'pointer',
+                                  }}
+                                  title="Promote to Runway"
+                                >
+                                  + Runway
+                                </button>
+                              </div>
+                              <div style={{ fontSize: 12, fontWeight: 600, color: '#F3F4F6' }}>
+                                {scene.title}
+                              </div>
+                              <div style={{ fontSize: 10, color: '#9CA3AF', lineHeight: 1.4 }}>
+                                {triggerText ? (
+                                  <div>
+                                    <strong>Trigger:</strong>{' '}
+                                    {triggerText.length > 80 ? triggerText.slice(0, 80) + '...' : triggerText}
+                                  </div>
+                                ) : (
+                                  <div>
+                                    {groundText.length > 80 ? groundText.slice(0, 80) + '...' : groundText}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        });
+                      })()}
+                    </div>
+                  </div>
                 </div>
               </div>
             ) : null}

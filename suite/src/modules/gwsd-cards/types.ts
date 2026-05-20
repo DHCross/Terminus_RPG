@@ -75,6 +75,21 @@ export type TerminusConflictData = {
   vector?: TerminusVector;
 };
 
+export type StoryFunction = 'hook' | 'obstacle' | 'prospect' | 'latent';
+
+export interface ConnectiveTrigger {
+  id: string;
+  label: string;               // e.g., "If the central arch completely collapses..."
+  triggerType: 'bound' | 'unbound';
+  targetNodeId: string;        // The destination Scene Card ID
+  activationCriteria?: string; // For Unbound triggers (e.g., "Rupture Casting used")
+  stateHandoff?: {
+    pressureModifier?: number; // Escalates/degrades Section 4 Scene Pressure
+    groundInject?: string;     // Seamlessly updates Section 3 Ground text
+    latentConditionId?: string; // Pushes a card to the Active Deck layer
+  };
+}
+
 export type TerminusSceneMode = 'social' | 'kinetic' | 'hazard' | 'confrontation' | 'discovery' | 'puzzle';
 
 export type TerminusSceneMeta = {
@@ -92,6 +107,8 @@ export type TerminusSceneMeta = {
   driftLadder?: string;
   mapHooks?: string;
   readAloud?: string;
+  storyFunction?: StoryFunction;
+  connectiveTriggers?: ConnectiveTrigger[];
 };
 
 export interface BaseGWSDCard<TStateType extends SceneStateType, TState extends GWSDState> {
@@ -171,6 +188,8 @@ export interface Scene {
   validationWarnings?: string[];
   /** Silhouette RPG scene-card projection used by the live rules view */
   silhouette?: SilhouetteProjection;
+  storyFunction?: StoryFunction;
+  connectiveTriggers?: ConnectiveTrigger[];
 }
 
 export interface Deck {
