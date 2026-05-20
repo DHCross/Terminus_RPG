@@ -480,6 +480,14 @@ export function runNarrativeDiagnostics(scenes: Scene[]): NarrativeDiagnosticsRe
     const body = sceneBody(scene);
     const isLatent = scene.stateType === 'latent';
 
+    const mode = detectSceneMode(scene);
+    const trapIntent = hasTrapIntent(scene, body);
+    const trapTrigger = hasTrapTrigger(scene, body);
+    const hazardGround = hasHazardGround(body);
+    const hazardExposure = hasHazardExposure(scene, body);
+    const driftChannel = detectDriftChannel(body.drift);
+    const hpTaxOnly = !isLatent && HP_TAX_PATTERN.test(`${body.shift} ${body.drift}`) && !trapTrigger && !hazardExposure;
+
     const shiftVsDrift = wordSimilarity(body.shift, body.drift);
     if (!isLatent && body.shift && body.drift && shiftVsDrift >= 0.75) {
       signals.push({
@@ -711,13 +719,6 @@ export function runNarrativeDiagnostics(scenes: Scene[]): NarrativeDiagnosticsRe
       }
     }
 
-    const mode = detectSceneMode(scene);
-    const trapIntent = hasTrapIntent(scene, body);
-    const trapTrigger = hasTrapTrigger(scene, body);
-    const hazardGround = hasHazardGround(body);
-    const hazardExposure = hasHazardExposure(scene, body);
-    const driftChannel = detectDriftChannel(body.drift);
-    const hpTaxOnly = !isLatent && HP_TAX_PATTERN.test(`${body.shift} ${body.drift}`) && !trapTrigger && !hazardExposure;
 
     // Puzzle-mode scenes with trap framing: ensure inference pathway is specified.
     // (Trap content classifies as Puzzle since both use the Inference verb.)
