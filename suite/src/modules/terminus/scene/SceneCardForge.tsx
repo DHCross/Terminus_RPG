@@ -11,7 +11,7 @@ import {
   Gauge
 } from 'lucide-react';
 import { useToast } from '../../../components/Toast';
-import type { Scene, GWSDCard, ActiveGWSDCard, ActiveGWSDState, TerminusOrder, TerminusSceneMode } from '../../gwsd-cards/types';
+import type { Scene, GWSDCard, ActiveGWSDCard, ActiveGWSDState, TerminusOrder, TerminusSceneMode, StoryFunction } from '../../gwsd-cards/types';
 
 // API Key and Endpoint from environment variables
 const apiKey = import.meta.env.VITE_AI_API_KEY || import.meta.env.VITE_GEMINI_API_KEY || "";
@@ -36,12 +36,16 @@ export function SceneCardForge({ onSceneForged, onCancel }: SceneCardForgeProps)
   
   // Form State
   const [formData, setFormData] = useState({
-    sceneTitle: "Crumbling Bridge",
+    sceneTitle: "Toll Bridge",
     adventure: "Custom Adventure",
     act: "1",
-    location: "The bridge region",
+    location: "River Crossing",
     sceneMode: "Confrontation",
     stateType: "Active Scene",
+    sceneFunction: "Obstacle",
+    encounterType: "Role-playing",
+    terminusElement: "None / ordinary scene",
+    anomalyDetails: "",
     ground: "",
     will: "",
     shift: "",
@@ -91,7 +95,10 @@ export function SceneCardForge({ onSceneForged, onCancel }: SceneCardForgeProps)
 - **Location:** ${formData.location.trim() || 'Unknown'}
 - **Scene Mode:** ${formData.sceneMode}
 - **State Type:** ${formData.stateType}
-- **Pressure Type:** ${formData.pressureType}
+- **Scene Function:** ${formData.sceneFunction}
+- **Encounter Type:** ${formData.encounterType}
+- **Terminus Element:** ${formData.terminusElement}
+${formData.terminusElement !== "None / ordinary scene" ? `- **Anomaly Details:** ${formData.anomalyDetails.trim() || 'None'}\n` : ''}- **Pressure Type:** ${formData.pressureType}
 - **Scene Pressure:** ${safePressure}/5
 
 ## Engine Layer (GWSD)
@@ -201,6 +208,19 @@ ${orderLines || '- No order hooks provided.'}
         makeCard('drift', formData.drift),
       ];
 
+      const storyFunctionMap: Record<string, StoryFunction> = {
+        'Hook': 'hook',
+        'Obstacle': 'obstacle',
+        'Prospect': 'prospect',
+        'Transition': 'hook',
+        'Setup': 'hook',
+        'Confrontation': 'hook',
+        'Recovery': 'hook',
+        'Discovery': 'hook',
+        'Custom': 'hook',
+      };
+      const mappedStoryFunction = storyFunctionMap[formData.sceneFunction] ?? 'hook';
+
       const newScene: Scene = {
         id: sceneId,
         title: (formData.sceneTitle || 'Untitled Scene').trim(),
@@ -211,6 +231,7 @@ ${orderLines || '- No order hooks provided.'}
         scenePressure: safePressure,
         cards,
         raw: markdown,
+        storyFunction: mappedStoryFunction,
         terminus: {
           scenePressure: safePressure,
           location: formData.location.trim(),
@@ -219,6 +240,7 @@ ${orderLines || '- No order hooks provided.'}
           mapHooks: formData.mapHooks.trim(),
           readAloud: formData.readAloud.trim(),
           orderTags,
+          storyFunction: mappedStoryFunction,
         },
       };
 
@@ -259,26 +281,40 @@ ${orderLines || '- No order hooks provided.'}
     setIsBasicGenerating(true);
     setGenerationMessage('');
 
-    const seedPrompt = seedIdea.trim() || "A mysterious failure of civic routine in a dark fantasy town, such as a repeating street, a gate that refuses mourners, or records dated tomorrow.";
+    let defaultSeed = "";
+    if (formData.terminusElement === "None / ordinary scene") {
+      defaultSeed = "An ordinary dark-fantasy RPG encounter (e.g. a toll bridge obstacle, a tavern high-stakes negotiation, a steep mountain climb, a tense border checkpoint).";
+    } else {
+      defaultSeed = "A mysterious failure of civic routine in a dark fantasy town, such as a repeating street, a gate that refuses mourners, or records dated tomorrow.";
+    }
+    const seedPrompt = seedIdea.trim() || defaultSeed;
 
     const prompt = `
       You are an expert game designer for the Terminus RPG, a dark fantasy tabletop game powered by the Coherence System.
       In this world, reality is maintained through civic routine, law, memory, and repeated structure. When patterns fail, reality fractures (Ruptures) in localized, civic-procedural anomalies.
       
-      Generate a themed Terminus RPG scene setup based on the following user seed premise:
-      "${seedPrompt}"
+      Generate a themed Terminus RPG scene setup based on the following:
+      Scene Function: ${formData.sceneFunction}
+      Primary Encounter Type: ${formData.encounterType}
+      Terminus Element: ${formData.terminusElement}
+      ${formData.terminusElement !== 'None / ordinary scene' && formData.anomalyDetails ? `Anomaly Details: ${formData.anomalyDetails}` : ''}
+      User Seed/Concept: "${seedPrompt}"
       
       Requirements:
       1. sceneTitle: Must be atmospheric and evocative of Terminus theme. Use Welsh, Norse, Gaelic, or Egyptian naming elements if appropriate (e.g. Rhudd-Sarn, Maerwyn, Valdr-Vard, Khamat-Maat) or mysterious civic/environmental terms.
       2. adventure: A fitting dark-fantasy adventure/campaign segment title.
       3. act: A number or Roman numeral (e.g., "1", "2", "3", "I", "II", "III").
-      4. location: A specific geographic or architectural place showing civic strain (e.g. "Rhudd-Sarn Crossing", "Maerwyn Archive Gate 3", "The Ash-Chamber").
+      4. location: A specific geographic or architectural place fitting the scene function and location type (e.g. "Rhudd-Sarn Crossing", "Maerwyn Archive Gate 3", "The Ash-Chamber").
       5. sceneMode: Must be one of the following exact strings: "Confrontation", "Discovery", "Social", "Hazard", "Trap".
       
       Guidelines:
       - Aesthetic: Civic ruin, cold black stone, wet masonry, expired public works, rusted brass gears, celestial infrastructure, dried oxblood, bone paper.
+      ${formData.terminusElement !== 'None / ordinary scene' ? `
       - Theme: Rupture is a local systemic failure of a routine (e.g., a bell ringing twice, a dead transit line accepting passengers, a street that grows longer, a bridge rejecting mourners, court verdicts changing based on who enters first).
       - Core Entities/Anomalies: Utilize Terminus lore such as **Corrections** (reality-enforcing manifestations of routine failure: Correction Body, Correction Instrument, Correction Writ, or Correction Office), **Correction Offices** that override Ground rules, and chilling folk designations like *The Black Walker*, *Vardrek*, or *Sithny's Mark*.
+      ` : `
+      - Theme: This is an ordinary dark-fantasy encounter with NO active reality fracture or supernatural anomaly. Focus on human pressures, physical obstacles, civic rules, or local conflicts.
+      `}
       
       Return ONLY a valid JSON object matching this TypeScript interface exactly:
       {
@@ -360,25 +396,47 @@ ${orderLines || '- No order hooks provided.'}
       Scene Mode: ${formData.sceneMode}
       Pressure Level (1-5): ${formData.scenePressure}
       State Type: ${formData.stateType}
+      Scene Function: ${formData.sceneFunction}
+      Primary Encounter Type: ${formData.encounterType}
+      Terminus Element: ${formData.terminusElement}
+      ${formData.terminusElement !== 'None / ordinary scene' && formData.anomalyDetails ? `Anomaly Details: ${formData.anomalyDetails}` : ''}
 
       Follow these strict creative guidelines:
       1. THE ENGINE LAYER (GWSD)
-         - ground: Define what is currently reliable right now: physical constraints, social rules, access boundaries, permissions. Avoid vague flavor. Keep it actionable and game-focused. 
-           * Good Ground example: "No one can hear speech beyond arm's reach, and the eastern door only opens for names recorded in the ward ledger."
-         - will: The active pressure already acting on the situation before characters intervene.
-           * Good Will example: "The lich is maintaining the ritual shield and will abandon any attack that risks breaking concentration."
-         - shift: What changes immediately when characters act, interfere, or make an attempt. 
-           * Good Shift example: "If anyone touches the sealed bell, every door in the room locks and the nearest dead name is read aloud."
-         - drift: The executable "Else statement" — what worsens, advances, closes, or decays if no one acts at the end of a round.
-           * Good Drift example: "At the end of each round, another citizen's name vanishes from the civic register."
+         ${formData.terminusElement === 'None / ordinary scene' ? `
+         - THIS IS AN ORDINARY SCENE with no supernatural or Rupture/Correction element. Do NOT use magical, supernatural, or reality-breaking terminology (e.g. no "reality fractures", "Rupture symptoms", "Correction Offices", etc.). Focus on purely physical, social, or historical stakes.
+         - GWSD for Grounded Play:
+           * ground: Define what is currently physically reliable or legally possible: physical constraints, social rules, access boundaries, permissions. Avoid vague flavor. Keep it actionable and game-focused.
+             Good Ground example: "The bridge is guarded and payment is required to cross."
+           * will: What pressure is already acting (e.g., goals of NPCs, physical momentum, time limits).
+             Good Will example: "The toll captain wants coin, papers, or leverage before opening the gate."
+           * shift: What changes immediately when characters act.
+             Good Shift example: "If the party offers valid authority or payment, the gate opens; if they threaten force, guards close ranks."
+           * drift: The executable "Else statement" — passive consequence of delay or inaction (what changes if no one resolves the situation).
+             Good Drift example: "Delay draws other travelers, witnesses, and possible competitors."
+         ` : `
+         - THIS IS A TERMINUS ANOMALY SCENE (strain, symptoms, correction, old office pressure, etc.). Incorporate reality-breaking or procedural failure details.
+         - GWSD for Supernatural/Anomaly Play:
+           * ground: Define what is currently reliable: physical or metaphysical rules. Keep it actionable and game-focused.
+             Good Ground example: "No one can hear speech beyond arm's reach, and the eastern door only opens for names recorded in the ward ledger."
+           * will: The active pressure already acting on the situation before characters intervene, or the anomaly's momentum.
+             Good Will example: "The lich is maintaining the ritual shield and will abandon any attack that risks breaking concentration."
+           * shift: What changes immediately when characters act, interfere, or make an attempt.
+             Good Shift example: "If anyone touches the sealed bell, every door in the room locks and the nearest dead name is read aloud."
+           * drift: The executable "Else statement" — what worsens, advances, closes, or decays if no one acts at the end of a round.
+             Good Drift example: "At the end of each round, another citizen's name vanishes from the civic register."
+         `}
       
       2. OPTIONAL MECHANICS & FLAVOR
          - readAloud: Atmospheric, sensory, concrete, and short (1-2 sentences). Focus on rain, stone, bells, cold brass, wet masonry, sealed gates, smoke, old public works, or shifting structures. NEVER dictate player emotions or explain the metaphysics too early. Let the failure speak for itself.
+           If this is an ordinary scene, focus on the mundane atmosphere (e.g., creaking wood, suspicious guards, wet road, flickering torches, mud).
          - driftLadder: If Drift is a sequence, specify 3 incremental steps (e.g. 1. Water reaches ankles -> 2. Lower exits flood -> 3. Bridge buckles).
+           For an ordinary scene, use natural physical/social escalation (e.g. 1. Guard calls for reinforcement -> 2. Gate is barred completely -> 3. Local patrol arrives).
          - mapHooks: 2-3 specific interactive map elements (e.g. "The crumbling pillar," "The iron ledger grate").
 
       3. ORDER HOOKS (SPECIFIC OPPORTUNITIES)
          - Generate a table-facing opportunity for each of the 6 Orders using bounded, practical game terms (e.g., reveal, delay, expose, hold, block, reduce impact, act before next Drift, force hesitation, open a passage).
+         - Keep these opportunities strictly grounded in the scene context. If this is an ordinary scene (e.g. Toll Bridge obstacle), make them ordinary (e.g. Seeker: reveal the toll captain's hidden debt; Breaker: force open the side gate lock; Warden: block guards from closing the gate; Rival: challenge the champion guard to a wager; Broker: leverage local merchant papers; Shade: sneak past the watchtower).
          - Avoid software or internal developer jargon (no references to "runtime", "simulation", "state machine", "code", "AI", "text blocks"). These are player-facing tools.
          - Avoid over-absolute terms ("automatically", "completely", "guarantee", "without a roll", "entire party", "rewrite the scene").
          - Specific order goals:
@@ -389,12 +447,14 @@ ${orderLines || '- No order hooks provided.'}
            * Broker: Manage passage rights, debts, patronage, or convert bonds to leverage.
            * Shade: Access hidden paths, conceal, or redirect attention where it fails.
 
-      4. TERMINOLOGY BOUNDARY & CORRECTIONS (CRITICAL)
-         - "Rupture" names a condition state — systemic failure when Routine no longer holds. NEVER treat Rupture as a substance, energy type, spell school, or blade/monster infusion. 
-         - Never write "Rupture energy," "Rupture power," "Rupture magic," "Rupture-infused," "Rupture blade," or similar. 
-         - Instead, show physical, civic, sensory, or procedural symptoms: ink separating into oil and brine, blades casting two shadows, bells ringing before being struck, stairs repeating every seventh step, road lines crawling across the stone.
-         - Integrate Terminus entities and enforcements: **Corrections** (Correction Body, Correction Instrument, Correction Writ, or Correction Office).
-         - Show **Correction Offices** attempting to rewrite environmental Ground rules to force compliance, and draw upon folk names like *The Black Walker*, *Vardrek*, or *Sithny's Mark* to represent the haunting nature of these systemic anomalies.
+      4. TERMINOLOGY BOUNDARY & CORRECTIONS (CRITICAL - ONLY APPLY IF NOT AN ORDINARY SCENE)
+         - If this is NOT an ordinary scene:
+           * "Rupture" names a condition state — systemic failure when Routine no longer holds. NEVER treat Rupture as a substance, energy type, spell school, or blade/monster infusion. 
+           * Never write "Rupture energy," "Rupture power," "Rupture magic," "Rupture-infused," "Rupture blade," or similar. 
+           * Instead, show physical, civic, sensory, or procedural symptoms: ink separating into oil and brine, blades casting two shadows, bells ringing before being struck, stairs repeating every seventh step, road lines crawling across the stone.
+           * Integrate Terminus entities and enforcements: **Corrections** (Correction Body, Correction Instrument, Correction Writ, or Correction Office).
+           * Show **Correction Offices** attempting to rewrite environmental Ground rules to force compliance, and draw upon folk names like *The Black Walker*, *Vardrek*, or *Sithny's Mark* to represent the haunting nature of these systemic anomalies.
+         - If this IS an ordinary scene, avoid all mention of Ruptures, Corrections, supernatural details, or reality breakdown.
       
       Return ONLY a valid JSON object matching this TypeScript interface exactly:
       {
@@ -516,6 +576,79 @@ ${orderLines || '- No order hooks provided.'}
               </button>
             </div>
 
+            {/* Foundational Authoring Questions */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+              <div className="space-y-1">
+                <label className="text-xs text-slate-400 font-semibold">1. Scene Function</label>
+                <select 
+                  name="sceneFunction" 
+                  value={formData.sceneFunction} 
+                  onChange={handleInputChange} 
+                  className="w-full bg-slate-950 border border-slate-700 rounded p-2 text-sm text-slate-200 focus:border-amber-500 outline-none"
+                >
+                  <option>Hook</option>
+                  <option>Obstacle</option>
+                  <option>Prospect</option>
+                  <option>Transition</option>
+                  <option>Setup</option>
+                  <option>Confrontation</option>
+                  <option>Recovery</option>
+                  <option>Discovery</option>
+                  <option>Custom</option>
+                </select>
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs text-slate-400 font-semibold">2. Encounter Type</label>
+                <select 
+                  name="encounterType" 
+                  value={formData.encounterType} 
+                  onChange={handleInputChange} 
+                  className="w-full bg-slate-950 border border-slate-700 rounded p-2 text-sm text-slate-200 focus:border-amber-500 outline-none"
+                >
+                  <option>Combat</option>
+                  <option>Role-playing</option>
+                  <option>Problem-solving</option>
+                  <option>Exploration</option>
+                  <option>Hazard</option>
+                  <option>Social</option>
+                  <option>Mixed</option>
+                </select>
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs text-slate-400 font-semibold">3. Terminus Element</label>
+                <select 
+                  name="terminusElement" 
+                  value={formData.terminusElement} 
+                  onChange={handleInputChange} 
+                  className="w-full bg-slate-950 border border-slate-700 rounded p-2 text-sm text-slate-200 focus:border-amber-500 outline-none"
+                >
+                  <option>None / ordinary scene</option>
+                  <option>Low strain</option>
+                  <option>Rupture symptoms</option>
+                  <option>Correction influence</option>
+                  <option>Old Office pressure</option>
+                  <option>Broken routine</option>
+                  <option>Custom</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Conditionally show Anomaly details if Terminus element is selected */}
+            {formData.terminusElement !== "None / ordinary scene" && (
+              <div className="mb-4 space-y-1">
+                <label className="text-xs text-slate-400 font-semibold">Anomaly / Rupture / Correction Details</label>
+                <textarea
+                  name="anomalyDetails"
+                  value={formData.anomalyDetails}
+                  onChange={handleInputChange}
+                  placeholder="Enter details about the reality fracture, routine failure, or Correction influence..."
+                  rows={2}
+                  className="w-full bg-slate-950 border border-slate-700 rounded p-2 text-xs text-slate-200 focus:border-amber-500 outline-none resize-none transition-all font-mono"
+                />
+              </div>
+            )}
+
+            {/* AI Generator Seed Box */}
             <div className="mb-6 p-4 bg-slate-950/40 border border-slate-800 rounded-lg space-y-3">
               <div className="flex justify-between items-center">
                 <span className="text-xs font-semibold text-amber-500 flex items-center gap-1.5">
@@ -533,17 +666,26 @@ ${orderLines || '- No order hooks provided.'}
                 )}
               </div>
               <p className="text-[11px] text-slate-400">
-                Type an anomaly concept (e.g. <em>"A street that grows longer the faster you run"</em>) or leave empty for a random seed, then click <strong>Generate Basic Info</strong>.
+                {formData.terminusElement === "None / ordinary scene" ? (
+                  <>
+                    Type a grounded scene concept (e.g. <em>"A toll bridge guarded by a corrupt sergeant"</em>) or leave empty for a random seed, then click <strong>Generate Basic Info</strong>.
+                  </>
+                ) : (
+                  <>
+                    Type an anomaly concept (e.g. <em>"A street that grows longer the faster you run"</em>) or leave empty for a random seed, then click <strong>Generate Basic Info</strong>.
+                  </>
+                )}
               </p>
               <textarea
                 value={seedIdea}
                 onChange={(e) => setSeedIdea(e.target.value)}
-                placeholder="Enter scene concept, anomaly description, or story hook..."
+                placeholder={formData.terminusElement === "None / ordinary scene" ? "Enter ordinary scene concept or story hook..." : "Enter scene concept, anomaly description, or story hook..."}
                 rows={2}
                 className="w-full bg-slate-950 border border-slate-700 rounded p-2 text-xs text-slate-200 focus:border-amber-500 outline-none resize-none font-mono transition-all"
               />
             </div>
 
+            {/* General Metadata Fields */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-1">
                 <label className="text-xs text-slate-400">Scene Title</label>
