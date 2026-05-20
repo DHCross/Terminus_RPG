@@ -283,3 +283,177 @@ Ensure all generated names are extremely high-quality and directly usable at a T
     throw new Error('Failed to parse AI name response as JSON.', { cause: error });
   }
 }
+
+import type { AIAdventureRequest, AdventureOutline } from '../modules/terminus/adventure/types';
+
+export async function generateAdventureOutline(
+  request: AIAdventureRequest,
+  apiKey: string,
+  baseUrl: string = 'https://api.openai.com/v1',
+  model: string = 'gpt-4o-mini'
+): Promise<Omit<AdventureOutline, 'id' | 'createdAt'>> {
+  const systemPrompt = `You are the Adventure Architect for the Terminus RPG under the Coherence System.
+You generate a fully formed "AdventureOutline" JSON object.
+
+Tringad Setting: Dark fantasy, civic-ruin, tragic bureaucracy, where reality holds together through routine, law, and repeated structure. When routines crumble, reality fractures into Ruptures.
+Responders (the players) enter districts to prevent collapse and restore stable parameters.
+
+CRITICAL DESIGN PRINCIPLES (from the Storytellers Guide):
+1. PLAYABILITY OVER EXPOSITION: Do not write a linear story or a passive lore dump. Use "Story-Latent Plots" where the adventure maps the potential conflicts and situations, leaving outcomes completely open to player interaction and chance.
+2. CORE ACTIVITY: The prompt defines the premise. The adventure structure must align with one of the 5 structures:
+   - dungeon: Geography-driven exploration of discrete physical space.
+   - mystery: Clue-driven investigation across scenes.
+   - fights: Momentum-driven sequential confrontations.
+   - survival: Threat-driven defense of a place/person.
+   - intrigue: Power-driven vying for political influence.
+3. CONCRETE SENSORY 3D DESCRIPTIONS: Sensory text must describe concrete objects, textures, and lighting (rain, dark iron, wet stone, tolling bells, damp registries). STRICTLY FORBID "Emotional Dictation" (do not tell players what their characters feel, e.g. do not write "you feel dread" or "you are struck by awe"). Do not use "Prospective Language" like "You might notice..." or "You could hear...". Everything must be present tense and observable.
+4. ACTIVE NPC & MONSTER WILLS: Every NPC must have a clear "Will" (active intention), mapped to their Social Class (from Criminal Underclass to Upper Upper). Major NPCs must be assigned clear "Story Roles":
+   - Ally (supports PCs, but never acts as a Deus Ex Machina or outshines the PCs).
+   - Competitor (creates rivalry without necessitating lethal combat).
+   - Hinderer (provides obstacles through bureaucracy, misinformation, or red tape).
+   - Patron (provides resources/leverage, but demands compliance or duty).
+   - Wild Card (unpredictable, shifting allegiances).
+5. NO DESCRIPTIVE LORE DUMPS: Keep past history extremely light; focus on active ongoing tensions that characters can interact with.
+6. SCENE RESOLUTIONS AND STUCK CUES: Provide concrete, actionable "If the Players Are Stuck" cues or triggers for the GM to keep the game flowing.
+
+Generate a JSON object strictly matching the following schema structure:
+{
+  "title": "Evocative Title (theme/stakes)",
+  "summary": "One-paragraph synopsis describing the main conflict, objectives, and tone.",
+  "campaignContext": "String showing where this fits.",
+  "playerProgression": "Level range and playtime (e.g. Levels 2-3, 3-5 hours)",
+  "campaignDate": "Evocative in-game date or calendar system (e.g. 14th of the Raining Bell, Cycle 8)",
+  "originationLocale": {
+    "name": "Starting location name",
+    "description": "Short evocative physical description.",
+    "details": "Cultural, political, or geographical details relevant to the adventure.",
+    "tensions": "Ongoing friction (e.g., guilds, local offices, water shortages)."
+  },
+  "themes": {
+    "primary": "Primary theme (mystery, redemption, survival, etc.)",
+    "secondary": "Secondary theme (sacrifice, bureaucratic neglect, lingering guilt)"
+  },
+  "milieu": {
+    "pastEvents": "Significant event shaping current scenario.",
+    "ongoingEvents": "Active ongoing conflicts.",
+    "consequences": "What could happen based on responder decisions (multiple possibilities)."
+  },
+  "npcs": {
+    "major": [
+      {
+        "name": "Evocative name",
+        "race": "Species/Lineage (e.g. Human, Hollow, Silt-born)",
+        "gender": "Gender",
+        "class": "Order or trade",
+        "socialClass": "Social standing (e.g. Lower Middle, Upper Lower)",
+        "affiliations": "Faction/Guild",
+        "goals": "Their active, immediate goal",
+        "role": "ally | competitor | hinderer | patron | wildcard",
+        "relationship": "How they view or relate to the responders"
+      }
+    ],
+    "minor": [
+      {
+        "name": "Name",
+        "description": "Short description",
+        "purpose": "Their narrative purpose in the plot"
+      }
+    ]
+  },
+  "threats": {
+    "major": [
+      {
+        "name": "Name",
+        "type": "Monster/Threat type",
+        "class": "Threat category (e.g. Correction Instrument, Remnant, Stray)",
+        "role": "Narrative role / representation of theme",
+        "goals": "What they seek to achieve or defend"
+      }
+    ],
+    "minor": [
+      {
+        "name": "Name",
+        "role": "Their mechanical/combat role (e.g. Fodder, Hazard, Skirmisher)",
+        "description": "Short physical and atmospheric description"
+      }
+    ]
+  },
+  "plot": {
+    "act1": {
+      "incitingIncident": "Specific event that forces action.",
+      "endpoint": "First major objective achieved.",
+      "turningPoints": ["Turning point 1", "Turning point 2"]
+    },
+    "act2": {
+      "incitingIncident": "New twists or complications.",
+      "endpoint": "Key midpoint goal achieved.",
+      "turningPoints": ["Twist 1", "Complication 2"]
+    },
+    "act3": {
+      "incitingIncident": "Final revelation or peak stakes.",
+      "endpoint": "Climax and open resolution.",
+      "turningPoints": ["Key decision point", "Consequence trigger"]
+    }
+  },
+  "encounters": [
+    {
+      "name": "Encounter Name",
+      "type": "combat | roleplay | puzzle | exploration | mixed",
+      "function": "advance | challenge | information",
+      "goal": "Significance / what players need to get/solve",
+      "plotElement": "Connection to the overarching mystery/conflict",
+      "location": "Physical location (description of key objects and textures)",
+      "description": "Sensory-dense, concrete description of the setup and the challenge.",
+      "boundTriggers": "Triggered by player action (what triggers this encounter or a complication)",
+      "unboundTriggers": "Contingencies based on creative or unusual player actions (stuck cues)"
+    }
+  ],
+  "goals": {
+    "primary": "Overarching objective",
+    "secondary": "Side objectives providing moral weight or mechanical aid",
+    "moralDilemmas": "A severe choice the responders must make (e.g., purge a district or save its forgotten citizens)."
+  }
+}`;
+
+  const userPrompt = `Generate a complete Adventure Outline for the Terminus RPG with these details:
+Premise/Idea: "${request.premise}"
+Structure Archetype: "${request.structure}" (focus heavily on this gameplay loop)
+Core Activity: "${request.coreActivity || 'Responders sent to stabilize the failing reality anchors'}"
+Campaign Context: "${request.campaignContext || 'Standard operations'}"
+Player Progression: "${request.playerProgression || 'Levels 1-3, 3-4 hours'}"
+Culture Inspiration: "${request.culture}"
+
+Ensure the generated NPCs have active wills and are anchored in social standings. Ensure the encounters include both triggered complications and fallback stuck cues. DO NOT use generic placeholders or write "TBD". Complete every field with rich, high-quality, atmospheric, and playable Terminus narrative.`;
+
+  const response = await fetch(`${baseUrl.replace(/\/$/, '')}/chat/completions`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      model: model,
+      response_format: { type: 'json_object' },
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: userPrompt }
+      ]
+    })
+  });
+
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    throw new Error(err.error?.message || `API request failed with status ${response.status}`);
+  }
+
+  const data = await response.json();
+  const content = data.choices[0].message.content;
+  
+  try {
+    const parsed = JSON.parse(content);
+    return parsed as Omit<AdventureOutline, 'id' | 'createdAt'>;
+  } catch (error: unknown) {
+    throw new Error('Failed to parse AI adventure response as JSON.', { cause: error });
+  }
+}
+

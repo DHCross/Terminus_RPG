@@ -116,6 +116,11 @@ function App() {
             <h2>Open a workspace</h2>
           </div>
           <div className="action-grid">
+            <Link to="/adventures" className="action-card">
+              <Sparkles size={20} className="text-amber-500" />
+              <span>Adventure Forge</span>
+              <small>Forge story-latent campaigns and play-ready maps.</small>
+            </Link>
             <Link to="/characters" className="action-card">
               <Users size={20} />
               <span>Characters</span>
