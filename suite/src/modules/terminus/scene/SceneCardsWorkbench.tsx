@@ -43,13 +43,12 @@ export function SceneCardsWorkbench() {
 
       {/* Tab Content */}
       <div className="flex-1 overflow-hidden">
-        {activeTab === 'forge' && (
-          <div className="h-full overflow-y-auto">
+        {activeTab === 'forge' ? (
+          <div key="forge" className="h-full overflow-y-auto" data-scene-tab="forge">
             <SceneCardForge onSceneForged={handleSceneForged} />
           </div>
-        )}
-        {activeTab === 'parser' && (
-          <div className="h-full overflow-y-auto">
+        ) : (
+          <div key="parser" className="h-full overflow-y-auto" data-scene-tab="parser">
             <GWSDApp
               pendingScene={pendingScene}
               onPendingSceneConsumed={() => setPendingScene(null)}
