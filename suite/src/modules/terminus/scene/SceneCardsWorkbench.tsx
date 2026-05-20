@@ -9,9 +9,17 @@ type SceneTab = 'forge' | 'parser';
 export function SceneCardsWorkbench() {
   const [activeTab, setActiveTab] = useState<SceneTab>('forge');
   const [pendingScene, setPendingScene] = useState<Scene | null>(null);
+  const [pendingScenes, setPendingScenes] = useState<Scene[] | null>(null);
 
   const handleSceneForged = (scene: Scene) => {
     setPendingScene(scene);
+    setPendingScenes(null);
+    setActiveTab('parser');
+  };
+
+  const handleScenesForged = (scenes: Scene[]) => {
+    setPendingScenes(scenes);
+    setPendingScene(null);
     setActiveTab('parser');
   };
 
@@ -45,13 +53,17 @@ export function SceneCardsWorkbench() {
       <div className="flex-1 overflow-hidden">
         {activeTab === 'forge' ? (
           <div key="forge" className="h-full overflow-y-auto" data-scene-tab="forge">
-            <SceneCardForge onSceneForged={handleSceneForged} />
+            <SceneCardForge onSceneForged={handleSceneForged} onScenesForged={handleScenesForged} />
           </div>
         ) : (
           <div key="parser" className="h-full overflow-y-auto" data-scene-tab="parser">
             <GWSDApp
               pendingScene={pendingScene}
-              onPendingSceneConsumed={() => setPendingScene(null)}
+              pendingScenes={pendingScenes}
+              onPendingSceneConsumed={() => {
+                setPendingScene(null);
+                setPendingScenes(null);
+              }}
             />
           </div>
         )}

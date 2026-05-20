@@ -239,7 +239,7 @@ Armed when counterfeit credentials are flag-detected at the gate.
 Corridor alarm levels increase, summoning heavy interceptor units.
 [/gwsd]`;
 
-export default function App({ pendingScene, onPendingSceneConsumed }: { pendingScene?: Scene | null; onPendingSceneConsumed?: () => void }) {
+export default function App({ pendingScene, pendingScenes, onPendingSceneConsumed }: { pendingScene?: Scene | null; pendingScenes?: Scene[] | null; onPendingSceneConsumed?: () => void }) {
   const [scenes, setScenes] = useState<Scene[]>(() => {
     const parsed = smartParse(DEMO_MANUSCRIPT);
     return parsed.scenes;
@@ -670,6 +670,23 @@ export default function App({ pendingScene, onPendingSceneConsumed }: { pendingS
     setSelectedSceneId(scene.id);
   }, []);
 
+  const handleAddScenes = useCallback((newScenes: Scene[]) => {
+    setScenes((prev) => {
+      const nextScenes = [...prev];
+      newScenes.forEach((scene) => {
+        if (!nextScenes.some((s) => s.id === scene.id)) {
+          nextScenes.push({ ...scene, order: nextScenes.length + 1 });
+        }
+      });
+      return nextScenes;
+    });
+    setCardsMode('parse');
+    if (newScenes.length > 0) {
+      setSelectedSceneId(newScenes[newScenes.length - 1].id);
+    }
+  }, []);
+
+
   // Consume a scene that was forged in the AI Forge tab and passed in via props.
   const onPendingSceneConsumedRef = useRef(onPendingSceneConsumed);
   useEffect(() => {
@@ -685,6 +702,22 @@ export default function App({ pendingScene, onPendingSceneConsumed }: { pendingS
     setSelectedSceneId(pendingScene.id);
     onPendingSceneConsumedRef.current?.();
   }, [pendingScene]);
+
+  useEffect(() => {
+    if (!pendingScenes || pendingScenes.length === 0) return;
+    setScenes((prev) => {
+      const nextScenes = [...prev];
+      pendingScenes.forEach((scene) => {
+        if (!nextScenes.some((s) => s.id === scene.id)) {
+          nextScenes.push({ ...scene, order: nextScenes.length + 1 });
+        }
+      });
+      return nextScenes;
+    });
+    setCardsMode('parse');
+    setSelectedSceneId(pendingScenes[pendingScenes.length - 1].id);
+    onPendingSceneConsumedRef.current?.();
+  }, [pendingScenes]);
 
   const handleExportJSON = useCallback(() => {
     const data = {
@@ -1069,6 +1102,7 @@ export default function App({ pendingScene, onPendingSceneConsumed }: { pendingS
         ) : workspace === 'cards' && cardsMode === 'builder' ? (
           <SceneCardForge
             onSceneForged={handleAddScene}
+            onScenesForged={handleAddScenes}
             onCancel={() => setCardsMode('parse')}
           />
         ) : (

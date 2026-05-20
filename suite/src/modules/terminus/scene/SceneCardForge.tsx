@@ -22,28 +22,66 @@ const BLOB_URL_REVOCATION_DELAY_MS = 250;
 
 interface SceneCardForgeProps {
   onSceneForged?: (scene: Scene) => void;
+  onScenesForged?: (scenes: Scene[]) => void;
   onCancel?: () => void;
 }
 
-export function SceneCardForge({ onSceneForged, onCancel }: SceneCardForgeProps) {
+interface SceneCardFormData {
+  id: string;
+  sceneTitle: string;
+  adventure: string;
+  act: string;
+  location: string;
+  sceneMode: string;
+  stateType: string;
+  sceneFunction: string;
+  encounterType: string;
+  terminusElement: string;
+  anomalyDetails: string;
+  ground: string;
+  will: string;
+  shift: string;
+  drift: string;
+  pressureType: string;
+  scenePressure: number;
+  readAloud: string;
+  driftLadder: string;
+  mapHooks: string;
+  orderHooks: {
+    Seeker: string;
+    Breaker: string;
+    Warden: string;
+    Rival: string;
+    Broker: string;
+    Shade: string;
+  };
+}
+
+export function SceneCardForge({ onSceneForged, onScenesForged, onCancel }: SceneCardForgeProps) {
   const { addToast } = useToast();
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isAllGenerating, setIsAllGenerating] = useState(false);
   const [generationMessage, setGenerationMessage] = useState('');
   const [previewMarkdown, setPreviewMarkdown] = useState('');
   const [showPreview, setShowPreview] = useState(false);
   const [seedIdea, setSeedIdea] = useState('');
   const [isBasicGenerating, setIsBasicGenerating] = useState(false);
   
-  // Form State
-  const [formData, setFormData] = useState({
-    sceneTitle: "Toll Bridge",
-    adventure: "Custom Adventure",
-    act: "1",
+  // Batch Mode States
+  const [generationMode, setGenerationMode] = useState<'single' | 'sequence'>('single');
+  const [numScenesInSequence, setNumScenesInSequence] = useState<number>(3);
+  const [activeSceneIndex, setActiveSceneIndex] = useState<number>(0);
+
+  const createEmptySceneForm = (index: number = 0, adventureName: string = "Custom Adventure", actName: string = "1"): SceneCardFormData => ({
+    id: crypto.randomUUID(),
+    sceneTitle: `Scene ${index + 1}`,
+    adventure: adventureName,
+    act: actName,
     location: "River Crossing",
     sceneMode: "Confrontation",
     stateType: "Active Scene",
-    sceneFunction: "Obstacle",
-    encounterType: "Role-playing",
+    sceneFunction: index === 0 ? "Hook" : index === 1 ? "Obstacle" : "Confrontation",
+    encounterType: "Mixed",
     terminusElement: "None / ordinary scene",
     anomalyDetails: "",
     ground: "",
@@ -65,70 +103,90 @@ export function SceneCardForge({ onSceneForged, onCancel }: SceneCardForgeProps)
     }
   });
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>, section: string | null = null, fieldName: string | null = null) => {
-    const { name, value } = e.target;
-    if (section === 'orderHooks' && fieldName) {
-      setFormData(prev => ({
-        ...prev,
-        orderHooks: { ...prev.orderHooks, [fieldName]: value }
-      }));
-    } else {
-      setFormData(prev => ({
-        ...prev,
-        [name]: name === 'scenePressure' ? Number(value) : value
-      }));
-    }
+  const [scenesList, setScenesList] = useState<SceneCardFormData[]>(() => [createEmptySceneForm(0)]);
+  
+  // Helper updater for active form data state
+  const setFormData = (updater: (prev: SceneCardFormData) => SceneCardFormData) => {
+    setScenesList(prev => prev.map((item, idx) => {
+      if (idx !== activeSceneIndex) return item;
+      return updater(item);
+    }));
   };
 
-  const buildSceneCardMarkdown = () => {
-    const safePressure = Math.max(1, Math.min(5, Number(formData.scenePressure) || 1));
-    const orderLines = Object.entries(formData.orderHooks)
+  const formData = scenesList[activeSceneIndex] || createEmptySceneForm(0);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>, section: string | null = null, fieldName: string | null = null) => {
+    const { name, value } = e.target;
+    setScenesList(prev => prev.map((item, idx) => {
+      if (idx !== activeSceneIndex) return item;
+      
+      if (section === 'orderHooks' && fieldName) {
+        return {
+          ...item,
+          orderHooks: { ...item.orderHooks, [fieldName]: value }
+        };
+      } else {
+        return {
+          ...item,
+          [name]: name === 'scenePressure' ? Number(value) : value
+        };
+      }
+    }));
+  };
+
+  const buildSingleSceneCardMarkdown = (scene: SceneCardFormData) => {
+    const safePressure = Math.max(1, Math.min(5, Number(scene.scenePressure) || 1));
+    const orderLines = Object.entries(scene.orderHooks)
       .filter(([, hook]) => hook.trim())
       .map(([order, hook]) => `- **${order}:** ${hook.trim()}`)
       .join('\n');
 
-    return `# ${formData.sceneTitle.trim() || 'Untitled Scene'}
+    return `# ${scene.sceneTitle.trim() || 'Untitled Scene'}
 
 ## Metadata
-- **Adventure:** ${formData.adventure.trim() || 'Custom Adventure'}
-- **Act:** ${formData.act.trim() || '1'}
-- **Location:** ${formData.location.trim() || 'Unknown'}
-- **Scene Mode:** ${formData.sceneMode}
-- **State Type:** ${formData.stateType}
-- **Scene Function:** ${formData.sceneFunction}
-- **Encounter Type:** ${formData.encounterType}
-- **Terminus Element:** ${formData.terminusElement}
-${formData.terminusElement !== "None / ordinary scene" ? `- **Anomaly Details:** ${formData.anomalyDetails.trim() || 'None'}\n` : ''}- **Pressure Type:** ${formData.pressureType}
+- **Adventure:** ${scene.adventure.trim() || 'Custom Adventure'}
+- **Act:** ${scene.act.trim() || '1'}
+- **Location:** ${scene.location.trim() || 'Unknown'}
+- **Scene Mode:** ${scene.sceneMode}
+- **State Type:** ${scene.stateType}
+- **Scene Function:** ${scene.sceneFunction}
+- **Encounter Type:** ${scene.encounterType}
+- **Terminus Element:** ${scene.terminusElement}
+${scene.terminusElement !== "None / ordinary scene" ? `- **Anomaly Details:** ${scene.anomalyDetails.trim() || 'None'}\n` : ''}- **Pressure Type:** ${scene.pressureType}
 - **Scene Pressure:** ${safePressure}/5
 
 ## Engine Layer (GWSD)
-- **Ground:** ${formData.ground.trim() || 'TBD'}
-- **Will:** ${formData.will.trim() || 'TBD'}
-- **Shift:** ${formData.shift.trim() || 'TBD'}
-- **Drift:** ${formData.drift.trim() || 'TBD'}
+- **Ground:** ${scene.ground.trim() || 'TBD'}
+- **Will:** ${scene.will.trim() || 'TBD'}
+- **Shift:** ${scene.shift.trim() || 'TBD'}
+- **Drift:** ${scene.drift.trim() || 'TBD'}
 
 ## Read-Aloud
-${formData.readAloud.trim() || 'No read-aloud text provided.'}
+${scene.readAloud.trim() || 'No read-aloud text provided.'}
 
 ## Drift Ladder / Transition State
-${formData.driftLadder.trim() || 'No drift ladder provided.'}
+${scene.driftLadder.trim() || 'No drift ladder provided.'}
 
 ## Map Hooks / Nouns
-${formData.mapHooks.trim() || 'No map hooks provided.'}
+${scene.mapHooks.trim() || 'No map hooks provided.'}
 
 ## Order Hooks
 ${orderLines || '- No order hooks provided.'}
 `;
   };
 
-  const getMissingRequiredFields = () => {
+  const buildSceneCardMarkdown = () => {
+    return scenesList.map(scene => buildSingleSceneCardMarkdown(scene)).join('\n---\n\n');
+  };
+
+  const getMissingRequiredFieldsForScene = (scene: SceneCardFormData) => {
     const missing: string[] = [];
-    if (!formData.sceneTitle.trim()) missing.push('Scene Title');
-    if (!formData.location.trim()) missing.push('Location');
-    if (!formData.ground.trim()) missing.push('Ground');
-    if (!formData.will.trim()) missing.push('Will');
-    if (!formData.shift.trim()) missing.push('Shift');
-    if (!formData.drift.trim()) missing.push('Drift');
+    if (!scene.sceneTitle.trim()) missing.push('Scene Title');
+    if (!scene.location.trim()) missing.push('Location');
+    if (!scene.ground.trim()) missing.push('Ground');
+    if (!scene.will.trim()) missing.push('Will');
+    if (!scene.shift.trim()) missing.push('Shift');
+    if (!scene.drift.trim()) missing.push('Drift');
     return missing;
   };
 
@@ -140,23 +198,27 @@ ${orderLines || '- No order hooks provided.'}
   };
 
   const handleForgeSceneCard = () => {
-    const missingFields = getMissingRequiredFields();
-    if (missingFields.length > 0) {
-      setGenerationMessage(`⚠️ Complete required fields before forging: ${missingFields.join(', ')}`);
-      addToast('error', `Complete required fields: ${missingFields.join(', ')}`);
-      return;
+    // Validate all scenes in the list
+    for (let idx = 0; idx < scenesList.length; idx++) {
+      const missingFields = getMissingRequiredFieldsForScene(scenesList[idx]);
+      if (missingFields.length > 0) {
+        setActiveSceneIndex(idx);
+        setGenerationMessage(`⚠️ Scene ${idx + 1} ("${scenesList[idx].sceneTitle}") is incomplete. Required: ${missingFields.join(', ')}`);
+        addToast('error', `Scene "${scenesList[idx].sceneTitle}" requires: ${missingFields.join(', ')}`);
+        return;
+      }
     }
 
     const markdown = buildSceneCardMarkdown();
     setPreviewMarkdown(markdown);
     setShowPreview(true);
 
-    // Download the markdown file
-    const slug = (formData.sceneTitle || 'scene-cards')
+    // Download the single aggregated markdown file containing all cards
+    const deckSlug = (scenesList[0].adventure || 'scene-deck')
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/(^-|-$)/g, '');
-    const filename = `${slug || 'scene-cards'}.md`;
+    const filename = `${deckSlug || 'scene-deck'}.md`;
 
     const blob = new Blob([markdown], { type: 'text/markdown;charset=utf-8' });
     const url = URL.createObjectURL(blob);
@@ -168,10 +230,10 @@ ${orderLines || '- No order hooks provided.'}
     link.remove();
     setTimeout(() => URL.revokeObjectURL(url), BLOB_URL_REVOCATION_DELAY_MS);
 
-    // Build a Scene object and notify the parent so it can display in the workbench
-    if (onSceneForged) {
-      const sceneId = crypto.randomUUID();
-      const safePressure = Math.max(1, Math.min(5, Number(formData.scenePressure) || 1));
+    // Map forms into full Scene objects
+    const parsedScenes: Scene[] = scenesList.map((scene, index) => {
+      const sceneId = scene.id || crypto.randomUUID();
+      const safePressure = Math.max(1, Math.min(5, Number(scene.scenePressure) || 1));
 
       const sceneModeMap: Record<string, TerminusSceneMode> = {
         'Confrontation': 'confrontation',
@@ -181,13 +243,13 @@ ${orderLines || '- No order hooks provided.'}
         'Trap': 'hazard',
       };
       const terminusSceneMode: TerminusSceneMode =
-        sceneModeMap[formData.sceneMode] ?? 'confrontation';
+        sceneModeMap[scene.sceneMode] ?? 'confrontation';
 
       const orderKeyMap: Record<string, TerminusOrder> = {
         Seeker: 'seeker', Breaker: 'breaker', Warden: 'warden',
         Rival: 'rival', Broker: 'broker', Shade: 'shade',
       };
-      const orderTags: TerminusOrder[] = Object.entries(formData.orderHooks)
+      const orderTags: TerminusOrder[] = Object.entries(scene.orderHooks)
         .filter(([, hook]) => hook.trim())
         .map(([order]) => orderKeyMap[order])
         .filter((o): o is TerminusOrder => Boolean(o));
@@ -202,10 +264,10 @@ ${orderLines || '- No order hooks provided.'}
       });
 
       const cards: [GWSDCard, GWSDCard, GWSDCard, GWSDCard] = [
-        makeCard('ground', formData.ground),
-        makeCard('will', formData.will),
-        makeCard('shift', formData.shift),
-        makeCard('drift', formData.drift),
+        makeCard('ground', scene.ground),
+        makeCard('will', scene.will),
+        makeCard('shift', scene.shift),
+        makeCard('drift', scene.drift),
       ];
 
       const storyFunctionMap: Record<string, StoryFunction> = {
@@ -219,43 +281,51 @@ ${orderLines || '- No order hooks provided.'}
         'Discovery': 'hook',
         'Custom': 'hook',
       };
-      const mappedStoryFunction = storyFunctionMap[formData.sceneFunction] ?? 'hook';
+      const mappedStoryFunction = storyFunctionMap[scene.sceneFunction] ?? 'hook';
 
-      const newScene: Scene = {
+      return {
         id: sceneId,
-        title: (formData.sceneTitle || 'Untitled Scene').trim(),
-        adventure: (formData.adventure || 'Custom Adventure').trim(),
-        act: formData.act.trim() || undefined,
-        order: 1,
+        title: (scene.sceneTitle || `Scene ${index + 1}`).trim(),
+        adventure: (scene.adventure || 'Custom Adventure').trim(),
+        act: scene.act.trim() || undefined,
+        order: index + 1,
         stateType: 'active',
         scenePressure: safePressure,
         cards,
-        raw: markdown,
+        raw: buildSingleSceneCardMarkdown(scene),
         storyFunction: mappedStoryFunction,
         terminus: {
           scenePressure: safePressure,
-          location: formData.location.trim(),
+          location: scene.location.trim(),
           sceneMode: terminusSceneMode,
-          driftLadder: formData.driftLadder.trim(),
-          mapHooks: formData.mapHooks.trim(),
-          readAloud: formData.readAloud.trim(),
+          driftLadder: scene.driftLadder.trim(),
+          mapHooks: scene.mapHooks.trim(),
+          readAloud: scene.readAloud.trim(),
           orderTags,
           storyFunction: mappedStoryFunction,
         },
       };
+    });
 
-      onSceneForged(newScene);
+    // Notify the parent callback
+    if (onScenesForged) {
+      onScenesForged(parsedScenes);
+    } else if (onSceneForged && parsedScenes.length > 0) {
+      onSceneForged(parsedScenes[0]);
     }
 
-    setGenerationMessage(`✓ Scene cards forged and downloaded as ${filename}`);
-    addToast('success', `Scene "${formData.sceneTitle || 'Untitled'}" forged successfully`);
+    setGenerationMessage(`✓ ${scenesList.length} Scene Card(s) forged and downloaded as ${filename}`);
+    addToast('success', `Forged ${scenesList.length} scene cards successfully!`);
   };
 
   const handleToggleState = (type: string) => {
-    setFormData(prev => ({ ...prev, stateType: type }));
+    setScenesList(prev => prev.map((item, idx) => {
+      if (idx !== activeSceneIndex) return item;
+      return { ...item, stateType: type };
+    }));
   };
 
-  // Exponential backoff fetch for Gemini API
+  // Exponential backoff fetch for Gemini/Deepseek API
   const fetchWithRetry = async (url: string, options: RequestInit, retries: number = 5) => {
     const delays = [1000, 2000, 4000, 8000, 16000];
     for (let i = 0; i < retries; i++) {
@@ -289,7 +359,52 @@ ${orderLines || '- No order hooks provided.'}
     }
     const seedPrompt = seedIdea.trim() || defaultSeed;
 
-    const prompt = `
+    const isSequence = generationMode === 'sequence';
+
+    const prompt = isSequence ? `
+      You are an expert game designer for the Terminus RPG, a dark fantasy tabletop game powered by the Coherence System.
+      In this world, reality is maintained through civic routine, law, memory, and repeated structure. When patterns fail, reality fractures (Ruptures) in localized, civic-procedural anomalies.
+      
+      Generate a cohesive narrative sequence of exactly ${numScenesInSequence} themed Terminus RPG scene setups based on the following:
+      Terminus Element: ${formData.terminusElement}
+      ${formData.terminusElement !== 'None / ordinary scene' && formData.anomalyDetails ? `Anomaly Details: ${formData.anomalyDetails}` : ''}
+      User Seed/Concept: "${seedPrompt}"
+      
+      The sequence of ${numScenesInSequence} scenes should form a mini-campaign act or adventure session:
+      - Scene 1: Hook / Setup (introduces the situation, stakes, and environment)
+      - Middle scenes (2 to ${numScenesInSequence - 1}): Obstacles, Hazards, Discoveries, or Social interactions
+      - Final scene (${numScenesInSequence}): Climax / Confrontation or tense resolution
+      
+      Requirements for each scene in the sequence:
+      1. sceneTitle: Must be atmospheric and evocative of Terminus theme. Use Welsh, Norse, Gaelic, or Egyptian naming elements if appropriate (e.g. Rhudd-Sarn, Maerwyn, Valdr-Vard, Khamat-Maat) or mysterious civic/environmental terms.
+      2. adventure: A fitting dark-fantasy adventure/campaign segment title (keep this identical across all scenes).
+      3. act: A number or Roman numeral (keep this identical across all scenes).
+      4. location: A specific geographic or architectural place fitting the scene function and location type (e.g. "Rhudd-Sarn Crossing", "Maerwyn Archive Gate 3", "The Ash-Chamber").
+      5. sceneMode: Must be one of the following exact strings: "Confrontation", "Discovery", "Social", "Hazard", "Trap".
+      
+      Guidelines:
+      - Aesthetic: Civic ruin, cold black stone, wet masonry, expired public works, rusted brass gears, celestial infrastructure, dried oxblood, bone paper.
+      ${formData.terminusElement !== 'None / ordinary scene' ? `
+      - Theme: Rupture is a local systemic failure of a routine (e.g., a bell ringing twice, a dead transit line accepting passengers, a street that grows longer).
+      - Core Entities/Anomalies: Utilize Terminus lore such as **Corrections** (reality-enforcing manifestations of routine failure: Correction Body, Correction Instrument, Correction Writ, or Correction Office), **Correction Offices** that override Ground rules, and chilling folk designations like *The Black Walker*, *Vardrek*, or *Sithny's Mark*.
+      ` : `
+      - Theme: This is an ordinary dark-fantasy encounter with NO active reality fracture or supernatural anomaly. Focus on human pressures, physical obstacles, civic rules, or local conflicts.
+      `}
+      
+      Return ONLY a valid JSON object matching this TypeScript interface exactly:
+      {
+        "scenes": [
+          {
+            "sceneTitle": "string",
+            "adventure": "string",
+            "act": "string",
+            "location": "string",
+            "sceneMode": "Confrontation" | "Discovery" | "Social" | "Hazard" | "Trap"
+          }
+        ]
+      }
+      Do not include any extra text, explanations, or markdown. Only the JSON object. The scenes array must have exactly ${numScenesInSequence} elements.
+    ` : `
       You are an expert game designer for the Terminus RPG, a dark fantasy tabletop game powered by the Coherence System.
       In this world, reality is maintained through civic routine, law, memory, and repeated structure. When patterns fail, reality fractures (Ruptures) in localized, civic-procedural anomalies.
       
@@ -353,16 +468,42 @@ ${orderLines || '- No order hooks provided.'}
 
       const generatedData = JSON.parse(result.choices[0].message.content);
       
-      setFormData(prev => ({
-        ...prev,
-        sceneTitle: generatedData.sceneTitle || prev.sceneTitle,
-        adventure: generatedData.adventure || prev.adventure,
-        act: generatedData.act || prev.act,
-        location: generatedData.location || prev.location,
-        sceneMode: generatedData.sceneMode || prev.sceneMode
-      }));
-      setGenerationMessage('✓ Basic information generated successfully.');
-      addToast('success', 'Basic information generated! Review fields, then click Auto-Fill with AI below.');
+      if (isSequence) {
+        const generatedScenes = generatedData.scenes;
+        if (Array.isArray(generatedScenes) && generatedScenes.length > 0) {
+          setScenesList(generatedScenes.map((g, i) => {
+            const base = createEmptySceneForm(i, g.adventure || formData.adventure, g.act || formData.act);
+            return {
+              ...base,
+              sceneTitle: g.sceneTitle || base.sceneTitle,
+              adventure: g.adventure || base.adventure,
+              act: g.act || base.act,
+              location: g.location || base.location,
+              sceneMode: g.sceneMode || base.sceneMode,
+              sceneFunction: i === 0 ? "Hook" : i === generatedScenes.length - 1 ? "Confrontation" : "Obstacle",
+              encounterType: i === 0 ? "Exploration" : i === generatedScenes.length - 1 ? "Combat" : "Mixed",
+              terminusElement: formData.terminusElement,
+              anomalyDetails: formData.anomalyDetails,
+            };
+          }));
+          setActiveSceneIndex(0);
+          setGenerationMessage(`✓ Sequence of ${generatedScenes.length} scenes generated successfully.`);
+          addToast('success', `Generated ${generatedScenes.length} scenes in sequence! Click active tabs to view.`);
+        } else {
+          throw new Error("Invalid scenes array returned from AI");
+        }
+      } else {
+        setFormData(prev => ({
+          ...prev,
+          sceneTitle: generatedData.sceneTitle || prev.sceneTitle,
+          adventure: generatedData.adventure || prev.adventure,
+          act: generatedData.act || prev.act,
+          location: generatedData.location || prev.location,
+          sceneMode: generatedData.sceneMode || prev.sceneMode
+        }));
+        setGenerationMessage('✓ Basic information generated successfully.');
+        addToast('success', 'Basic information generated! Review fields, then click Auto-Fill with AI below.');
+      }
     } catch (error) {
       console.error("Failed to generate basic info:", error);
       setGenerationMessage('✗ Failed to generate basic info. Check VITE_AI_API_KEY and endpoint.');
@@ -372,16 +513,24 @@ ${orderLines || '- No order hooks provided.'}
     }
   };
 
-  // LLM Generation Logic
-  const handleAutoFill = async () => {
-    if (!apiKey) {
-      setGenerationMessage('⚠️ API key not configured. Set VITE_AI_API_KEY in your environment (.env.local).');
-      addToast('error', 'AI API key not configured. Set VITE_AI_API_KEY in your .env.local file.');
-      return;
-    }
+  // LLM Generation Logic for a single scene data structure (reusable for single and batch auto-fills)
+  const handleAutoFillSingle = async (sceneIndex: number, currentList: SceneCardFormData[]) => {
+    const scene = currentList[sceneIndex];
+    if (!scene) return null;
 
-    setIsGenerating(true);
-    setGenerationMessage('');
+    let defaultSeed = "";
+    if (scene.terminusElement === "None / ordinary scene") {
+      defaultSeed = "An ordinary dark-fantasy RPG encounter.";
+    } else {
+      defaultSeed = "A mysterious failure of civic routine in a dark fantasy town.";
+    }
+    const seedPrompt = seedIdea.trim() || defaultSeed;
+
+    const sequenceContext = currentList.length > 1
+      ? `Sequence Context: This scene is part of a sequence of ${currentList.length} scenes:\n` +
+        currentList.map((s, idx) => `${idx + 1}. "${s.sceneTitle}" (${s.sceneFunction} - ${s.location})`).join('\n') +
+        `\nCurrently generating content for Scene ${sceneIndex + 1} ("${scene.sceneTitle}"). Ensure the details flow logically in this narrative sequence.`
+      : "";
     
     const prompt = `
       You are an expert game designer building a "Scene Card" for the Terminus RPG under the Coherence System.
@@ -389,21 +538,23 @@ ${orderLines || '- No order hooks provided.'}
       
       Based on the following basic scene metadata, generate the operational and narrative text for this scene card:
       
-      Scene Title: ${formData.sceneTitle}
-      Adventure: ${formData.adventure}
-      Act: ${formData.act}
-      Location: ${formData.location}
-      Scene Mode: ${formData.sceneMode}
-      Pressure Level (1-5): ${formData.scenePressure}
-      State Type: ${formData.stateType}
-      Scene Function: ${formData.sceneFunction}
-      Primary Encounter Type: ${formData.encounterType}
-      Terminus Element: ${formData.terminusElement}
-      ${formData.terminusElement !== 'None / ordinary scene' && formData.anomalyDetails ? `Anomaly Details: ${formData.anomalyDetails}` : ''}
+      Scene Title: ${scene.sceneTitle}
+      Adventure: ${scene.adventure}
+      Act: ${scene.act}
+      Location: ${scene.location}
+      Scene Mode: ${scene.sceneMode}
+      Pressure Level (1-5): ${scene.scenePressure}
+      State Type: ${scene.stateType}
+      Scene Function: ${scene.sceneFunction}
+      Primary Encounter Type: ${scene.encounterType}
+      Terminus Element: ${scene.terminusElement}
+      ${scene.terminusElement !== 'None / ordinary scene' && scene.anomalyDetails ? `Anomaly Details: ${scene.anomalyDetails}` : ''}
+
+      ${sequenceContext}
 
       Follow these strict creative guidelines:
       1. THE ENGINE LAYER (GWSD)
-         ${formData.terminusElement === 'None / ordinary scene' ? `
+         ${scene.terminusElement === 'None / ordinary scene' ? `
          - THIS IS AN ORDINARY SCENE with no supernatural or Rupture/Correction element. Do NOT use magical, supernatural, or reality-breaking terminology (e.g. no "reality fractures", "Rupture symptoms", "Correction Offices", etc.). Focus on purely physical, social, or historical stakes.
          - GWSD for Grounded Play:
            * ground: Define what is currently physically reliable or legally possible: physical constraints, social rules, access boundaries, permissions. Avoid vague flavor. Keep it actionable and game-focused.
@@ -452,7 +603,7 @@ ${orderLines || '- No order hooks provided.'}
            * "Rupture" names a condition state — systemic failure when Routine no longer holds. NEVER treat Rupture as a substance, energy type, spell school, or blade/monster infusion. 
            * Never write "Rupture energy," "Rupture power," "Rupture magic," "Rupture-infused," "Rupture blade," or similar. 
            * Instead, show physical, civic, sensory, or procedural symptoms: ink separating into oil and brine, blades casting two shadows, bells ringing before being struck, stairs repeating every seventh step, road lines crawling across the stone.
-           * Integrate Terminus entities and enforcements: **Corrections** (Correction Body, Correction Instrument, Correction Writ, or Correction Office).
+           * Integrate Terminus enforcements: **Corrections** (Correction Body, Correction Instrument, Correction Writ, or Correction Office).
            * Show **Correction Offices** attempting to rewrite environmental Ground rules to force compliance, and draw upon folk names like *The Black Walker*, *Vardrek*, or *Sithny's Mark* to represent the haunting nature of these systemic anomalies.
          - If this IS an ordinary scene, avoid all mention of Ruptures, Corrections, supernatural details, or reality breakdown.
       
@@ -488,47 +639,100 @@ ${orderLines || '- No order hooks provided.'}
       response_format: { type: "json_object" }
     };
 
-    try {
-      const result = await fetchWithRetry(
-        apiEndpoint,
-        {
-          method: 'POST',
-          headers: { 
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${apiKey}`
-          },
-          body: JSON.stringify(payload)
-        }
-      );
+    const result = await fetchWithRetry(
+      apiEndpoint,
+      {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`
+        },
+        body: JSON.stringify(payload)
+      }
+    );
 
-      const generatedData = JSON.parse(result.choices[0].message.content);
-      
-      setFormData(prev => ({
-        ...prev,
-        ground: generatedData.ground || prev.ground,
-        will: generatedData.will || prev.will,
-        shift: generatedData.shift || prev.shift,
-        drift: generatedData.drift || prev.drift,
-        readAloud: generatedData.readAloud || prev.readAloud,
-        driftLadder: generatedData.driftLadder || prev.driftLadder,
-        mapHooks: generatedData.mapHooks || prev.mapHooks,
-        orderHooks: {
-          Seeker: generatedData.orderHooks?.Seeker || prev.orderHooks.Seeker,
-          Breaker: generatedData.orderHooks?.Breaker || prev.orderHooks.Breaker,
-          Warden: generatedData.orderHooks?.Warden || prev.orderHooks.Warden,
-          Rival: generatedData.orderHooks?.Rival || prev.orderHooks.Rival,
-          Broker: generatedData.orderHooks?.Broker || prev.orderHooks.Broker,
-          Shade: generatedData.orderHooks?.Shade || prev.orderHooks.Shade,
-        }
-      }));
-      setGenerationMessage('✓ Scene content generated successfully');
-      addToast('success', 'Scene content generated — fill in any remaining fields and click Forge Scene Cards');
+    const generatedData = JSON.parse(result.choices[0].message.content);
+    return {
+      ground: generatedData.ground || "",
+      will: generatedData.will || "",
+      shift: generatedData.shift || "",
+      drift: generatedData.drift || "",
+      readAloud: generatedData.readAloud || "",
+      driftLadder: generatedData.driftLadder || "",
+      mapHooks: generatedData.mapHooks || "",
+      orderHooks: {
+        Seeker: generatedData.orderHooks?.Seeker || "",
+        Breaker: generatedData.orderHooks?.Breaker || "",
+        Warden: generatedData.orderHooks?.Warden || "",
+        Rival: generatedData.orderHooks?.Rival || "",
+        Broker: generatedData.orderHooks?.Broker || "",
+        Shade: generatedData.orderHooks?.Shade || "",
+      }
+    };
+  };
+
+  const handleAutoFill = async () => {
+    if (!apiKey) {
+      setGenerationMessage('⚠️ API key not configured. Set VITE_AI_API_KEY in your environment (.env.local).');
+      addToast('error', 'AI API key not configured. Set VITE_AI_API_KEY in your .env.local file.');
+      return;
+    }
+
+    setIsGenerating(true);
+    setGenerationMessage('');
+    
+    try {
+      const generated = await handleAutoFillSingle(activeSceneIndex, scenesList);
+      if (generated) {
+        setFormData(prev => ({
+          ...prev,
+          ...generated
+        }));
+        setGenerationMessage('✓ Scene content generated successfully');
+        addToast('success', 'Scene content generated — fill in any remaining fields and click Forge Scene Cards');
+      }
     } catch (error) {
       console.error("Failed to generate content:", error);
       setGenerationMessage('✗ Failed to generate scene content. Check your VITE_AI_API_KEY and endpoint.');
-      addToast('error', 'Failed to generate scene content. Check your API key and endpoint.');
+      addToast('error', 'Failed to generate scene content.');
     } finally {
       setIsGenerating(false);
+    }
+  };
+
+  const handleAutoFillAll = async () => {
+    if (!apiKey) {
+      setGenerationMessage('⚠️ API key not configured. Set VITE_AI_API_KEY in your environment (.env.local).');
+      addToast('error', 'AI API key not configured. Set VITE_AI_API_KEY in your .env.local file.');
+      return;
+    }
+
+    setIsAllGenerating(true);
+    setGenerationMessage('Generating content for all scenes in sequence...');
+    addToast('info', `Starting auto-fill for all ${scenesList.length} scenes. This might take a few moments...`);
+
+    try {
+      const updatedScenesList = [...scenesList];
+      for (let i = 0; i < updatedScenesList.length; i++) {
+        setGenerationMessage(`Generating scene ${i + 1} of ${updatedScenesList.length}...`);
+        const generated = await handleAutoFillSingle(i, updatedScenesList);
+        if (generated) {
+          updatedScenesList[i] = {
+            ...updatedScenesList[i],
+            ...generated
+          };
+          // Update state step-by-step so the user sees live progress!
+          setScenesList([...updatedScenesList]);
+        }
+      }
+      setGenerationMessage(`✓ Content generated for all ${scenesList.length} scenes successfully.`);
+      addToast('success', `Successfully auto-filled all ${scenesList.length} scenes in the sequence!`);
+    } catch (error) {
+      console.error("Failed to generate all content:", error);
+      setGenerationMessage('✗ Failed during multi-card generation. Some scenes might have been completed.');
+      addToast('error', 'Failed to auto-fill all scenes.');
+    } finally {
+      setIsAllGenerating(false);
     }
   };
 
@@ -561,6 +765,143 @@ ${orderLines || '- No order hooks provided.'}
 
         <div className="p-6 space-y-8">
           
+          {/* A. Premium Batch Controls */}
+          <div className="bg-slate-950/50 backdrop-blur-md border border-slate-800 rounded-lg p-5 mb-2 shadow-lg flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="space-y-1.5">
+              <label className="text-[10px] uppercase font-bold tracking-wider text-slate-500 block">Forge Mode</label>
+              <div className="flex gap-2 p-1 bg-slate-900 border border-slate-850 rounded-lg inline-flex">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setGenerationMode('single');
+                    if (scenesList.length > 1) {
+                      setScenesList([scenesList[0]]);
+                      setActiveSceneIndex(0);
+                    }
+                  }}
+                  className={`px-4 py-1.5 text-xs font-semibold rounded transition-all ${
+                    generationMode === 'single'
+                      ? 'bg-amber-600 text-amber-950 shadow-sm'
+                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+                  }`}
+                >
+                  Single Card
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setGenerationMode('sequence');
+                    if (scenesList.length === 1) {
+                      setScenesList([
+                        scenesList[0],
+                        createEmptySceneForm(1, scenesList[0].adventure, scenesList[0].act),
+                        createEmptySceneForm(2, scenesList[0].adventure, scenesList[0].act),
+                      ]);
+                      setActiveSceneIndex(0);
+                    }
+                  }}
+                  className={`px-4 py-1.5 text-xs font-semibold rounded transition-all ${
+                    generationMode === 'sequence'
+                      ? 'bg-amber-600 text-amber-950 shadow-sm'
+                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+                  }`}
+                >
+                  Card Sequence (Session Deck)
+                </button>
+              </div>
+            </div>
+
+            {generationMode === 'sequence' && (
+              <div className="flex flex-wrap items-center gap-4 animate-fadeIn">
+                <div className="space-y-1.5">
+                  <label className="text-[10px] uppercase font-bold tracking-wider text-slate-500 block">Sequence Size</label>
+                  <select
+                    value={numScenesInSequence}
+                    onChange={(e) => {
+                      const newSize = Number(e.target.value);
+                      setNumScenesInSequence(newSize);
+                      setScenesList(prev => {
+                        const next = [...prev];
+                        if (next.length < newSize) {
+                          for (let i = next.length; i < newSize; i++) {
+                            next.push(createEmptySceneForm(i, prev[0]?.adventure || "Custom Adventure", prev[0]?.act || "1"));
+                          }
+                        } else if (next.length > newSize) {
+                          next.splice(newSize);
+                        }
+                        return next;
+                      });
+                      if (activeSceneIndex >= newSize) {
+                        setActiveSceneIndex(newSize - 1);
+                      }
+                    }}
+                    className="bg-slate-900 border border-slate-800 rounded px-3 py-1.5 text-xs text-slate-200 focus:border-amber-500 outline-none"
+                  >
+                    <option value={2}>2 Scenes</option>
+                    <option value={3}>3 Scenes</option>
+                    <option value={4}>4 Scenes</option>
+                    <option value={5}>5 Scenes</option>
+                  </select>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-[10px] uppercase font-bold tracking-wider text-slate-500 block">Manual Builder</label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setScenesList(prev => [
+                        ...prev,
+                        createEmptySceneForm(prev.length, prev[0]?.adventure || "Custom Adventure", prev[0]?.act || "1")
+                      ]);
+                      setActiveSceneIndex(scenesList.length);
+                    }}
+                    className="px-4 py-1.5 text-xs bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-200 font-semibold rounded hover:bg-slate-800 transition-all"
+                  >
+                    + Add Card
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* B. Cards Tab Selector */}
+          <div className="flex flex-wrap items-end gap-1.5 border-b border-slate-800 bg-slate-950/20 px-2 pt-2 rounded-t-lg">
+            {scenesList.map((scene, index) => {
+              const isActive = index === activeSceneIndex;
+              return (
+                <div
+                  key={scene.id}
+                  className={`group relative flex items-center gap-2 px-4 py-2.5 text-xs border-t border-x rounded-t transition-all cursor-pointer ${
+                    isActive
+                      ? 'bg-slate-900 border-slate-700 text-amber-400 font-semibold shadow-[0_-2px_10px_-3px_rgba(245,158,11,0.15)] z-10'
+                      : 'bg-slate-950/40 border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/30'
+                  }`}
+                  onClick={() => setActiveSceneIndex(index)}
+                >
+                  <span className={`w-1.5 h-1.5 rounded-full ${isActive ? 'bg-amber-500' : 'bg-slate-600'}`} />
+                  <span className="max-w-[120px] truncate">
+                    {scene.sceneTitle || `Scene ${index + 1}`}
+                  </span>
+                  {scenesList.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setScenesList(prev => prev.filter((_, idx) => idx !== index));
+                        if (activeSceneIndex >= scenesList.length - 1) {
+                          setActiveSceneIndex(Math.max(0, scenesList.length - 2));
+                        }
+                      }}
+                      className="text-slate-500 hover:text-red-400 transition-colors ml-1 p-0.5 rounded hover:bg-slate-800"
+                    >
+                      <X size={10} />
+                    </button>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+          
           {/* 1. Basic Information */}
           <section>
             <div className="flex justify-between items-end mb-4 border-b border-slate-800 pb-2">
@@ -572,7 +913,7 @@ ${orderLines || '- No order hooks provided.'}
                 className="flex items-center gap-1.5 text-xs bg-amber-900/30 hover:bg-amber-800/40 text-amber-300 border border-amber-700/50 px-3 py-1 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isBasicGenerating ? <Activity size={14} className="animate-pulse" /> : <Sparkles size={14} />}
-                {isBasicGenerating ? 'Forging Info...' : 'Generate Basic Info'}
+                {isBasicGenerating ? 'Forging Info...' : generationMode === 'sequence' ? 'Generate Scene Sequence' : 'Generate Basic Info'}
               </button>
             </div>
 
@@ -668,11 +1009,11 @@ ${orderLines || '- No order hooks provided.'}
               <p className="text-[11px] text-slate-400">
                 {formData.terminusElement === "None / ordinary scene" ? (
                   <>
-                    Type a grounded scene concept (e.g. <em>"A toll bridge guarded by a corrupt sergeant"</em>) or leave empty for a random seed, then click <strong>Generate Basic Info</strong>.
+                    Type a grounded scene concept (e.g. <em>"A toll bridge guarded by a corrupt sergeant"</em>) or leave empty for a random seed, then click <strong>{generationMode === 'sequence' ? 'Generate Scene Sequence' : 'Generate Basic Info'}</strong>.
                   </>
                 ) : (
                   <>
-                    Type an anomaly concept (e.g. <em>"A street that grows longer the faster you run"</em>) or leave empty for a random seed, then click <strong>Generate Basic Info</strong>.
+                    Type an anomaly concept (e.g. <em>"A street that grows longer the faster you run"</em>) or leave empty for a random seed, then click <strong>{generationMode === 'sequence' ? 'Generate Scene Sequence' : 'Generate Basic Info'}</strong>.
                   </>
                 )}
               </p>
@@ -741,14 +1082,28 @@ ${orderLines || '- No order hooks provided.'}
           <section>
             <div className="flex justify-between items-end mb-4 border-b border-slate-800 pb-2">
               <h4 className="text-xs font-semibold text-amber-500 uppercase tracking-wider">3. The Engine Layer (GWSD)</h4>
-              <button 
-                onClick={handleAutoFill}
-                disabled={isGenerating || !apiKey}
-                className="flex items-center gap-1 text-xs bg-indigo-900/30 hover:bg-indigo-800/40 text-indigo-300 border border-indigo-700/50 px-3 py-1 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isGenerating ? <Activity size={14} className="animate-pulse" /> : <Sparkles size={14} />}
-                {isGenerating ? 'Generating...' : 'Auto-Fill with AI'}
-              </button>
+              <div className="flex gap-2">
+                {generationMode === 'sequence' && (
+                  <button 
+                    type="button"
+                    onClick={handleAutoFillAll}
+                    disabled={isGenerating || isAllGenerating || !apiKey}
+                    className="flex items-center gap-1.5 text-xs bg-amber-950/40 hover:bg-amber-900/50 text-amber-300 border border-amber-800/50 px-3 py-1 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isAllGenerating ? <Activity size={14} className="animate-pulse" /> : <Sparkles size={14} />}
+                    {isAllGenerating ? 'Generating All...' : 'Auto-Fill All Scenes'}
+                  </button>
+                )}
+                <button 
+                  type="button"
+                  onClick={handleAutoFill}
+                  disabled={isGenerating || isAllGenerating || !apiKey}
+                  className="flex items-center gap-1.5 text-xs bg-indigo-900/30 hover:bg-indigo-800/40 text-indigo-300 border border-indigo-700/50 px-3 py-1 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isGenerating ? <Activity size={14} className="animate-pulse" /> : <Sparkles size={14} />}
+                  {isGenerating ? 'Generating Current...' : generationMode === 'sequence' ? 'Auto-Fill Current Scene' : 'Auto-Fill with AI'}
+                </button>
+              </div>
             </div>
             
             {generationMessage && (
@@ -840,9 +1195,9 @@ ${orderLines || '- No order hooks provided.'}
                   <div className="w-20 pt-2 text-xs font-medium text-slate-400 text-right">{order}</div>
                   <input 
                     type="text" 
-                    value={formData.orderHooks[order as keyof typeof formData.orderHooks]} 
+                    value={formData.orderHooks[order as keyof typeof formData.orderHooks] || ""} 
                     onChange={(e) => handleInputChange(e, 'orderHooks', order)} 
-                    className="flex-1 bg-slate-950 border border-slate-800 rounded p-2 text-sm text-slate-300 focus:border-amber-500 outline-none" 
+                    className="flex-1 bg-slate-950 border border-slate-880 rounded p-2 text-sm text-slate-300 focus:border-amber-500 outline-none" 
                     placeholder={`Opportunity for the ${order}...`}
                   />
                 </div>
@@ -887,9 +1242,9 @@ ${orderLines || '- No order hooks provided.'}
             <button
               type="button"
               onClick={handleForgeSceneCard}
-              className="flex items-center gap-2 px-6 py-2 text-sm bg-amber-600 hover:bg-amber-500 text-amber-950 font-bold rounded shadow-lg shadow-amber-900/20 transition-colors"
+              className="flex items-center gap-2 px-6 py-2 text-sm bg-amber-600 hover:bg-amber-500 text-amber-950 font-bold rounded shadow-lg shadow-amber-900/20 transition-colors animate-pulse-slow"
             >
-              <Save size={16} /> Forge Scene Cards
+              <Save size={16} /> {generationMode === 'sequence' ? `Forge ${scenesList.length} Scene Cards` : 'Forge Scene Card'}
             </button>
           </div>
         </div>
