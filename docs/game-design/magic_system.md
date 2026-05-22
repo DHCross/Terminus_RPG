@@ -259,7 +259,7 @@ A Systemic Overdraw is a wide-scope rupture that affects multiple targets, cause
 
 Examples:
 
-- Stop a tram line.
+- Stop a cargo canal lock.
 - Shatter multiple seals.
 - Tear open a route for the whole cell.
 - Break a public ward in front of witnesses.

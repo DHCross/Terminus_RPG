@@ -103,6 +103,42 @@ The goal is not to replace traditional TRPG play. The goal is to make the hidden
 
 Terminus should feel like a TRPG that finally says the quiet part out loud, not like a philosophy seminar wearing dice.
 
+#### Table Language vs. Resolution Language
+
+Terminus does not ban familiar combat or adventure language.
+
+Players may still say they attack, defend, dodge, block, shoot, tackle, parry, guard, or retreat. Those declarations remain the natural language of play.
+
+The Coherence System only changes how the table resolves those actions.
+
+*   An **“attack”** is usually resolved as applied pressure through **Force**, **Agility**, or **Willpower**.
+*   A **“defense”** is usually resolved through **Endure**, **Avoid**, or **Exert**.
+*   A successful exchange creates **Impact**, position, exposure, delay, protection, or another concrete change in the scene.
+
+The ordinary language stays familiar. The resolution model makes the consequences sharper.
+
+> **System Note: Player Verbs**
+> **Do not police player verbs. Translate them.**
+> The translation layer is tested **whenever a player declares an ordinary action**. Fiction-first does not mean replacing every familiar RPG word with bespoke terminology. It means the player's fictional action matters before the mechanical category is chosen. "I swing my axe at the armor joint" (Fiction) comes first. The table then translates that into Force against Endure. Telling a player "don't say attack, say apply pressure" is jargon-first, not fiction-first.
+
+#### The Tabletop: Maps vs. Scene Cards
+
+Scene Cards augment maps, VTTs, props, miniatures, handouts, stat blocks, and ordinary table procedures. They do not replace them.
+
+*   **Maps show space.**
+*   **Scene Cards show pressure.**
+
+Terminus remains fully compatible with traditional tabletop and VTT play. While a VTT or physical location map shows the physical geometry of a room—where a bridge, doors, rubble, or enemies are located—the Scene Card acts as the "state overlay," telling the Guide what those physical elements currently *mean in play*.
+
+##### **The Bridge Example**
+If your map shows a bridge over a flood channel, the Scene Card makes that map "runnable" by defining its active state:
+*   **Ground:** The centerline is stable, but the edges are rain-slick and crumbling.
+*   **Will:** The current is actively pulling debris into the bridge supports.
+*   **Shift:** Heavy movement will break another section.
+*   **Drift:** Delaying makes one safe route completely unusable.
+
+By explicitly stating that players still run combat, movement, exploration, and investigation in recognizable RPG terms, the system reinforces that Terminus is not trying to supplant standard adventure structures. Instead, it simply makes the table "state-aware," ensuring that modular encounters and environments are dynamic and responsive.
+
 ---
 
 ## The Lived World: Tringad
@@ -586,7 +622,7 @@ It survives because multiple systems meet there:
 * Accord House
 * Faction courts
 * Sealed districts
-* River or rail crossing
+* River or canal crossing
 * Old imperial infrastructure
 
 The city should have enough order that rupture feels like violation, not background noise.

@@ -38,8 +38,8 @@ export default function App() {
           ],
           will: {
             NPCName: "Curator Mellis",
-            Role": "Silent Archivist (Wild Card)",
-            ActiveWill": "Wants to maintain the silence of the archive and protect coherence data from unauthorized viewing."
+            "Role": "Silent Archivist (Wild Card)",
+            "ActiveWill": "Wants to maintain the silence of the archive and protect coherence data from unauthorized viewing."
           },
           shift: [
             "IF a character speaks above a whisper → THEN automatic spheres activate and converge.",
@@ -47,8 +47,8 @@ export default function App() {
             "IF a character steals a spool → THEN it emits a chime that corrupts all local data."
           ],
           drift: {
-            rate": "Slow – records decay 1% per week, but actively speed up during interference.",
-            consequence": "After 3 acts of theft/violence, a Null-Drag purge initiates, wiping all unsealed data."
+            "rate": "Slow – records decay 1% per week, but actively speed up during interference.",
+            "consequence": "After 3 acts of theft/violence, a Null-Drag purge initiates, wiping all unsealed data."
           }
         },
         {
@@ -63,8 +63,8 @@ export default function App() {
           ],
           will: {
             NPCName: "Master Kara",
-            Role": "Chief Artificer (Patron)",
-            ActiveWill": "Seeks raw biological tissue to stabilize a new hybrid engine and offers forge-access in return."
+            "Role": "Chief Artificer (Patron)",
+            "ActiveWill": "Seeks raw biological tissue to stabilize a new hybrid engine and offers forge-access in return."
           },
           shift: [
             "IF a character offers living flesh → THEN Kara grants access to a fused weapon upgrade forge.",
@@ -72,8 +72,8 @@ export default function App() {
             "IF a character approaches the hammer → THEN a grafted slave screams a Pragma core warning."
           ],
           drift: {
-            rate": "Rapid – heat increases 10°C per minute.",
-            consequence": "If not vented in 15 minutes, all metal becomes red-hot, and a hybrid slave breaks free."
+            "rate": "Rapid – heat increases 10°C per minute.",
+            "consequence": "If not vented in 15 minutes, all metal becomes red-hot, and a hybrid slave breaks free."
           }
         }
       ]
@@ -102,16 +102,16 @@ export default function App() {
           ],
           will: {
             NPCName: "Terminal Overseer",
-            Role": "Construct (Hinderer)",
-            ActiveWill": "Demands authorized clearing forms or immediate evacuation of the sector."
+            "Role": "Construct (Hinderer)",
+            "ActiveWill": "Demands authorized clearing forms or immediate evacuation of the sector."
           },
           shift: [
             "IF a player hacks the terminal → THEN the static field drops for 1 minute.",
             "IF a weapon is unholstered → THEN red lighting activates and defenses arm."
           ],
           drift: {
-            rate": "Steady Drift build.",
-            consequence": "At state 4, the location triggers a containment field seal."
+            "rate": "Steady Drift build.",
+            "consequence": "At state 4, the location triggers a containment field seal."
           }
         }
         setActiveScenes([...activeScenes, fallbackScene])

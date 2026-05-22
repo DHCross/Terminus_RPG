@@ -61,11 +61,11 @@ Terminus is not an excuse to replace adventure with lore. Most sessions should s
 The people of the world do not call it Terminus. To them, the world is simply Tringad, the Concord Lands, the Known Marches, the Old Continuum, or something similarly lived-in and historical. “Terminus” is not common speech. It is the buried name of the final architecture beneath reality — the secret frame that explains why the world holds together, why it fails, and why certain places stop obeying ordinary rules. For now, I’d use a plain-world name with civic weight: Tringad Short, old, easy to say, and flexible enough to hold many cultures. So: The game is Terminus. The world is Tringad. Terminus is the secret under Tringad.  
 **Tringad at a Glance**  
 Tringad is a dark fantasy world built on the remains of a luminous high-fantasy age. It is not a ruined wasteland. Its cities still ring bells, open markets, register births, hold trials, bless bridges, bury the dead, inspect wards, run transit lines, and keep civic calendars. People still marry, argue, sell bread, forge tools, gossip, worship, and sleep. That ordinary life matters.  
-In Tringad, routine is not just habit. Routine helps stabilize reality. When markets open in the correct order, when trains arrive at the appointed bell, when priests repeat the old civic blessings, when judges speak verdicts in proper form, when burial rites are completed, when lamps are lit at dusk — the world becomes more reliable. When those routines fail, reality begins to slip. That failure is called a Rupture.  
+In Tringad, routine is not just habit. Routine helps stabilize reality. When markets open in the correct order, when ferries arrive at the appointed bell, when priests repeat the old civic blessings, when judges speak verdicts in proper form, when burial rites are completed, when lamps are lit at dusk — the world becomes more reliable. When those routines fail, reality begins to slip. That failure is called a Rupture.  
 **The Quiet Day**  
-The central emotional idea of the setting is the quiet day. A quiet day is a day when no one has to become heroic just to survive. The bakery opens. The tram arrives. The child returns from school. The watchman finishes his route. The dead stay buried. The bridge carries people both ways. The bell rings once. The Orders do not exist because the world wants adventure. They exist because sometimes the quiet day breaks. The quiet day is what the world wants. Your character may want something else entirely. The Accord doesn't care why you work — only that you do. Play a cynic, a zealot, a debtor, a thrill-seeker, or a true believer. The rupture doesn't ask your opinion.  
+The central emotional idea of the setting is the quiet day. A quiet day is a day when no one has to become heroic just to survive. The bakery opens. The ferry arrives. The child returns from school. The watchman finishes his route. The dead stay buried. The bridge carries people both ways. The bell rings once. The Orders do not exist because the world wants adventure. They exist because sometimes the quiet day breaks. The quiet day is what the world wants. Your character may want something else entirely. The Accord doesn't care why you work — only that you do. Play a cynic, a zealot, a debtor, a thrill-seeker, or a true believer. The rupture doesn't ask your opinion.  
 **Rupture**  
-A Rupture is not merely a monster attack or a magical curse. A Rupture is a systemic failure. Something that was supposed to keep reality stable begins misfiring. Examples: A street grows longer the harder one tries to leave. A clerk signs a document dated tomorrow. A court verdict changes depending on who enters the room first. A ferry arrives with passengers who drowned last week. A signal bell rings twice, and the crowd repeats the same motion. A bridge supports only people walking north. A dead transit line accepts passengers. A door opens into the wrong year.  
+A Rupture is not merely a monster attack or a magical curse. A Rupture is a systemic failure. Something that was supposed to keep reality stable begins misfiring. Examples: A street grows longer the harder one tries to leave. A clerk signs a document dated tomorrow. A court verdict changes depending on who enters the room first. A ferry arrives with passengers who drowned last week. A signal bell rings twice, and the crowd repeats the same motion. A bridge supports only people walking north. A dead ferry line accepts passengers. A door opens into the wrong year.  
 Most people experience Rupture as fear, inconvenience, superstition, bureaucracy, or local disaster. They do not know the deeper truth. They only know that something has gone wrong and ordinary institutions are not enough.  
 **The Sixfold Accord**  
 Tringad’s answer to Rupture is the Sixfold Accord. The Accord is not an adventurers’ guild. It is closer to an emergency field institution, a licensing body, a court of last resort, and a dangerous public service all at once. It exists because no single kind of expert can safely answer a Rupture. A scholar may know what is happening but cannot hold a collapsing ward. A soldier may hold a bridge but cannot understand why it rejects certain names. A negotiator may calm a crowd but cannot open a sealed route. A thief may enter the impossible room but cannot legitimize what was found there.  
@@ -266,7 +266,7 @@ Wardens hold the line where collapse is in motion.
 **Hold the Line:** You can take an ally’s Threshold loss if you interpose.  
 **Anchor Point:** Choose a boundary. Until you move, enemies cannot easily force it open.  
 **Brace Against It:** When you Endure, you can protect one nearby person from that same pressure.
-**Absorb the Drift:** When the Scene Drift increases due to a monster's passive escalation, you may suffer a loss to your Exert Threshold to delay or negate the increase for this round. You are holding the room together with your will.
+**Absorb the Drift:** When the Scene Drift increases due to unaddressed tension or active escalation, you may suffer a loss to your Exert Threshold to delay or negate the increase. You are holding the room together with your will.
 
 ## **Rival**
 
@@ -296,6 +296,78 @@ Shades utilize concealment, misdirection, and reversal.
 # 
 
 # **9\. Terminus Pressure Exchange Doctrine**
+
+Terminus still uses familiar table language. Characters attack, defend, dodge, brace, strike, shove, guard, flee, shoot, cast, and protect.
+
+The difference is not what players are allowed to say. The difference is how those actions are resolved.
+
+## **The Core Translation Layer**
+
+The translation layer is tested **whenever a player declares an ordinary action**. Players speak in the vernacular of classic fantasy adventure; the Guide references the Scene Card to resolve the state change. The Guide does not police these verbs. The Guide translates them into the resolution layer only after the fictional action is clear.
+
+> ### ── The Guide Doctrine ──
+> **Do not police player verbs. Translate them.**
+> Fiction-first does not mean forcing players to speak in mechanical jargon. "I swing my axe at the armor joint" comes first. The Guide translates this into Force vs. Endure. Telling a player "don't say attack, say apply pressure" is jargon-first and a design failure.
+
+| Player Verbal Signal | Rule Translation | Structural Consequence |
+| --- | --- | --- |
+| **“I hit it with my axe.”** | **Force** vs. **Endure** | Impact directly depletes physical or structural integrity. |
+| **“I dive out of the way!”** | **Agility** vs. **Avoid** | The character trades tactical space or positioning to negate a wound. |
+| **“I grit my teeth and hold my ground.”** | **Willpower** vs. **Exert** | Mental resolve or stamina absorbs the strain, burning fuel for special abilities. |
+| **“We lock shields across the passage.”** | Alters **Ground** | Modifies what currently holds, shifting environmental permissions for the opposition. |
+| **“I find the weak link in the mechanism.”** | Triggers **Shift** | An immediate, permanent modification of the active scene geometry. |
+| **“We wait to see what they do next.”** | Advances **Drift** | Unresolved pressure escalates; the situation degrades or moves to its next step. |
+
+---
+
+## **The Coherence Architecture**
+
+```
+                  [ GROUND ]             [ WILL ]
+              (What currently holds)  (What pushes)
+                        │                  │
+                        ▼                  ▼
+                 ┌────────────────────────────────┐
+                 │       THE PRESSURE EXCHANGE     │
+                 │   "Do not police player verbs. │
+                 │         Translate them."       │
+                 └────────────────────────────────┘
+                        │                  │
+                        ▼                  ▼
+                  [ SHIFT ]              [ DRIFT ]
+             (What changes when    (What worsens if left
+               characters act)          unresolved)
+```
+
+---
+
+## **Refocusing the State Tools (The Guide Doctrine)**
+
+* **The Character Sheet** remains the source of identity, capability, and resources.
+* **The Scene Card** is purely a Guide-facing state tool. It maps the room's current tolerances, active pressures, immediate responses, and systemic complications.
+* **The Rule of Scope:** Every Rupture is a scene-state problem, but not every scene-state problem is a Rupture. Normal ambushes, suspicious guards, locked archives, and hungry beasts are the default fabric of adventure. Anomalies are deployed only when reality itself is meant to fracture.
+
+---
+
+## **The Tabletop (Maps vs. Scene Cards)**
+
+Scene Cards augment maps, VTTs, props, miniatures, handouts, stat blocks, and ordinary table procedures. They do not replace them.
+
+* **Maps show space.**
+* **Scene Cards show pressure.**
+
+Terminus remains fully compatible with traditional tabletop and VTT play. While a VTT or physical location map shows the physical geometry of a room—where a bridge, doors, rubble, or enemies are located—the Scene Card acts as the "state overlay," telling the Guide what those physical elements currently *mean in play*.
+
+### **The Bridge Example**
+If a map shows a bridge over a flood channel, the Scene Card makes that map "runnable" by defining its active state:
+* **Ground:** The centerline is stable, but the edges are rain-slick and crumbling.
+* **Will:** The current is actively pulling debris into the bridge supports.
+* **Shift:** Heavy movement will break another section.
+* **Drift:** Delaying makes one safe route completely unusable.
+
+By explicitly stating that players still run combat, movement, exploration, and investigation in recognizable RPG terms, the system reinforces that Terminus is not trying to supplant standard adventure structures. Instead, it simply makes the table "state-aware," ensuring that modular encounters and environments are dynamic and responsive.
+
+---
 
 Terminus resolves conflict through direct exchanges of pressure. Actions always matter; the target decides how the outcome is routed.
 
@@ -346,6 +418,8 @@ Armor does not decide whether you are attacked; it decides whether the pressure 
 
 Drift measures how far a scene has detached from stable reality. It functions as an escalating clock of worsening conditions.
 
+Drift operates on a Trigger-Based or Event-Driven model rather than an arbitrary round timer. It is the systemic answer to unaddressed tension, representing the visible architecture of an unresolved situation becoming progressively worse.
+
 ## **The Drift Scale**
 
 | Drift | State | Mechanical Effect |
@@ -357,21 +431,74 @@ Drift measures how far a scene has detached from stable reality. It functions as
 | **4** | Rupture | Systemic collapse. The catalyst performs a scene-ending action, or the PCs must Rout. |
 
 ## **Managing Drift**
-- **Increase:** Drift increments at the end of rounds when a monster triggers passive escalation, or when a critical failure occurs.
-- **Reduction:** Standard player actions cannot lower Drift. A Warden may use **Absorb the Drift** to negate an increase.
-- **Reset:** Drift resets to 0 when the Scene ends or the catalyst causing the rupture is neutralized.
 
-# **11\. Scenario: The Timed Crossing**
+*   **Drift Trigger and Increase:** Drift advances when unresolved pressure reaches a stated trigger on the active Scene Card. It does not advance automatically at the end of every round unless the Scene Card defines end-of-round escalation as one of its triggers (e.g., when timing itself is the active pressure, such as rising floodwaters, poison gas, or alarm cycles). Common triggers include:
+    *   **Lingering Delay:** When the party hesitates, over-debates, or fails to act under pressure.
+    *   **Ignored Threat:** When an active hazard, alarm, or hostile force is left unaddressed.
+    *   **Botched Working:** When a critical mechanical check or magical override fails, sending a surge of entropy into the scene's geometry.
+    *   **Scenic Catalyst:** A specific trigger defined on the Scene Card (e.g., "when blood hits the stone flagstones" or "when the toll engine sounds the bell").
+*   **Reduction:** Standard player actions cannot lower Drift. A Warden may use **Absorb the Drift** to suffer a loss to their Exert Threshold to delay or negate a Drift increase.
+*   **Reset:** Drift resets to 0 when the Scene ends or the catalyst causing the rupture is neutralized.
+
+# **11\. Scenario: The Old Toll Gate**
 
 **Guide Read-Aloud:**  
-*The crossing is loud and exact. A bell sounds. Signals change in sequence. The tram glides in just as market awnings snap into place. No one stops. No one collides. Then the north signal changes out of order. One line of pedestrians steps forward; the other does not stop. The same bell rings again.*
+*“The toll arch is wet with rain. The gate hangs halfway down, and an iron-bodied Route Inspector stands beneath it with one hand on the locking bar. Its head turns toward you with a dry click. ‘Blue docket. Third bell stamp. No exceptions.’”*
 
 ## **Scene Card**
 
-**Ground:** Crowded but orderly. Signals and habit govern movement.  
-**Will:** The system preserves routine. Timing begins to desynchronize.  
-**Shift:** Interrupting the pedestrian jumps the loop to a signal post. Damage to a post breaks crowd confidence.  
-**Drift:** Signals change out of sequence. Crowd compresses. Duplicate tram becomes solid.
+**Ground**  
+A narrow stone toll arch blocks the causeway. The gate is half-lowered, the stones are slick with rain, and only one person can pass through the opening at a time.
+
+**Will**  
+The Route Inspector refuses passage without a valid blue docket stamped for the third bell.
+
+**Shift**  
+* If someone presents valid authority, the gate opens.
+* If someone forces the locking bar, the gate jams halfway and creates a narrow passage.
+* If someone attacks the Inspector directly, it braces and resists with Endure.
+
+**Drift**  
+Drift increases if the party delays in the open, draws a crowd, spills blood on the toll stones, or lets the Inspector ring the alarm bell.
+* At Drift 2, the upper gate begins to descend.
+* At Drift 3, the causeway locks down and another official response is dispatched.
+
+---
+
+## **Play Example**
+
+**Guide:**  
+“The toll arch is wet with rain. The gate hangs halfway down, and an iron-bodied Route Inspector stands beneath it with one hand on the locking bar. Its head turns toward you with a dry click. ‘Blue docket. Third bell stamp. No exceptions.’”
+
+**Player (Breaker):**  
+“I’m done arguing. I shoulder-charge it and try to knock it out of the arch.”
+
+**Guide:**  
+“Good. You’re using direct force to clear the passage. That sounds like Force. The Inspector plants its staff and tries to hold the arch. It resists with Endure.”
+
+*Resolve the roll.*
+
+**On success:**  
+“You slam into its chest plate hard enough to drive it back. Its staff scrapes across the stone, and the arch is open for a moment. The scene shifts: one character can get through before it recovers.”
+
+**On failure:**  
+“It does not move. You hit it like a wall, and its staff hooks behind your shoulder. You are stopped in the arch and exposed unless you give ground, strain through it, or let the impact land physically.”
+
+**Second Player (Shade):**  
+“I dive past them and go for the locking lever.”
+
+**Guide:**  
+“That’s clear. You are using speed and positioning before the Inspector recovers. Roll Agility. The risk is Avoid: if this goes badly, you lose position or get pinned near the gate.”
+
+**If the player fails:**  
+“The Inspector’s arm snaps out and drives you into the side rail. You do not reach the lever. You can route the consequence through position, strain, or physical impact depending on what you are willing to lose.”
+
+*If the trigger happens:*
+
+**Guide:**  
+“You are both still in the open, and the delay has drawn attention. That satisfies the Drift trigger. The blue signal bell above the arch begins to ring. Drift increases to 1.”
+
+---
 
 ---
 

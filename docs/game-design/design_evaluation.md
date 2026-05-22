@@ -62,7 +62,7 @@ Baur's monster chapter warns against combat becoming "grindy." Terminus avoids t
 
 Michael Shea's "Designing Situations" chapter argues for building adventures around locations and inhabitants rather than pre-scripted scenes. The GM lays out a situation; the players navigate it however they want.
 
-The Terminus Scene Card (Ground, Will, Shift, Drift) is a purpose-built tool for exactly this. It doesn't describe what happens. It describes the current state of the situation and what changes when players act. The Timed Crossing scenario demonstrates this: the GM has a situation (crossing desynchronizes), a Drift track (signals fail, crowd compresses, duplicate tram materializes), and Order-specific approaches. No scripted outcome.
+The Terminus Scene Card (Ground, Will, Shift, Drift) is a purpose-built tool for exactly this. It doesn't describe what happens. It describes the current state of the situation and what changes when players act. The Old Toll Gate scenario demonstrates this: the GM has a situation (gate blocks causeway), a Drift track (gate descends, sector locks down), and Order-specific approaches. No scripted outcome.
 
 Dan's own *Guide to Writing Adventure* introduced the concept of "story-latent" — plot as unrealized potential rather than predetermined outcome — and modular events that can be reordered by the GM. Terminus adventures are structurally story-latent. Ruptures are systemic failures with multiple valid responses. The Accord cell answers "why are these people together" without scripting what they do.
 

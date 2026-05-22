@@ -73,7 +73,9 @@ To prevent cognitive overload, the designer should utilize the GWSD Protocol for
 
 Modular Mechanics and Jargon
 
-Integrating adventure-specific mechanics (like the "Possibility Bottle") into the core architecture creates confusion. These must remain modular, restricted to "GM Insights" or "Stat Blocks." Furthermore, replace all "Designer Jargon" with active phrases. Use "Triggered by player action" instead of "Bound," and "Central to the scene" instead of "Essential."
+Integrating adventure-specific mechanics (like the "Possibility Bottle") into the core architecture creates confusion. These must remain modular, restricted to "GM Insights" or "Stat Blocks." Furthermore, replace all "Designer Jargon" with active phrases. Use "Triggered by player action" instead of "Bound," and "Central to the scene" instead of "Essential." 
+
+Crucially, **do not police player verbs** (e.g., forbidding players from saying "attack," "defend," "dodge," or "block" in favor of "apply pressure" or "absorb pressure"). This is jargon-first rather than fiction-first. Table language should remain natural, evocative TRPG language, while the rules and system translate those declarations internally into resolution mechanics (Force, Agility, Willpower vs. Endure, Avoid, Exert). Fiction-first means the fictional action happens first, and the system translates it, not that the player is forced to speak in mechanical jargon.
 
 The Missing Transition
 
@@ -145,6 +147,7 @@ Wall of Text (Unorganized layout)	GWSD Protocol (Ground, Will, Shift, Drift)
 Designer Jargon (Bound/Unbound)	Active Reference ("Triggered by player action")
 Floating Archetypes (Generic NPCs)	Social/Ecclesiastical Anchoring (Social Class maps)
 Prose Average (Generic AI text)	Post-Smoothing (Human-led Six Characteristic review)
+Policing Player Verbs (Forcing jargon over natural play)	Translation (Do not police player verbs. Translate them.)
 
 Conclusion
 
