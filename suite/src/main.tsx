@@ -16,6 +16,7 @@ import { NPCWorkbench } from './modules/terminus/npc/NPCWorkbench';
 import { MonsterWorkbench } from './modules/terminus/monster/MonsterWorkbench';
 import { NomenclatorWorkbench } from './modules/terminus/names/NomenclatorWorkbench';
 import { AdventureWorkbench } from './modules/terminus/adventure/AdventureWorkbench';
+import { CampaignView } from './modules/terminus/campaign/CampaignView';
 import './index.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
@@ -37,6 +38,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
               <Route path="orders" element={<OrdersView />} />
               <Route path="playtest" element={<PlaytestTools />} />
               <Route path="rules" element={<RulesPage />} />
+              <Route path="campaign" element={<CampaignView />} />
             </Route>
           </Routes>
         </BrowserRouter>
