@@ -307,7 +307,7 @@ The translation layer is tested **whenever a player declares an ordinary action*
 
 > ### ── The Guide Doctrine ──
 > **Do not police player verbs. Translate them.**
-> Fiction-first does not mean forcing players to speak in mechanical jargon. "I swing my axe at the armor joint" comes first. The Guide translates this into Force vs. Endure. Telling a player "don't say attack, say apply pressure" is jargon-first and a design failure.
+> Fiction-first does not mean forcing players to speak in mechanical jargon. Players are encouraged to use ordinary tabletop language (e.g., "I attack" or "I search the desk"), which the Guide then translates into the system's structural consequences. "I swing my axe at the armor joint" comes first. The Guide translates this into Force vs. Endure. Telling a player "don't say attack, say apply pressure" is jargon-first and a design failure.
 
 | Player Verbal Signal | Rule Translation | Structural Consequence |
 | --- | --- | --- |
@@ -345,7 +345,7 @@ The translation layer is tested **whenever a player declares an ordinary action*
 
 * **The Character Sheet** remains the source of identity, capability, and resources.
 * **The Scene Card** is purely a Guide-facing state tool. It maps the room's current tolerances, active pressures, immediate responses, and systemic complications.
-* **The Rule of Scope:** Every Rupture is a scene-state problem, but not every scene-state problem is a Rupture. Normal ambushes, suspicious guards, locked archives, and hungry beasts are the default fabric of adventure. Anomalies are deployed only when reality itself is meant to fracture.
+* **The Rule of Scope:** Every Rupture is a scene-state problem, but not every scene-state problem is a Rupture. Normal, non-anomalous scenes—like dealing with a suspicious clerk, a locked archive, a bridge toll, or a hungry beast—are essential. Allowing for these ordinary dangers ensures that the 'Quiet Day' remains the baseline, making the reality-bending Ruptures feel truly impactful when they do happen. Anomalies are deployed only when reality itself is meant to fracture.
 
 ---
 
@@ -356,7 +356,7 @@ Scene Cards augment maps, VTTs, props, miniatures, handouts, stat blocks, and or
 * **Maps show space.**
 * **Scene Cards show pressure.**
 
-Terminus remains fully compatible with traditional tabletop and VTT play. While a VTT or physical location map shows the physical geometry of a room—where a bridge, doors, rubble, or enemies are located—the Scene Card acts as the "state overlay," telling the Guide what those physical elements currently *mean in play*.
+Terminus remains fully compatible with traditional tabletop and VTT play. Maps show space, while Scene Cards show pressure, ensuring that traditional tools like Virtual Tabletop (VTT) interfaces and miniatures remain a central part of play. While a VTT or physical location map shows the physical geometry of a room—where a bridge, doors, rubble, or enemies are located—the Scene Card acts as the "state overlay," telling the Guide what those physical elements currently *mean in play*.
 
 ### **The Bridge Example**
 If a map shows a bridge over a flood channel, the Scene Card makes that map "runnable" by defining its active state:
@@ -418,7 +418,7 @@ Armor does not decide whether you are attacked; it decides whether the pressure 
 
 Drift measures how far a scene has detached from stable reality. It functions as an escalating clock of worsening conditions.
 
-Drift operates on a Trigger-Based or Event-Driven model rather than an arbitrary round timer. It is the systemic answer to unaddressed tension, representing the visible architecture of an unresolved situation becoming progressively worse.
+Drift operates on a Trigger-Based or Event-Driven model rather than an arbitrary round timer. While some hazards may escalate on a regular beat, Drift advances when unresolved pressure reaches a stated trigger. This could be the end of a round, but it could also trigger when the party delays, an alarm bell rings, a spell fails, or the true source of the pressure is ignored. It is the systemic answer to unaddressed tension, representing the visible architecture of an unresolved situation becoming progressively worse.
 
 ## **The Drift Scale**
 

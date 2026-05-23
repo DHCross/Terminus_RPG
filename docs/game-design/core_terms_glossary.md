@@ -54,6 +54,6 @@ Use these one-sentence definitions early in public-facing material to reduce ter
 
 **Correction Writ:** A nonphysical or semi-legal manifestation: impossible notices, unsigned seals, unreceived summons, documents with no sender, redactions already performed.
 
-**Correction Office:** A location that has begun enforcing its own reality; the correction is architectural rather than embodied.
+**Correction Office:** A location that has begun enforcing its own reality; the correction is architectural rather than embodied. While players can physically fight a Correction Body (a mechanical entity), they must take a completely different approach to a Correction Office. An Office occurs when a room or environment begins enforcing an automated law that no one can survive, forcing the players to interpret, bypass, appeal, or nullify the active permissions rather than just swinging a weapon.
 
 **Unauthorized Correction:** Accord classification for an entity acting without a traceable civic source. An admission of ignorance, not a description of behavior.

@@ -27,7 +27,7 @@ A tool-like manifestation. Not necessarily humanoid. May be architectural, mecha
 A nonphysical or semi-legal manifestation: impossible notices, unreceived summons, documents with no sender, seals that have already been affixed, redactions that have already occurred. A Correction Writ may precede or follow a Correction Body. It may also appear alone.
 
 **Correction Office**
-A place that has begun enforcing its own reality. A Correction Office does not move. It expands. Rooms develop new purpose. Documents appear that were not filed. Doors open to spaces that should not exist. The Accord classifies a location as a Correction Office when the enforcement is architectural rather than embodied.
+A place that has begun enforcing its own reality. A Correction Office does not move. It expands. Rooms develop new purpose. Documents appear that were not filed. Doors open to spaces that should not exist. The Accord classifies a location as a Correction Office when the enforcement is architectural rather than embodied. While players can physically fight a Correction Body (a mechanical entity), they must take a completely different approach to a Correction Office. An Office occurs when a room or environment begins enforcing an automated law that no one can survive, forcing the players to interpret, bypass, appeal, or nullify the active permissions rather than just swinging a weapon.
 
 **Unauthorized Correction**
 Accord term for an entity acting without a known civic source. This classification is an acknowledgment of ignorance, not a description of behavior. The Accord uses it when a Correction Body cannot be traced to any known writ, institution, or licensure — which is, in practice, always.

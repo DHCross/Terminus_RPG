@@ -128,7 +128,7 @@ Scene Cards augment maps, VTTs, props, miniatures, handouts, stat blocks, and or
 *   **Maps show space.**
 *   **Scene Cards show pressure.**
 
-Terminus remains fully compatible with traditional tabletop and VTT play. While a VTT or physical location map shows the physical geometry of a room—where a bridge, doors, rubble, or enemies are located—the Scene Card acts as the "state overlay," telling the Guide what those physical elements currently *mean in play*.
+Terminus remains fully compatible with traditional tabletop and VTT play. Maps show space, while Scene Cards show pressure, ensuring that traditional tools like Virtual Tabletop (VTT) interfaces and miniatures remain a central part of play. While a VTT or physical location map shows the physical geometry of a room—where a bridge, doors, rubble, or enemies are located—the Scene Card acts as the "state overlay," telling the Guide what those physical elements currently *mean in play*.
 
 ##### **The Bridge Example**
 If your map shows a bridge over a flood channel, the Scene Card makes that map "runnable" by defining its active state:
@@ -248,6 +248,10 @@ The aesthetic is severe civic ruin, not gothic romance.
 * Pure apocalyptic wasteland tone
 
 Terminus should feel like a field manual from an empire that still remembers how the stars were supposed to move.
+
+### Technology Boundaries
+
+The document explicitly bans optimistic steampunk elements and modern rail transit, such as trains or locomotives. To maintain the game's industrial gothic aesthetic, the world relies on older, heavy, and exhausted civic infrastructure like ferries, canal locks, causeways, toll gates, and bridge engines.
 
 ---
 
