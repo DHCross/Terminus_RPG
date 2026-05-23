@@ -1,304 +1,656 @@
-/* Terminus Civic Record - Character Sheet Styling */
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;600&display=swap');
+/* ── Terminus RPG Civic Field Record character sheet styling ── */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;800&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@400;600;700;800&family=Reenie+Beanie&display=swap');
+
+/* ── BASE CSS VARIABLE SYSTEM ── */
+.terminus-sheet-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px;
+  background: #0B0F19; /* Sleek dark ambient framing the page */
+  border-radius: 12px;
+  border: 1px solid #1E293B;
+  box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+
+  /* Fallback / Default (Human Seeker) values */
+  --ts-bg-color: #F5F0E3; 
+  --ts-main-border-color: #2D2A26; 
+  --ts-ink-color: #263859; /* Navy blue handwritten ink */
+  --ts-accent-color: #8C7A5F; /* Vintage gold/bronze */
+  --ts-stamp-color: #B91C1C; /* Seal red */
+  --ts-sheet-border: 8px double var(--ts-main-border-color);
+  --ts-border-radius: 2px;
+}
+
+/* ── 1. LINEAGE THEMES (Controls Paper, Outer Frame, and Ink) ── */
+
+/* Human: Traditional warm linen paper, classic borders, administrative navy ink */
+.skin-lineage-human {
+  --ts-bg-color: #F5F0E3;
+  --ts-main-border-color: #2D2A26;
+  --ts-ink-color: #1A365D;
+  --ts-sheet-border: 8px double var(--ts-main-border-color);
+  --ts-border-radius: 4px;
+}
+
+/* Stoneborn: Sandstone/clay heavy parchment, monolithic thick frame, dark iron ink */
+.skin-lineage-stoneborn {
+  --ts-bg-color: #E6DFD3;
+  --ts-main-border-color: #3E352F;
+  --ts-ink-color: #2D3748;
+  --ts-sheet-border: 12px double var(--ts-main-border-color);
+  --ts-border-radius: 0px; /* Monolithic corners */
+}
+.skin-lineage-stoneborn .ts-lined-box {
+  background-image: repeating-linear-gradient(to bottom, transparent, transparent 23px, rgba(62, 53, 47, 0.1) 23px, rgba(62, 53, 47, 0.1) 24px);
+}
+
+/* High Alfar: Pure luminous ivory paper, gold double outline, starlit sapphire-black ink */
+.skin-lineage-highalfar, .skin-lineage-high {
+  --ts-bg-color: #FAF9F6;
+  --ts-main-border-color: #3E2F1F;
+  --ts-ink-color: #0F172A;
+  --ts-sheet-border: 4px double var(--ts-accent-color);
+  --ts-border-radius: 6px;
+}
+.skin-lineage-highalfar .terminus-sheet, .skin-lineage-high .terminus-sheet {
+  outline: 1px solid var(--ts-main-border-color);
+  outline-offset: -8px;
+}
+
+/* Deep Alfar: Cold abyssal grey stone paper, crystalline solid border, obsidian ink */
+.skin-lineage-deepalfar, .skin-lineage-deep {
+  --ts-bg-color: #D3DBD9;
+  --ts-main-border-color: #22333B;
+  --ts-ink-color: #0A1417;
+  --ts-sheet-border: 6px solid var(--ts-main-border-color);
+  --ts-border-radius: 0px;
+}
+.skin-lineage-deepalfar .ts-inner-border, .skin-lineage-deep .ts-inner-border {
+  border-width: 2px;
+}
+
+/* Wild Alfar: Mossy/ivy green forest parchment, irregular dashed borders, rich bark-brown ink */
+.skin-lineage-wildalfar, .skin-lineage-wild {
+  --ts-bg-color: #E5EDE9;
+  --ts-main-border-color: #4A3525;
+  --ts-ink-color: #3E2718;
+  --ts-sheet-border: 5px dashed var(--ts-main-border-color);
+  --ts-border-radius: 14px;
+}
+.skin-lineage-wildalfar .ts-lined-box, .skin-lineage-wild .ts-lined-box {
+  background-image: repeating-linear-gradient(to bottom, transparent, transparent 23px, rgba(74, 53, 37, 0.08) 23px, rgba(74, 53, 37, 0.08) 24px);
+}
+
+
+/* ── 2. ORDER THEMES (Controls Stamp Ink, Abilities Accent, and Seals) ── */
+
+/* Seeker: Star navigation blue stamp */
+.skin-order-seeker {
+  --ts-stamp-color: #1D4ED8;
+  --ts-accent-color: #2563EB;
+}
+
+/* Breaker: Rupturing industrial flame-orange stamp */
+.skin-order-breaker {
+  --ts-stamp-color: #C2410C;
+  --ts-accent-color: #EA580C;
+}
+
+/* Warden: Protective aegis forest green stamp */
+.skin-order-warden {
+  --ts-stamp-color: #047857;
+  --ts-accent-color: #16A34A;
+}
+
+/* Rival: Combat blood-scarlet stamp */
+.skin-order-rival {
+  --ts-stamp-color: #B91C1C;
+  --ts-accent-color: #DC2626;
+}
+
+/* Broker: Formal plum wax-seal violet stamp */
+.skin-order-broker {
+  --ts-stamp-color: #6D28D9;
+  --ts-accent-color: #7C3AED;
+}
+
+/* Shade: Classified shadowy charcoal faded stamp */
+.skin-order-shade {
+  --ts-stamp-color: #374151;
+  --ts-accent-color: #4B5563;
+}
+
+
+/* ── 3. COMPONENT STYLES UTILIZING DYNAMIC VARS ── */
 
 .terminus-sheet {
-  background-color: #EFEBE0; /* Parchment base */
-  color: #2D2A26;
-  font-family: 'Cormorant Garamond', serif;
-  padding: 12px;
-  border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.5), inset 0 0 40px rgba(160, 140, 110, 0.2);
+  background-color: var(--ts-bg-color);
+  background-image: 
+    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.4) 0%, rgba(253, 251, 247, 0) 100%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cfilter id='paper-grain'%3E%3CfeTurbulence type='fracture' baseFrequency='0.04' numOctaves='3' result='noise'%3E%3C/feTurbulence%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0.5 0 0 0 0 0.4 0 0 0 0 0.3 0 0 0 0.07 0' result='colorNoise'%3E%3C/feColorMatrix%3E%3CfeComposite operator='in' in2='SourceGraphic'%3E%3C/feComposite%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23paper-grain)' opacity='0.7'/%3E%3C/svg%3E");
+  color: var(--ts-main-border-color);
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  padding: 14px;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 720px;
+  border: var(--ts-sheet-border);
+  border-radius: var(--ts-border-radius);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.4);
   position: relative;
-  max-width: 650px;
-  margin: 0 auto;
-  border: 1px solid #C4B9A3;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Double inner border effect */
 .ts-inner-border {
-  border: 2px solid #5C5549;
-  border-radius: 8px;
+  border: 1px solid var(--ts-main-border-color);
   padding: 24px;
   position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
-.ts-inner-border::before {
-  content: '';
-  position: absolute;
-  top: 4px; left: 4px; right: 4px; bottom: 4px;
-  border: 1px solid rgba(92, 85, 73, 0.4);
-  border-radius: 6px;
-  pointer-events: none;
-}
-
-/* Header */
-.ts-header {
+/* Header section */
+.ts-top-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 2px solid #5C5549;
-  padding-bottom: 12px;
-  margin-bottom: 16px;
-}
-
-.ts-title-block {
-  flex-grow: 1;
-}
-
-.ts-name {
-  font-family: 'Cinzel', serif;
-  font-size: 32px;
-  font-weight: 700;
-  letter-spacing: 2px;
-  margin: 0 0 4px 0;
-  color: #1A1816;
-}
-
-.ts-subtitle {
-  font-family: 'Inter', sans-serif;
-  font-size: 11px;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  color: #4A453A;
-  font-weight: 600;
-}
-
-.ts-seal-placeholder {
-  width: 60px;
-  height: 60px;
-  flex-shrink: 0;
-  margin-left: 20px;
-}
-
-.ts-seal-circle {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  border: 2px dashed #7A7261;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: 'Cinzel', serif;
-  font-size: 24px;
-  color: #7A7261;
-  transform: rotate(-15deg);
-}
-
-/* Body Layout */
-.ts-body-grid {
-  display: grid;
-  grid-template-columns: 280px 1fr;
-  gap: 24px;
-}
-
-/* Left Column */
-.ts-col-left {
-  display: flex;
-  flex-direction: column;
+  margin-bottom: 12px;
   gap: 16px;
 }
 
-.ts-portrait-area {
-  width: 100%;
-  height: 380px;
-  background-color: #DCD5C4;
-  border: 1px solid #A8A08D;
-  border-radius: 4px;
-  overflow: hidden;
+.ts-brand {
+  flex: 1;
 }
 
-.ts-portrait-placeholder {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.ts-brand-main {
+  font-family: 'Cinzel', serif;
+  font-size: 11pt;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: var(--ts-main-border-color);
+  line-height: 1.2;
+}
+
+.ts-brand-motto {
   font-family: 'Inter', sans-serif;
-  font-size: 12px;
-  color: #7A7261;
-  background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0,0,0,0.03) 10px, rgba(0,0,0,0.03) 20px);
-}
-
-/* Origin Block */
-.ts-origin-block {
-  background-color: rgba(255,255,255,0.3);
-  border: 1px solid #C4B9A3;
-  border-radius: 4px;
-  padding: 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.ts-field-row {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  font-size: 14px;
-  line-height: 1.3;
-}
-
-.ts-icon-placeholder {
-  font-size: 12px;
-  filter: grayscale(100%) opacity(0.7);
+  font-size: 6.5pt;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--ts-main-border-color);
+  opacity: 0.75;
+  text-transform: uppercase;
   margin-top: 2px;
 }
 
-.ts-field-label {
-  font-weight: 600;
-  color: #1A1816;
+.ts-crest-center {
+  flex-shrink: 0;
+  color: var(--ts-main-border-color);
 }
 
-.ts-field-val {
-  color: #333;
-}
-
-/* Right Column */
-.ts-col-right {
+.ts-meta-stamp-area {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-}
-
-.ts-rules-block {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.ts-section-title {
-  font-family: 'Cinzel', serif;
-  font-size: 14px;
-  font-weight: 700;
-  letter-spacing: 1.5px;
-  color: #2D2A26;
-  display: flex;
-  align-items: center;
-}
-
-.ts-section-title.ts-center {
-  justify-content: center;
-  margin-bottom: 8px;
-}
-
-.ts-section-title::before, .ts-section-title::after {
-  content: '';
-  flex-grow: 1;
-  height: 1px;
-  background-color: #A8A08D;
-  margin: 0 10px;
-}
-.ts-section-title.ts-center::before, .ts-section-title.ts-center::after {
-  max-width: 40px;
-}
-
-.ts-text-body {
-  font-size: 15px;
-  line-height: 1.4;
-  color: #333;
-}
-
-.ts-divider {
-  height: 1px;
-  background-color: #DCD5C4;
-  margin: 4px 0;
-}
-
-.ts-divider-subtle {
-  height: 1px;
-  background-image: linear-gradient(to right, transparent, #DCD5C4, transparent);
-  margin: 6px 0;
-}
-
-.ts-abilities-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
+  align-items: flex-end;
   gap: 6px;
+  flex-shrink: 0;
 }
 
-.ts-abilities-list li {
-  font-size: 15px;
-  font-weight: 600;
+.ts-doc-number {
+  font-family: 'Inter', sans-serif;
+  font-size: 8pt;
+  font-weight: 700;
+  color: var(--ts-main-border-color);
+  letter-spacing: 0.02em;
+}
+
+.ts-official-stamp-box {
+  border: 1px dashed var(--ts-accent-color);
+  width: 72px;
+  height: 72px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(253, 251, 247, 0.4);
+}
+
+.ts-stamp-label {
+  position: absolute;
+  top: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--ts-bg-color);
+  font-family: 'Inter', sans-serif;
+  font-size: 5.5pt;
+  font-weight: 800;
+  color: var(--ts-accent-color);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0 4px;
+  white-space: nowrap;
+}
+
+.ts-red-ink-seal {
+  transform: rotate(-12deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ts-stamp-color);
+}
+
+/* Header Plate Banner */
+.ts-header-plate {
+  background: #1D1816;
+  color: #F5EBDD;
+  border: 4px double var(--ts-accent-color);
+  text-align: center;
+  padding: 10px;
+  margin-bottom: 20px;
+}
+
+.ts-plate-sub {
+  font-family: 'Inter', sans-serif;
+  font-size: 7.5pt;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #C5B299;
+}
+
+.ts-plate-main {
+  font-family: 'Cinzel', serif;
+  font-size: 16pt;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-top: 3px;
+}
+
+/* Universal Section Headers */
+.ts-section-header {
+  border-bottom: 1.5px solid var(--ts-main-border-color);
   display: flex;
   align-items: center;
   gap: 8px;
+  margin-top: 14px;
+  margin-bottom: 10px;
+  padding-bottom: 3px;
 }
 
-/* Mechanics Grid */
-.ts-mechanics-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+.ts-section-num {
+  font-family: 'Cinzel', serif;
+  font-size: 10pt;
+  font-weight: 700;
+  background: var(--ts-main-border-color);
+  color: var(--ts-bg-color);
+  width: 20px;
+  height: 20px;
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.ts-section-title-text {
+  font-family: 'Cinzel', serif;
+  font-size: 11pt;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ts-main-border-color);
+}
+
+.ts-section-instruction {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 10pt;
+  font-style: italic;
+  color: var(--ts-main-border-color);
+  opacity: 0.75;
+  margin: -6px 0 8px 0;
+}
+
+/* Handwritten Text Elements - color matches dynamic ink variables */
+.handwriting {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-style: italic;
+  font-weight: 600;
+  color: var(--ts-ink-color) !important; /* Dynamic blue/rust/iron ink */
+  text-shadow: 0.5px 0.5px 0px rgba(0, 0, 0, 0.05);
+}
+
+/* SECTION I FIELDS */
+.ts-identity-fields {
+  display: flex;
   gap: 16px;
+  margin-bottom: 16px;
+}
+
+.ts-field-inline {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  border-bottom: 1.5px solid var(--ts-main-border-color);
+  padding-bottom: 2px;
+}
+
+.ts-inline-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 7.5pt;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ts-main-border-color);
+  opacity: 0.75;
+}
+
+.ts-inline-value {
+  font-size: 12.5pt;
+  line-height: 1.1;
+  padding-left: 4px;
+}
+
+/* SECTION II LINED BOX */
+.ts-lined-box {
+  border: 1.5px solid var(--ts-main-border-color);
+  border-radius: 4px;
+  padding: 14px 18px 24px;
+  background-color: rgba(253, 251, 247, 0.4);
+  background-image: repeating-linear-gradient(to bottom, transparent, transparent 23px, rgba(140, 122, 95, 0.15) 23px, rgba(140, 122, 95, 0.15) 24px);
+  min-height: 98px;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.handwriting-block {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 12pt;
+  font-style: italic;
+  font-weight: 600;
+  line-height: 24px;
+  color: var(--ts-ink-color);
+}
+
+.ts-lined-box-divider {
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--ts-bg-color);
+  padding: 0 8px;
+  color: var(--ts-main-border-color);
+}
+
+/* SECTION III SKILLS & THRESHOLDS */
+.ts-skills-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.ts-skill-column {
+  border-right: 1.5px solid rgba(140, 122, 95, 0.35);
+  padding-right: 14px;
+  display: flex;
+  flex-direction: column;
+}
+
+.ts-skill-column:last-child {
+  border-right: none;
+  padding-right: 0;
+}
+
+.ts-skill-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 12px;
+  height: 52px;
+}
+
+.ts-skill-label-block {
+  flex: 1;
+}
+
+.ts-skill-label-name {
+  font-family: 'Cinzel', serif;
+  font-size: 8.5pt;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--ts-main-border-color);
+  line-height: 1.2;
+}
+
+.ts-die-box-wrapper {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--ts-main-border-color);
+}
+
+.ts-die-vector {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(1px 2px 2px rgba(45,42,38,0.15));
+}
+
+.ts-rating-square {
+  border: 1.5px solid var(--ts-main-border-color);
+  width: 36px;
+  height: 36px;
+  background: rgba(253, 251, 247, 0.7);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: inset 0 0 4px rgba(0,0,0,0.05);
+}
+
+.ts-square-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 5pt;
+  font-weight: 800;
+  color: var(--ts-main-border-color);
+  opacity: 0.75;
+  letter-spacing: 0.05em;
+  line-height: 1;
+}
+
+.ts-square-val {
+  font-family: 'Cinzel', serif;
+  font-size: 9.5pt;
+  font-weight: 700;
+  color: var(--ts-main-border-color);
+  line-height: 1.1;
+  margin-top: 2px;
+}
+
+.ts-threshold-track {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1.5px solid rgba(140, 122, 95, 0.25);
+  padding-top: 8px;
   margin-top: auto;
 }
 
-.ts-mechanics-box {
-  border: 1px solid #A8A08D;
+.ts-track-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 7.5pt;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  color: var(--ts-main-border-color);
+}
+
+.ts-threshold-row-circles {
+  display: flex;
+  gap: 5px;
+}
+
+.ts-bubble {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  border: 2px solid var(--ts-main-border-color);
+  background: transparent;
+  box-sizing: border-box;
+}
+
+.ts-bubble.filled {
+  background: var(--ts-main-border-color);
+}
+
+.ts-bubble.unlocked {
+  background: transparent;
+  border-style: solid;
+}
+
+/* SECTION IV ORDER ABILITIES */
+.ts-abilities-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.ts-ability-card {
+  border: 1.5px solid var(--ts-main-border-color);
   border-radius: 4px;
   padding: 12px;
-  background-color: rgba(255,255,255,0.2);
+  background: rgba(253, 251, 247, 0.4);
+  position: relative;
+  box-sizing: border-box;
 }
 
-.ts-stat-row {
+.ts-ability-badge {
+  position: absolute;
+  top: -8px;
+  left: 10px;
+  background: var(--ts-main-border-color);
+  color: var(--ts-bg-color);
+  font-family: 'Cinzel', serif;
+  font-size: 7pt;
+  font-weight: 800;
+  width: 16px;
+  height: 16px;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 16px;
-  font-weight: 600;
-}
-
-.ts-die-hex {
-  display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 36px;
-  background-color: #2D2A26;
-  color: #EFEBE0;
-  font-family: 'Inter', sans-serif;
-  font-size: 14px;
-  font-weight: 700;
-  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  border-radius: 2px;
+  border: 1px solid var(--ts-accent-color);
 }
 
-.ts-threshold-row {
+.ts-ability-name {
+  font-family: 'Cinzel', serif;
+  font-size: 9pt;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--ts-main-border-color);
+  margin: 0 0 6px 0;
+  border-bottom: 1.5px dashed rgba(140, 122, 95, 0.3);
+  padding-bottom: 3px;
+  padding-left: 10px;
+}
+
+.ts-ability-desc {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 9.5pt;
+  line-height: 1.35;
+  color: var(--ts-main-border-color);
+  opacity: 0.85;
+  margin: 0;
+}
+
+/* SECTION V BACKGROUND & GEAR */
+.ts-gear-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.ts-field-row-full {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  border-bottom: 1.5px solid var(--ts-main-border-color);
+  padding-bottom: 2px;
+}
+
+.ts-row-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 7.5pt;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ts-main-border-color);
+  opacity: 0.75;
+  white-space: nowrap;
+}
+
+.ts-row-value {
+  font-size: 12.5pt;
+  line-height: 1.1;
+  flex: 1;
+  padding-left: 4px;
+}
+
+/* FOOTER SECTION */
+.ts-footer-row {
+  border-top: 1.5px solid var(--ts-main-border-color);
+  padding-top: 10px;
+  margin-top: auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 15px;
-  font-weight: 600;
-  margin-bottom: 6px;
+  color: var(--ts-main-border-color);
 }
 
-.ts-threshold-circles {
+.ts-gear-deco {
   display: flex;
-  gap: 4px;
+  align-items: center;
+  opacity: 0.8;
+  color: var(--ts-main-border-color);
 }
 
-.ts-circle {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  border: 1px solid #2D2A26;
+.ts-footer-text {
+  font-family: 'Inter', sans-serif;
+  font-size: 7pt;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--ts-main-border-color);
+  opacity: 0.8;
+  text-transform: uppercase;
 }
 
-.ts-circle-filled {
-  background-color: #2D2A26;
-}
-
-.ts-circle-empty {
-  background-color: transparent;
-}
-
-.ts-gear-placeholder {
-  text-align: center;
-  font-family: 'Cinzel', serif;
-  font-size: 12px;
-  color: #5C5549;
-  border-top: 1px dashed #A8A08D;
-  padding-top: 12px;
-  margin-top: 8px;
+/* ── PRINT OPTIMIZATION ── */
+@media print {
+  body {
+    background: white !important;
+  }
+  .terminus-sheet-container {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+  }
+  .terminus-sheet {
+    box-shadow: none !important;
+    border-width: 6px !important;
+    width: 8.5in !important;
+    height: 11in !important;
+    padding: 10px !important;
+    margin: 0 auto !important;
+    background: var(--ts-bg-color) !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
 }

@@ -52,6 +52,7 @@ export default function PrintLayout({ scenes }: Props) {
         }
 
         @media print {
+          @page { margin: 0; size: letter; }
           body { margin: 0; padding: 0; }
           .no-print { display: none !important; }
           .print-layout, .print-page, .print-card {

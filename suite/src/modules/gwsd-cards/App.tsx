@@ -18,6 +18,7 @@ import {
 import TextInput from './components/TextInput';
 import SceneRow from './components/SceneRow';
 import PrintLayout from './components/PrintLayout';
+import FullSpreadPrintLayout from './components/FullSpreadPrintLayout';
 import DiagnosticsViewer from './components/DiagnosticsViewer';
 import CharacterStudio from './components/CharacterStudio';
 import MonsterStudio from './components/MonsterStudio';
@@ -256,6 +257,7 @@ export default function App({ pendingScene, pendingScenes, onPendingSceneConsume
   const [promptCopied, setPromptCopied] = useState(false);
   const [parsedDiagnostics, setParsedDiagnostics] = useState<ParsedDiagnosticsReport | null>(null);
   const [cardsMode, setCardsMode] = useState<CardsMode>('parse');
+  const [printLayoutType, setPrintLayoutType] = useState<'deck' | 'spread'>('deck');
 
   interface PlayState {
     activeNodeId: string | null;
@@ -968,7 +970,10 @@ export default function App({ pendingScene, pendingScenes, onPendingSceneConsume
                   </label>
 
                   <button
-                    onClick={() => window.print()}
+                    onClick={() => {
+                      setPrintLayoutType('deck');
+                      setTimeout(() => window.print(), 50);
+                    }}
                     style={{
                       padding: '6px 14px',
                       fontSize: 13,
@@ -977,9 +982,29 @@ export default function App({ pendingScene, pendingScenes, onPendingSceneConsume
                       border: 'none',
                       borderRadius: 6,
                       cursor: 'pointer',
+                      fontWeight: 600,
                     }}
                   >
-                    Print Cards
+                    Print Deck (4-up)
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setPrintLayoutType('spread');
+                      setTimeout(() => window.print(), 50);
+                    }}
+                    style={{
+                      padding: '6px 14px',
+                      fontSize: 13,
+                      background: '#4F46E5',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: 6,
+                      cursor: 'pointer',
+                      fontWeight: 600,
+                    }}
+                  >
+                    Print Spreads (1-up)
                   </button>
 
                   <button onClick={handleExportJSON} style={exportBtnStyle}>
@@ -2017,12 +2042,99 @@ export default function App({ pendingScene, pendingScenes, onPendingSceneConsume
                   </div>
                 </div>
               </div>
+            ) : view === 'print' ? (
+              <div
+                className="no-print animate-fade-in"
+                style={{
+                  background: '#1E293B',
+                  border: '1px solid #334155',
+                  borderRadius: 8,
+                  padding: '16px 20px',
+                  marginBottom: 24,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  gap: 16,
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                }}
+              >
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <span style={{ fontSize: 16 }}>🖨️</span>
+                    <span style={{ fontSize: 14, fontWeight: 700, letterSpacing: '0.05em', color: '#F3F4F6' }}>
+                      PRINT PREVIEW OPTIONS
+                    </span>
+                  </div>
+                  <span style={{ fontSize: 11, color: '#94A3B8' }}>
+                    Select layout, verify margins and formatting, then execute. Keep background graphics enabled.
+                  </span>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <div style={{ display: 'flex', background: '#0F172A', borderRadius: 6, padding: 3, border: '1px solid #334155' }}>
+                    <button
+                      onClick={() => setPrintLayoutType('deck')}
+                      style={{
+                        padding: '6px 12px',
+                        fontSize: 12,
+                        fontWeight: 600,
+                        borderRadius: 4,
+                        border: 'none',
+                        cursor: 'pointer',
+                        background: printLayoutType === 'deck' ? '#374151' : 'transparent',
+                        color: printLayoutType === 'deck' ? 'white' : '#94A3B8',
+                        transition: 'all 0.15s ease',
+                      }}
+                    >
+                      Minimalist Deck (4-up)
+                    </button>
+                    <button
+                      onClick={() => setPrintLayoutType('spread')}
+                      style={{
+                        padding: '6px 12px',
+                        fontSize: 12,
+                        fontWeight: 600,
+                        borderRadius: 4,
+                        border: 'none',
+                        cursor: 'pointer',
+                        background: printLayoutType === 'spread' ? '#4F46E5' : 'transparent',
+                        color: printLayoutType === 'spread' ? 'white' : '#94A3B8',
+                        transition: 'all 0.15s ease',
+                      }}
+                    >
+                      Full Spreads (1-up)
+                    </button>
+                  </div>
+
+                  <button
+                    onClick={() => window.print()}
+                    style={{
+                      padding: '8px 16px',
+                      fontSize: 13,
+                      fontWeight: 700,
+                      background: printLayoutType === 'spread' ? '#4F46E5' : '#374151',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: 6,
+                      cursor: 'pointer',
+                      boxShadow: printLayoutType === 'spread' ? '0 0 12px rgba(79, 70, 229, 0.4)' : 'none',
+                      transition: 'all 0.2s ease',
+                    }}
+                  >
+                    Print Active Layout
+                  </button>
+                </div>
+              </div>
             ) : null}
 
             {/* Print layout: always mounted for window.print(), visible on screen only in print view */}
             {scenes.length > 0 && (
               <div className={`print-only${view === 'print' ? ' print-preview' : ''}`}>
-                <PrintLayout scenes={scenes} />
+                {printLayoutType === 'deck' ? (
+                  <PrintLayout scenes={scenes} />
+                ) : (
+                  <FullSpreadPrintLayout scenes={scenes} />
+                )}
               </div>
             )}
           </>
