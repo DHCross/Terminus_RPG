@@ -7,7 +7,7 @@ import type { Scene } from '../../gwsd-cards/types';
 type SceneTab = 'forge' | 'parser';
 
 export function SceneCardsWorkbench() {
-  const [activeTab, setActiveTab] = useState<SceneTab>('forge');
+  const [activeTab, setActiveTab] = useState<SceneTab>('parser');
   const [pendingScene, setPendingScene] = useState<Scene | null>(null);
   const [pendingScenes, setPendingScenes] = useState<Scene[] | null>(null);
 
