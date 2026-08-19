@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import type { Character, CharacterDefinition, ValidationDiagnostic } from '../../coherence-engine/src/index.ts';
-import { ARMOR_REDUCTION } from '../../coherence-engine/src/index.ts';
+import { BODY_ARMOR, sheetArmorLine, toEngineArmor } from '../../../data/terminus/armor';
 import {
   buildCharacterFromDraft,
   CHARACTER_PRESETS,
@@ -106,9 +106,9 @@ export default function CharacterStudio() {
               </Field>
               <Field label="Armor">
                 <select value={draft.armor} onChange={(event) => setDraft({ ...draft, armor: event.target.value as CharacterDraft['armor'] })} style={selectStyle}>
-                  {Object.keys(ARMOR_REDUCTION).map((armor) => (
-                    <option key={armor} value={armor}>
-                      {armor} · -{ARMOR_REDUCTION[armor as keyof typeof ARMOR_REDUCTION]} impact
+                  {BODY_ARMOR.filter((piece) => piece.id === 'none' || piece.id === piece.engineArmor).map((piece) => (
+                    <option key={piece.id} value={piece.engineArmor}>
+                      {sheetArmorLine(piece.id, 'generic')}
                     </option>
                   ))}
                 </select>
@@ -160,7 +160,32 @@ export default function CharacterStudio() {
       sidebar={
         <>
           <PanelSection title="Generated Character" description="Live engine output from the current draft.">
-            <CharacterSheetPreview character={preview.character} />
+            <CharacterSheetPreview
+              character={preview.character}
+              armorId={draft.armor}
+              onChange={(patch) => {
+                setDraft((current) => ({
+                  ...current,
+                  name: patch.name ?? current.name,
+                  background: patch.background ?? current.background,
+                  immediateWant: patch.approach ?? current.immediateWant,
+                  notesText: patch.objective ?? current.notesText,
+                  armor: patch.armor ? toEngineArmor(patch.armor) : current.armor,
+                  actions: {
+                    ...current.actions,
+                    force: patch.force ?? current.actions.force,
+                    agility: patch.agility ?? current.actions.agility,
+                    willpower: patch.willpower ?? current.actions.willpower,
+                  },
+                  primaryWeapon: patch.primaryWeapon
+                    ? { ...current.primaryWeapon, name: patch.primaryWeapon }
+                    : current.primaryWeapon,
+                  secondaryWeapon: patch.secondaryItem
+                    ? { ...current.secondaryWeapon, name: patch.secondaryItem }
+                    : current.secondaryWeapon,
+                }));
+              }}
+            />
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 16 }}>
               <button onClick={saveCurrent} style={primaryButtonStyle}>Save to Roster</button>
               <button onClick={exportRoster} style={secondaryButtonStyle} disabled={roster.length === 0}>
@@ -194,7 +219,7 @@ export default function CharacterStudio() {
                       <div style={{ fontSize: 14, fontWeight: 700, color: '#F8FAFC' }}>{entry.character.name}</div>
                       <div style={{ fontSize: 11, color: '#64748B' }}>{formatTimestamp(entry.savedAt)}</div>
                     </div>
-                    <div style={{ fontSize: 12, color: '#CBD5E1' }}>Initiative {entry.character.initiativePhase} · Armor {entry.character.armor}</div>
+                    <div style={{ fontSize: 12, color: '#CBD5E1' }}>Initiative {entry.character.initiativePhase} · {sheetArmorLine(entry.character.armor, 'generic')}</div>
                     <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                       <button onClick={() => loadRecord(entry)} style={secondaryButtonStyle}>Load</button>
                       <button

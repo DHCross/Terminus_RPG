@@ -6,11 +6,30 @@ import { useState } from 'react';
 import type { CharacterCardData, DieRank, SkillKey, ThresholdKey, WorkingVerb } from './characterData';
 import { DIE_FACES, SKILL_THRESHOLD_LINK } from './characterData';
 
-/* ── Character art registry ── */
-const CHARACTER_ART: Record<string, string> = {
-  'Durgrim Ironvow': '/art/durgrim-ironvow.jpg',
-  'Sylarien Moon-Glass': '/art/sylarien-moon-glass.jpg',
-  'Brother Caedmon of the Iron Vow': '/art/brother-caedmon.jpg',
+/* ── Character art registry with optimal focus positions ── */
+interface CharacterArtConfig {
+  src: string;
+  position: string;
+}
+
+const CHARACTER_ART: Record<string, CharacterArtConfig> = {
+  'Durgrim Ironvow': {
+    src: '/art/durgrim-ironvow.jpg',
+    position: 'center 14%',
+  },
+  'Sylarien Moon-Glass': {
+    src: '/art/sylarien-moon-glass.jpg',
+    position: 'center 10%',
+  },
+  'Brother Caedmon of the Iron Vow': {
+    src: '/art/brother-caedmon.jpg',
+    position: 'center 12%',
+  },
+};
+
+const DEFAULT_ART: CharacterArtConfig = {
+  src: '/art/durgrim-ironvow.jpg',
+  position: 'center 12%',
 };
 
 /* ── Origin themes ── */
@@ -28,21 +47,21 @@ const ORIGIN_THEMES: Record<string, OriginTheme> = {
     secondary: '#cd7f3266',
     glow: 'rgba(205,127,50,0.4)',
     badge: 'rgba(205,127,50,0.12)',
-    gradient: 'linear-gradient(180deg, rgba(11,18,32,0) 0%, rgba(11,18,32,0.4) 50%, rgba(11,18,32,0.98) 100%)',
+    gradient: 'linear-gradient(180deg, rgba(11,18,32,0.4) 0%, rgba(11,18,32,0) 25%, rgba(11,18,32,0) 55%, rgba(11,18,32,0.82) 85%, #0b1220 100%)',
   },
   Elf: {
     primary: '#a78bfa',
     secondary: '#a78bfa66',
     glow: 'rgba(167,139,250,0.4)',
     badge: 'rgba(167,139,250,0.12)',
-    gradient: 'linear-gradient(180deg, rgba(11,18,32,0) 0%, rgba(11,18,32,0.4) 50%, rgba(11,18,32,0.98) 100%)',
+    gradient: 'linear-gradient(180deg, rgba(11,18,32,0.4) 0%, rgba(11,18,32,0) 25%, rgba(11,18,32,0) 55%, rgba(11,18,32,0.82) 85%, #0b1220 100%)',
   },
   Human: {
     primary: '#f59e0b',
     secondary: '#f59e0b66',
     glow: 'rgba(245,158,11,0.4)',
     badge: 'rgba(245,158,11,0.12)',
-    gradient: 'linear-gradient(180deg, rgba(11,18,32,0) 0%, rgba(11,18,32,0.4) 50%, rgba(11,18,32,0.98) 100%)',
+    gradient: 'linear-gradient(180deg, rgba(11,18,32,0.4) 0%, rgba(11,18,32,0) 25%, rgba(11,18,32,0) 55%, rgba(11,18,32,0.82) 85%, #0b1220 100%)',
   },
 };
 
@@ -51,7 +70,7 @@ const DEFAULT_THEME: OriginTheme = {
   secondary: '#64748b66',
   glow: 'rgba(100,116,139,0.3)',
   badge: 'rgba(100,116,139,0.12)',
-  gradient: 'linear-gradient(180deg, rgba(11,18,32,0) 0%, rgba(11,18,32,0.98) 100%)',
+  gradient: 'linear-gradient(180deg, rgba(11,18,32,0.4) 0%, rgba(11,18,32,0) 25%, rgba(11,18,32,0) 55%, rgba(11,18,32,0.82) 85%, #0b1220 100%)',
 };
 
 const VERB_COLORS: Record<WorkingVerb, string> = {
@@ -185,6 +204,8 @@ export function CoherenceCharacterCard({ character: c }: { character: CharacterC
     }
   };
 
+  const artConfig = CHARACTER_ART[c.name] ?? DEFAULT_ART;
+
   return (
     <div
       style={{
@@ -200,9 +221,9 @@ export function CoherenceCharacterCard({ character: c }: { character: CharacterC
       }}
     >
       {/* ── Cinematic Portrait Band ── */}
-      <div style={{ position: 'relative', height: 250, overflow: 'hidden' }}>
+      <div style={{ position: 'relative', height: 380, overflow: 'hidden' }}>
         <img
-          src={CHARACTER_ART[c.name] || '/art/durgrim-ironvow.jpg'}
+          src={artConfig.src}
           alt={c.name}
           style={{
             position: 'absolute',
@@ -210,13 +231,13 @@ export function CoherenceCharacterCard({ character: c }: { character: CharacterC
             width: '100%',
             height: '100%',
             objectFit: 'cover',
-            objectPosition: 'top center',
+            objectPosition: artConfig.position,
           }}
         />
         <div style={{ position: 'absolute', inset: 0, background: theme.gradient }} />
         
         {/* Top badges */}
-        <div style={{ position: 'absolute', top: 16, left: 20, display: 'flex', gap: 8 }}>
+        <div style={{ position: 'absolute', top: 16, left: 20, display: 'flex', gap: 8, zIndex: 2 }}>
           <span
             style={{
               fontSize: 10,
@@ -229,7 +250,7 @@ export function CoherenceCharacterCard({ character: c }: { character: CharacterC
               border: `1px solid ${theme.secondary}`,
               borderRadius: 6,
               padding: '4px 10px',
-              backdropFilter: 'blur(4px)',
+              backdropFilter: 'blur(6px)',
             }}
           >
             {c.legacy}
@@ -242,10 +263,11 @@ export function CoherenceCharacterCard({ character: c }: { character: CharacterC
               color: '#94a3b8',
               fontWeight: 700,
               fontFamily: 'Inter, sans-serif',
-              background: 'rgba(11,18,32,0.75)',
+              background: 'rgba(11,18,32,0.8)',
               border: '1px solid #1e293b',
               borderRadius: 6,
               padding: '4px 10px',
+              backdropFilter: 'blur(6px)',
             }}
           >
             {c.approach}
@@ -264,6 +286,7 @@ export function CoherenceCharacterCard({ character: c }: { character: CharacterC
             padding: '6px 14px',
             backdropFilter: 'blur(6px)',
             textAlign: 'center',
+            zIndex: 2,
           }}
         >
           <div style={{ fontSize: 9, letterSpacing: '2px', color: theme.primary, fontWeight: 800, fontFamily: 'Inter, sans-serif', textTransform: 'uppercase' }}>Level</div>
@@ -271,11 +294,11 @@ export function CoherenceCharacterCard({ character: c }: { character: CharacterC
         </div>
 
         {/* Character Title at bottom of banner */}
-        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '0 24px 18px' }}>
+        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '0 24px 20px', zIndex: 2 }}>
           <div style={{ fontSize: 32, fontWeight: 800, color: '#f8fafc', lineHeight: 1.1, textShadow: '0 3px 15px rgba(0,0,0,0.9)' }}>
             {c.name}
           </div>
-          <div style={{ fontSize: 13.5, color: '#cbd5e1', marginTop: 4 }}>
+          <div style={{ fontSize: 13.5, color: '#cbd5e1', marginTop: 4, textShadow: '0 2px 8px rgba(0,0,0,0.8)' }}>
             <span style={{ color: theme.primary, fontWeight: 600 }}>{c.origin}</span>
             <span style={{ margin: '0 6px', color: '#475569' }}>·</span>
             <span style={{ color: '#e2e8f0' }}>{c.legacyRole.fieldFunction}</span>

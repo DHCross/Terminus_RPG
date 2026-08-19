@@ -57,7 +57,7 @@ function TerminusDashboard() {
           </p>
           <div className="dashboard-actions">
             <Link className="btn btn-primary" to="/characters">
-              <Users size={18} /> Create Character
+              <Users size={18} /> Open Character Vault
             </Link>
             <Link className="btn btn-secondary" to="/scene-cards">
               <Layers size={18} /> Build Scene Cards
@@ -75,7 +75,7 @@ function TerminusDashboard() {
                 <span>Agility {activeCharacter.skills.Agility || 'd4'}</span>
                 <span>Willpower {activeCharacter.skills.Willpower || 'd4'}</span>
               </div>
-              <Link className="btn btn-secondary" to="/characters">
+              <Link className="btn btn-secondary" to="/characters?tab=tracker">
                 <TrendingUp size={16} /> Continue Record
               </Link>
             </>
@@ -164,7 +164,7 @@ function TerminusDashboard() {
             <Link to="/rules" className="action-card">
               <BookOpen size={20} />
               <span>Rules Reference</span>
-              <small>Complete hyperlinked rules document.</small>
+              <small>Alpha 0.2. Armor buys an Endure answer.</small>
             </Link>
           </div>
         </div>

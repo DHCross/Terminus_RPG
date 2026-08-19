@@ -114,6 +114,15 @@ export interface CharacterCreationState {
   // Equipment
   equipment?: EquipmentSet;
 
+  // Civic sheet copy
+  speciesLabel?: string;
+  approach?: string;
+  backgroundSentence?: string;
+  currentObjective?: string;
+  primaryWeapon?: string;
+  secondaryItem?: string;
+  armor?: string;
+
   // Advancement tracking
   advancementPoints: number;
   completedOperations: number;

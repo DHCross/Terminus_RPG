@@ -3,6 +3,7 @@
  * Use these IDs to link to specific sections of the rules reference document.
  */
 export const RULES_SECTIONS = {
+  'one-pager': 'One-Page Core',
   'core-concepts': 'Core Concepts',
   orders: 'Orders',
   species: 'Species & Lineages',
@@ -11,6 +12,11 @@ export const RULES_SECTIONS = {
   'skill-disciplines': 'Skill Disciplines',
   advancement: 'Advancement',
   equipment: 'Equipment',
+  armor: 'Armor Permissions',
+  signatures: 'Signatures',
+  vectors: 'Vectors',
+  'old-work': 'Old Work',
+  factions: 'Interested Parties',
   'magic-modes': 'Magic Modes',
   'working-verbs': 'Working Verbs',
   'rupture-casting': 'Rupture Casting',

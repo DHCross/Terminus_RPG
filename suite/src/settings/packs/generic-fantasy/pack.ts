@@ -1,8 +1,10 @@
 /* ── Generic Fantasy Setting Pack ── */
 
-import { LayoutDashboard } from 'lucide-react';
+import { LayoutDashboard, Users } from 'lucide-react';
 import type { SettingPackUI } from '../../types';
 import GenericFantasyDashboard from './GenericFantasyDashboard';
+import { AurelCharacterVault } from './AurelCharacterVault';
+import { AurelNpcVault } from './AurelNpcVault';
 
 export const GENERIC_FANTASY_PACK_UI: SettingPackUI = {
   id: 'generic-fantasy',
@@ -18,9 +20,17 @@ export const GENERIC_FANTASY_PACK_UI: SettingPackUI = {
     badge: 'Preview 0.1',
   },
 
-  nav: [{ to: '/', label: 'Dashboard', icon: LayoutDashboard, end: true }],
+  nav: [
+    { to: '/', label: 'Dashboard', icon: LayoutDashboard, end: true },
+    { to: '/characters', label: 'Characters', icon: Users },
+    { to: '/npcs', label: 'NPC Vault', icon: Users },
+  ],
 
-  routes: [{ path: '', element: GenericFantasyDashboard, index: true }],
+  routes: [
+    { path: '', element: GenericFantasyDashboard, index: true },
+    { path: 'characters', element: AurelCharacterVault },
+    { path: 'npcs', element: AurelNpcVault },
+  ],
 
   dashboard: GenericFantasyDashboard,
 };

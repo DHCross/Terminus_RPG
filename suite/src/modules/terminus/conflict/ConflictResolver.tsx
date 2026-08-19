@@ -52,7 +52,7 @@ function resultCopy(winner: Winner | null) {
   if (winner === 'tie') {
     return {
       title: 'Pressure Locks',
-      detail: 'Tie state. Defender holds by default; check whether Exert, Endure, or another pressure choice changes the exchange.',
+      detail: 'Tie. Ties favor the responding side. If they answered with an armor permission, ties go to the armored defender.',
       color: '#fbbf24',
       bg: 'rgba(180, 83, 9, 0.22)',
       border: 'rgba(251, 191, 36, 0.6)',

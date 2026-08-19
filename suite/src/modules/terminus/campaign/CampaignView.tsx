@@ -97,7 +97,7 @@ const QA_DATA: QAItem[] = [
     topic: 'How does the Coherence System resolve conflict?',
     question: 'How does the basic mechanic work?',
     asker: 'zerotheory',
-    answer: 'The Coherence System resolves conflict through the Core Exchange: the acting side rolls an Action Skill (Force, Agility, or Willpower) against the defender’s chosen Threshold (Endure, Avoid, or Exert).\n\nThere are no to-hit rolls and no passive armor class. Higher roll takes control of the exchange. The losing side routes the consequence through their chosen Threshold, marking off limited Threshold Circles based on the weapon\'s Impact and Vectors.'
+    answer: 'The Coherence System resolves conflict through the Core Exchange: the acting side rolls an Action Skill (Force, Agility, or Willpower) against the defender’s chosen Threshold (Endure, Avoid, or Exert).\n\nThere are no to-hit rolls and no passive armor class. Armor does not reduce the result. It buys an Endure answer the fiction would otherwise deny, and ties go to the armored defender. Higher roll takes control. The losing side routes the consequence through their chosen Threshold, marking Threshold Circles from the weapon\'s Impact and Vectors.'
   },
   {
     id: 'one-to-one',
@@ -113,7 +113,7 @@ const QA_DATA: QAItem[] = [
     topic: 'Example of a roll',
     question: 'Could you give an example of a roll?',
     asker: 'zerotheory',
-    answer: 'Sure. A Stoneborn Warden is holding a breach while an anomaly strikes with an iron flail.\n\nThe attacker rolls Force (d10) and gets an 8. The Warden chooses to resist with Endure (d8), trusting heavy plate and bulk, and rolls a 5.\n\nThe attacker takes control. The flail has Impact 3 and the "breaks protection" vector. The Warden marks off Endure circles to absorb the blow. Because Endure circles are limited (derived from Force), taking heavy hits forces the Warden to reposition or call for help before their Threshold breaks.'
+    answer: 'Sure. A Stoneborn Warden in Sworn Harness is holding a breach while an anomaly strikes with an iron flail.\n\nThe attacker rolls Force (d10) and gets an 8. The Warden answers with Endure (d8) — Take Anything lets her treat this as something she can brace — and rolls a 5.\n\nThe attacker takes control. The flail has Impact 3 and Breaks Protection. That Vector strips the Harness permission for the rest of the scene: she is wearing metal that is no longer helping. She still marks Endure circles from the Impact. Next exchange she cannot claim Take Anything until the scene turns over.\n\nShe cannot answer with Avoid while the Harness is on. That was the cost she accepted when she buckled it.'
   },
   {
     id: 'dice-ladder',
@@ -129,7 +129,7 @@ const QA_DATA: QAItem[] = [
     topic: 'Who are the antagonists from the characters’ point of view?',
     question: 'From the point of view of the characters, who or what are the primary antagonists?',
     asker: 'Dan (Hardboiled GMshoe)',
-    answer: 'The primary antagonists are the physical horrors of a Rupture: looping anomalies, fractured beasts, rogue cults exploiting the desync, and corrupt guild masters who let routines slip for profit.\n\nBeyond anomalies, responders face rival cells, desperate factions, and the harsh realities of municipal politics in a rain-slicked city.'
+    answer: 'The horrors of a Rupture are real: looping streets, beasts that should not hold a shape, a counting-house coming down. Those are the symptoms.\n\nThe antagonists are whoever already filed paperwork about the failure. The Accord, which needs a steady supply of small problems. Indemnity houses that priced the drift months ago. Bell-founders whose queue is the delay. Speculators who buy in the gap and help you slowly. The ledger trade, standing near a court that can rewrite what happened. Scavengers three minutes ahead of the warrant. The Unbelled, who may be right about the bells. Dead offices that only have teeth while the pattern is thin.\n\nEvery Rupture has at least one interested party besides the cell. Decide who, before you decide what the anomaly does. They should not fight you. They file, delay, buy, arrive early, and remember what you owe them. If nobody profits, the scene is a repair job.'
   },
   {
     id: 'character-creation',
@@ -137,7 +137,7 @@ const QA_DATA: QAItem[] = [
     topic: 'Character creation',
     question: 'How does character creation go?',
     asker: 'zerotheory',
-    answer: 'It is front-loaded and fast.\n\n1. Choose Species: Human, High Alfar, Deep Alfar, Wild Alfar, or Stoneborn.\n2. Choose Order: Seeker, Breaker, Warden, Rival, Broker, or Shade.\n3. Choose Approach: e.g. Reveal, Sever, Anchor, Bind, Slip, Challenge.\n4. Choose Signature: a defining item (lantern, seal, greatsword, contract case, mask).\n5. Assign Skill Dice: distribute 5 build steps among Force, Agility, and Willpower (starting at d4).\n6. Derive Thresholds: d4=1, d6=2, d8=3, d10=4, d12=5 circles.\n7. Choose 3 Order Abilities.\n8. Choose Equipment: primary weapon/tool (Impact & Vector), armor, and secondary gear.\n9. Name the character, add one sentence of background, and state one thing you will risk.'
+    answer: 'It is front-loaded and fast.\n\n1. Choose Species: Human, High Alfar, Deep Alfar, Wild Alfar, or Stoneborn.\n2. Choose Order: Seeker, Breaker, Warden, Rival, Broker, or Shade.\n3. Choose Approach: e.g. Reveal, Sever, Anchor, Bind, Slip, Challenge.\n4. Choose Signature: a defining item (lantern, seal, greatsword, contract case, mask).\n5. Assign Skill Dice: distribute 5 build steps among Force, Agility, and Willpower (starting at d4).\n6. Derive Thresholds: d4=1, d6=2, d8=3, d10=4, d12=5 circles.\n7. Choose 3 Order Abilities.\n8. Choose Equipment: primary weapon (Impact and Vector), armor permission (what you may Endure), and secondary gear.\n9. Name the character, add one sentence of background, and state one thing you will risk.'
   },
   {
     id: 'order-abilities',
@@ -154,6 +154,14 @@ const QA_DATA: QAItem[] = [
     question: 'Is player death possible?',
     asker: 'zerotheory',
     answer: 'Yes. When Threshold circles run out, characters suffer severe consequences:\n\n- If Endure breaks, your physical body gives out (incapacitated, bleeding out, crushed).\n- If Avoid breaks, you suffer total tactical collapse (cornered, pinned down, disarmed, cut off).\n- If Exert breaks, you suffer complete mental collapse (catatonic, panic-stricken, vulnerable to psychic trauma).\n\nConsequences are fiction-first and dangerous.'
+  },
+  {
+    id: 'armor-permission',
+    category: 'mechanics',
+    topic: 'How does armor work?',
+    question: 'Does armor soak damage or add a defense number?',
+    asker: 'zerotheory',
+    answer: 'No. Armor does not reduce consequences. It buys you an answer.\n\nStreet clothes Endure only what the fiction plainly allows. Porter’s Jack takes the knock (fists, clubs, falls, crowd crush). Nightjack takes the edge (blades, still silent). Gatecoat takes the room: corridors, doorways, stairs, and crowds are Hard to Avoid. Sworn Harness takes anything, including some collapses that would be Direct Pressure, and you may never Avoid while it is on. A Board stacks with any of these: missiles, reach weapons, and you never lose position.\n\nBreaks Protection strips that permission for the rest of the scene. The permission returns next scene. Armor never needs repair.'
   },
   {
     id: 'total-erasure',

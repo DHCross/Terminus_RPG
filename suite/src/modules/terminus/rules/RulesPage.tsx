@@ -1,7 +1,8 @@
+import { Link } from 'react-router-dom';
 import { ArrowUp, BookOpen, Flame, Layers, Shield, Sparkles, Swords, Users } from 'lucide-react';
 import { rulesSectionLabel, type RulesSection } from './rulesLinks';
 import { SKILLS, CIRCLE_MAPPING } from '../../../data/terminus/skills';
-import { ORDERS_LIST } from '../../../data/terminus/orders';
+import { ORDER_DOCTRINE, ORDER_STARTER_PICK, ORDERS_LIST } from '../../../data/terminus/orders';
 import { SPECIES_LIST } from '../../../data/terminus/species';
 import { ADVANCEMENT_COSTS, THRESHOLD_MAPPING, SKILL_DISCIPLINES, CHARACTER_BASELINE, CREATION_UPGRADES } from '../../../data/terminus/advancement';
 import {
@@ -13,31 +14,37 @@ import {
   MAGIC_TERMINOLOGY_BOUNDARIES,
   MAGIC_TABLE_PROCEDURE,
 } from '../../../data/terminus/magic';
-import { DRIFT_DOCTRINE, DRIFT_MODES, DRIFT_WRITING_RULES } from '../../../data/terminus/drift';
-import { WEAPONS, WEAPON_VECTORS } from '../../../data/terminus/weapons';
-import { ARMOR_TYPES } from '../../../data/terminus/armor';
-
-// ─── Scene Hook Badge Styles ────────────────────────────────────────────────
-
-const HOOK_STYLES: Record<string, { label: string; color: string }> = {
-  ground:  { label: 'Ground',  color: '#64748b' },
-  will:    { label: 'Will',    color: '#991b1b' },
-  shift:   { label: 'Shift',   color: '#92400e' },
-  drift:   { label: 'Drift',   color: '#1e40af' },
-  latent:  { label: 'Latent',  color: '#5b21b6' },
-};
+import { DRIFT_DOCTRINE, DRIFT_MODES, DRIFT_TYPES, DRIFT_WRITING_RULES, SCENE_CARD_PREP } from '../../../data/terminus/drift';
+import { VECTOR_DOCTRINE, VECTOR_FAMILY_LABELS, WEAPONS, WEAPON_VECTORS, type VectorFamily } from '../../../data/terminus/weapons';
+import {
+  ARMOR_BUILDS,
+  ARMOR_DOCTRINE,
+  ARMOR_INTERACTIONS,
+  ARMOR_TYPES,
+  genericArmorLabel,
+  terminusArmorLabel,
+} from '../../../data/terminus/armor';
+import { SIGNATURE_COSTS, SIGNATURE_DOCTRINE, SIGNATURES, THREE_CURRENCIES } from '../../../data/terminus/signatures';
+import { OLD_WORK_CIVIC, OLD_WORK_DOCTRINE, OLD_WORK_MARTIAL } from '../../../data/terminus/oldWork';
+import { HOSTILE_TRACE_APPETITE, INTERESTED_PARTIES, INTERESTED_PARTY_DOCTRINE, RUPTURE_TOUCHES } from '../../../data/terminus/factions';
 
 // ─── Table of Contents ───────────────────────────────────────────────────────
 
 const tocSections: { section: RulesSection; icon: typeof BookOpen }[] = [
+  { section: 'one-pager', icon: BookOpen },
   { section: 'core-concepts', icon: BookOpen },
   { section: 'orders', icon: Users },
+  { section: 'factions', icon: Users },
   { section: 'species', icon: Users },
   { section: 'skills', icon: Swords },
   { section: 'thresholds', icon: Shield },
   { section: 'skill-disciplines', icon: BookOpen },
   { section: 'advancement', icon: Sparkles },
   { section: 'equipment', icon: Swords },
+  { section: 'armor', icon: Shield },
+  { section: 'signatures', icon: Sparkles },
+  { section: 'vectors', icon: Swords },
+  { section: 'old-work', icon: Sparkles },
   { section: 'magic-modes', icon: Flame },
   { section: 'working-verbs', icon: Sparkles },
   { section: 'rupture-casting', icon: Flame },
@@ -78,12 +85,51 @@ export function RulesPage() {
     <div className="rules-page" id="rules-top">
       {/* ── Header ────────────────────────────────────────────────────── */}
       <section className="rules-hero">
-        <span className="eyebrow">Alpha Rules Reference</span>
+        <span className="eyebrow">Alpha 0.2 Rules Reference</span>
         <h1>Terminus RPG Rules</h1>
         <p className="rules-hero__subtitle">
-          The complete Coherence System quick-reference. Every section links to
-          related rules; use the table of contents below or browse by topic.
+          The complete Coherence System quick-reference. Armor buys an Endure answer.
+          Every section links to related rules; use the table of contents below or browse by topic.
         </p>
+      </section>
+
+      {/* ── One-page core ─────────────────────────────────────────────── */}
+      <section className="rules-section">
+        <SectionHeading section="one-pager" icon={BookOpen} />
+        <pre className="rules-callout" style={{ whiteSpace: 'pre-wrap', fontFamily: 'inherit', lineHeight: 1.55, margin: 0 }}>
+{`TERMINUS CORE
+
+Skills:      Force / Agility / Willpower
+Thresholds:  Force → Endure
+             Agility → Avoid
+             Willpower → Exert
+
+Die ranks:   d4  d6  d8  d10  d12
+Circles:     d4=1  d6=2  d8=3  d10=4  d12=5
+
+Conflict:
+  Acting side rolls Skill.
+  Responding side chooses Threshold and rolls.
+  Higher roll takes control.
+  No target number. No to-hit roll. No passive defense.
+  Ties favor the responder. Armored defender wins ties.
+
+Armor:
+  Named permission. Buys Endure. No reduction.
+  Street clothes / Padded / Light / Medium / Heavy / Shield.
+  Breaks Protection strips the permission for the scene.
+
+Scene Card (Guide):
+  Ground — what is possible?
+  Will   — what pressure is active?
+  Shift  — what changes when characters act?
+  Drift  — what changes if they do nothing?
+
+The map guides players. The Scene Card guides the Guide.
+Currencies:    Exert (self) · Drift (world) · the object (Signature)
+The goal is not chaos. It is the return of the quiet day.`}
+        </pre>
+        <BackToTop />
       </section>
 
       {/* ── Table of Contents ──────────────────────────────────────────── */}
@@ -108,28 +154,28 @@ export function RulesPage() {
         <div className="rules-glossary">
           <dl>
             <dt>Terminus</dt>
-            <dd>The game and the hidden architecture beneath the world of Tringad.</dd>
+            <dd>The title of this game, and nothing else. No one in the setting has heard the word. It is not a place, a person, a faction, or a piece of lore anyone can discover.</dd>
 
             <dt>Tringad</dt>
-            <dd>The lived world where ordinary people work, travel, worship, trade, and survive.</dd>
+            <dd>The lived world where ordinary people work, travel, worship, trade, and survive. Rain-slicked civic dark fantasy: brass, oxblood ink, bone paper, bells, and load-bearing paperwork.</dd>
 
             <dt>Coherence System</dt>
             <dd>The rules engine for pressure, response, scene state, and reality failure.</dd>
 
             <dt>Routine</dt>
-            <dd>Repeated civic, social, legal, religious, and practical patterns that help reality stay stable.</dd>
+            <dd>Repeated civic, social, legal, religious, and practical patterns that hold the world quiet. Stability lives in the aggregate. A single missed bell or stuck gate is nothing.</dd>
 
             <dt>Quiet Day</dt>
-            <dd>A day when civilization functions without forcing anyone to become heroic just to survive.</dd>
+            <dd>The goal of play: a day when ordinary people walk, eat, bargain, and sleep without testing their thresholds. The Orders exist to return this, not to chase adventure.</dd>
 
             <dt>Rupture</dt>
-            <dd>Systemic failure that begins when routine breaks and reality loses permissions. See <a href="#scene-cards">Scene Cards</a> and <a href="#rupture-casting">Rupture Casting</a>.</dd>
+            <dd>Systemic failure from accumulated degradation across many repetitions — not one thing going wrong once. See <a href="#scene-cards">Scene Cards</a> and <a href="#rupture-casting">Rupture Casting</a>.</dd>
 
             <dt>Sixfold Accord</dt>
             <dd>The field-response institution that licenses mixed cells to answer Ruptures.</dd>
 
             <dt>Order</dt>
-            <dd>A recognized response identity. See <a href="#orders">Orders</a>.</dd>
+            <dd>A licensed field identity: what you are permitted to do when the ordinary world stops working. Not a job and not a class. See <a href="#orders">Orders</a>.</dd>
 
             <dt>Scene Card</dt>
             <dd>The Guide's operating surface for a scene. See <a href="#scene-cards">Scene Cards</a>.</dd>
@@ -162,7 +208,22 @@ export function RulesPage() {
             <dd>Inner reserve, concentration, control, fear resistance, social pressure, and magical strain. See <a href="#thresholds">Thresholds</a> and <a href="#magic-modes">Magic Modes</a>.</dd>
 
             <dt>Working</dt>
-            <dd>A magical or civic exception that changes what reality accepts. See <a href="#magic-modes">Magic Modes</a>.</dd>
+            <dd>A magical or civic exception that changes what reality accepts. Casters pay Exert. The reckless pay Drift. See <a href="#magic-modes">Magic Modes</a> and <a href="#signatures">Signatures</a>.</dd>
+
+            <dt>Signature</dt>
+            <dd>A thing with standing and a property. Not a bonus. Using it Commits, Marks, or Gives the object. See <a href="#signatures">Signatures</a>.</dd>
+
+            <dt>Armor</dt>
+            <dd>A named permission that buys an Endure answer. No reduction, no die, no track. Ties go to the armored defender. See <a href="#armor">Armor Permissions</a>.</dd>
+
+            <dt>Vector</dt>
+            <dd>What kind of pressure a weapon is. It takes away the answer the defender wanted to give; it does not pierce a number. One per exchange. See <a href="#vectors">Vectors</a>.</dd>
+
+            <dt>Old Work</dt>
+            <dd>A Working sealed into an object by a dead hand. Verb, anchor, and what the old hand still wants. No plus-one swords. See <a href="#old-work">Old Work</a>.</dd>
+
+            <dt>Direct Pressure</dt>
+            <dd>Harm the world inflicts with no Threshold answer: a collapsing counting-house, a fall, a room filling with river water. Never an attack. The answer is do not be standing there.</dd>
 
             <dt>Sanctioned Working</dt>
             <dd>A licensed Working that spends Exert and uses Seal, Expose, Bridge, or Nullify. See <a href="#magic-modes">Magic Modes</a> and <a href="#working-verbs">Working Verbs</a>.</dd>
@@ -200,68 +261,109 @@ export function RulesPage() {
       <section className="rules-section">
         <SectionHeading section="orders" icon={Users} />
 
-        <p className="rules-lede">
-          Six response identities licensed by the Sixfold Accord to answer Ruptures.
-          Each Order has a <strong>field function</strong> (what they do), <strong>approaches</strong> (roleplay flavors),
-          <strong>signatures</strong> (tools and relics), and <strong>starter abilities</strong>.
-        </p>
+        <p className="rules-lede">{ORDER_DOCTRINE.whatItIs}</p>
+        <p>{ORDER_DOCTRINE.abilitiesVsWorkings}</p>
+        <p>{ORDER_DOCTRINE.whyMixed}</p>
+        <p className="rules-note">{ORDER_DOCTRINE.pickThree} Full ability text lives on the <Link to="/orders">Orders dossier</Link>, not here.</p>
+
+        <table className="rules-table">
+          <thead>
+            <tr>
+              <th>Order</th>
+              <th>Field function</th>
+              <th>Not this</th>
+            </tr>
+          </thead>
+          <tbody>
+            {ORDERS_LIST.map((order) => (
+              <tr key={order.id}>
+                <td>
+                  <a href={`#order-${order.id}`}><strong>{order.name}</strong></a>
+                </td>
+                <td>{order.fieldFunction}</td>
+                <td>{order.notThis}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        <p className="rules-note">{ORDER_DOCTRINE.standing}</p>
 
         <div className="rules-card-grid">
           {ORDERS_LIST.map((order) => (
             <article className="rules-card" key={order.id} id={`order-${order.id}`}>
               <h3>{order.name}</h3>
               <p className="rules-card__function">{order.fieldFunction}</p>
-
-              <div className="rules-card__detail">
-                <h4>Approaches</h4>
-                <div className="chip-row">
-                  {order.approaches.map((a) => <span className="chip" key={a}>{a}</span>)}
-                </div>
-              </div>
-
-              <div className="rules-card__detail">
-                <h4>Signature Tools</h4>
-                <div className="chip-row">
-                  {order.signatures.map((s) => <span className="chip" key={s}>{s}</span>)}
-                </div>
-              </div>
-
-              <div className="rules-card__detail">
-                <h4>Starter Abilities</h4>
-                <div style={{ display: 'grid', gap: '0.75rem', marginTop: '0.5rem' }}>
-                  {order.abilities.map((ab) => (
-                    <div key={ab.name} style={{ borderLeft: '2px solid var(--color-border)', paddingLeft: '0.75rem' }}>
-                      <strong style={{ color: 'var(--color-primary)', display: 'block', marginBottom: '0.15rem' }}>{ab.name}</strong>
-                      <p style={{ margin: '0 0 0.35rem', fontSize: '0.875rem' }}>{ab.shortText}</p>
-                      {ab.sceneHooks && ab.sceneHooks.length > 0 && (
-                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.25rem', marginBottom: '0.4rem' }}>
-                          {ab.sceneHooks.map((hook) => (
-                            <span key={hook} style={{
-                              fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.07em',
-                              textTransform: 'uppercase', padding: '0.1rem 0.35rem',
-                              border: `1px solid ${HOOK_STYLES[hook]?.color ?? '#475569'}`,
-                              color: HOOK_STYLES[hook]?.color ?? '#475569',
-                              borderRadius: '2px',
-                            }}>
-                              {HOOK_STYLES[hook]?.label ?? hook}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-                      {ab.trigger && <p style={{ margin: '0.2rem 0', fontSize: '0.8rem', color: 'var(--color-muted)' }}><em>When:</em> {ab.trigger}</p>}
-                      {ab.baseEffect && <p style={{ margin: '0.2rem 0', fontSize: '0.8rem', color: 'var(--color-muted)' }}><em>Effect ({ab.baseEffect.type}):</em> {ab.baseEffect.text}</p>}
-                      {ab.exertEffect && <p style={{ margin: '0.2rem 0 0', fontSize: '0.8rem', color: 'var(--color-muted)', borderTop: '1px solid var(--color-border)', paddingTop: '0.3rem', marginTop: '0.3rem' }}><em>Exert ({ab.exertEffect.type}):</em> {ab.exertEffect.text}</p>}
-                    </div>
-                  ))}
-                </div>
-              </div>
-
+              <p style={{ fontSize: '0.9rem', lineHeight: 1.55 }}>{order.identity}</p>
+              <p className="muted" style={{ fontSize: '0.85rem' }}>{order.howToPlay[0]}</p>
               <p className="rules-crosslink">
-                See <a href="#archetypal-castings">Archetypal Castings</a> for {order.name}-specific Workings.
+                Choose {ORDER_STARTER_PICK} of {order.abilities.length}:{' '}
+                {order.abilities.map((ability) => ability.name).join(', ')}. See the{' '}
+                <Link to="/orders">Orders dossier</Link>
+                {' '}and <a href="#archetypal-castings">Archetypal Castings</a>.
               </p>
             </article>
           ))}
         </div>
+
+        <BackToTop />
+      </section>
+
+      {/* ── Who profits ───────────────────────────────────────────────── */}
+      <section className="rules-section">
+        <SectionHeading section="factions" icon={Users} />
+
+        <p className="rules-lede">{INTERESTED_PARTY_DOCTRINE.whyAppendix}</p>
+        <p><strong>{INTERESTED_PARTY_DOCTRINE.workingRule}</strong></p>
+
+        <div className="rules-card-grid">
+          {INTERESTED_PARTIES.map((party) => (
+            <article className="rules-card" key={party.id} id={`faction-${party.id}`}>
+              <h3>{party.name}</h3>
+              {party.body.split('\n\n').map((paragraph) => (
+                <p key={paragraph.slice(0, 24)} style={{ fontSize: '0.9rem', lineHeight: 1.55 }}>{paragraph}</p>
+              ))}
+              <dl>
+                <dt>How it profits</dt>
+                <dd>{party.howItProfits}</dd>
+                <dt>At the table</dt>
+                <dd>{party.atTheTable}</dd>
+                <dt>Will line</dt>
+                <dd><em>{party.willLine}</em></dd>
+              </dl>
+            </article>
+          ))}
+        </div>
+
+        <h3>Who profits from what</h3>
+        <table className="rules-table">
+          <thead>
+            <tr>
+              <th>Rupture touches…</th>
+              <th>Who is already there</th>
+            </tr>
+          </thead>
+          <tbody>
+            {RUPTURE_TOUCHES.map((row) => (
+              <tr key={row.touches}>
+                <td>{row.touches}</td>
+                <td>{row.who}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        <h3>Using them</h3>
+        <p>{INTERESTED_PARTY_DOCTRINE.pickBeforeCard}</p>
+        <p>{INTERESTED_PARTY_DOCTRINE.twoParties}</p>
+        <p>{INTERESTED_PARTY_DOCTRINE.doNotFight}</p>
+        <p>{INTERESTED_PARTY_DOCTRINE.quietDayCosts}</p>
+
+        <article className="rules-card">
+          <h3>{HOSTILE_TRACE_APPETITE.name}</h3>
+          <p>{HOSTILE_TRACE_APPETITE.body}</p>
+          <p className="rules-note">{INTERESTED_PARTY_DOCTRINE.hostileTraceOffList}</p>
+        </article>
 
         <BackToTop />
       </section>
@@ -320,7 +422,8 @@ export function RulesPage() {
         <SectionHeading section="skills" icon={Swords} />
 
         <p className="rules-lede">
-          Three core skills govern every action. Each skill maps to a defensive threshold.
+          Three core skills govern every action. Acting uses the Skill side.
+          Resisting uses the <a href="#thresholds">Threshold</a> side. They are the same engine.
           Skills use a <strong>die ladder</strong> from d4 to d12.
         </p>
 
@@ -354,10 +457,12 @@ export function RulesPage() {
         </div>
 
         <p className="rules-note">
-          At character creation, all three skills start at <strong>{CHARACTER_BASELINE.Force}</strong>.
+          At character creation in this suite, all three skills start at <strong>{CHARACTER_BASELINE.Force}</strong>.
           Three upgrades are applied: one to <strong>{CREATION_UPGRADES[0].targetDie}</strong> (primary),
           one to <strong>{CREATION_UPGRADES[1].targetDie}</strong> (secondary), and one to{' '}
-          <strong>{CREATION_UPGRADES[2].targetDie}</strong> (fallback).
+          <strong>{CREATION_UPGRADES[2].targetDie}</strong> (fallback). Alpha Draft 0.2 §6 uses five build steps
+          from d4 instead. This generator has not been rebuilt to match; treat the difference as playtest variance,
+          not a silent rules change.
         </p>
 
         <BackToTop />
@@ -368,8 +473,9 @@ export function RulesPage() {
         <SectionHeading section="thresholds" icon={Shield} />
 
         <p className="rules-lede">
-          Thresholds are defensive tracks that absorb pressure. Each maps directly
-          to a skill: the die value determines the number of threshold circles.
+          Thresholds absorb pressure. Acting uses the <a href="#skills">Skill</a> side;
+          resisting uses the Threshold side. Each maps to a skill: the die value determines
+          the number of threshold circles.
         </p>
 
         <table className="rules-table">
@@ -489,10 +595,11 @@ export function RulesPage() {
 
         <h3>Weapons</h3>
         <p className="rules-lede">
-          Weapons have an <strong>Impact</strong> value (1–3) that determines how many
-          threshold circles are threatened on a successful hit. Each weapon also has
-          <strong> vectors</strong>—situational traits that modify its behavior.
+          A weapon has two things. <strong>Impact</strong> (0–3) is how much pressure lands when you win.
+          <strong>Vector</strong> is what kind of pressure it is, and that is where the interest lives.
+          There is nothing to pierce. See <a href="#vectors">Vectors</a>.
         </p>
+        <p className="rules-note">{VECTOR_DOCTRINE.impactCeiling}</p>
 
         <table className="rules-table">
           <thead>
@@ -521,40 +628,288 @@ export function RulesPage() {
           </tbody>
         </table>
 
-        <h4>Weapon Vectors</h4>
-        <div className="rules-glossary">
-          <dl>
-            {WEAPON_VECTORS.map((v) => (
-              <div key={v.id}>
-                <dt>{v.name}</dt>
-                <dd>{v.description}</dd>
-              </div>
-            ))}
-          </dl>
-        </div>
-
-        <h3>Armor</h3>
-        <p className="rules-lede">
-          Armor provides <strong>Reduction</strong> (0–2), which subtracts from
-          threshold circles lost when hit.
+        <p>
+          Armor is not a second weapon table. It buys an Endure answer. Full grants live in{' '}
+          <a href="#armor">Armor Permissions</a>. Armor-Piercing is retired.{' '}
+          <a href="#vectors">Breaks Protection</a> strips the permission for the rest of the scene.
         </p>
 
+        <BackToTop />
+      </section>
+
+      {/* ── Armor permissions ──────────────────────────────────────────── */}
+      <section className="rules-section">
+        <SectionHeading section="armor" icon={Shield} />
+
+        <p className="rules-lede"><strong>{ARMOR_DOCTRINE.theRule}</strong></p>
+        <p className="rules-note">{ARMOR_DOCTRINE.canonical}</p>
+        <p>{ARMOR_DOCTRINE.how}</p>
+        <p>{ARMOR_DOCTRINE.named}</p>
+        <p className="rules-note">{ARMOR_DOCTRINE.portable}</p>
+        <p className="rules-note">{ARMOR_DOCTRINE.engineLeftover}</p>
+
+        <h3>Tringad offices</h3>
+        <p className="rules-lede">
+          Named by the work that wears them. A Warden buckles a Sworn Harness the way she swears an oath.
+          A Shade would rather keep a Nightjack than ring a Gatecoat through an unmarked door.
+        </p>
         <table className="rules-table">
           <thead>
             <tr>
               <th>Armor</th>
-              <th>Reduction</th>
+              <th>Permission</th>
+              <th>You may Endure</th>
+              <th>Cost</th>
             </tr>
           </thead>
           <tbody>
-            {ARMOR_TYPES.map((a) => (
-              <tr key={a.id}>
-                <td><strong>{a.name}</strong></td>
-                <td>{a.reduction}</td>
+            {ARMOR_TYPES.map((piece) => (
+              <tr key={`terminus-${piece.id}`}>
+                <td><strong>{terminusArmorLabel(piece)}</strong></td>
+                <td>{piece.permission ? <em>{piece.permission}</em> : '—'}</td>
+                <td>{piece.endure}</td>
+                <td>{piece.cost || '—'}</td>
               </tr>
             ))}
           </tbody>
         </table>
+
+        <h3>Setting-neutral names</h3>
+        <p className="rules-lede">
+          Same permissions. Use these when the pack is not Tringad: a flak vest is Medium, a hardsuit is Heavy.
+        </p>
+        <table className="rules-table">
+          <thead>
+            <tr>
+              <th>Armor</th>
+              <th>Permission</th>
+              <th>You may Endure</th>
+              <th>Cost</th>
+            </tr>
+          </thead>
+          <tbody>
+            {ARMOR_TYPES.map((piece) => (
+              <tr key={`generic-${piece.id}`}>
+                <td><strong>{genericArmorLabel(piece)}</strong></td>
+                <td>{piece.permission ? <em>{piece.permission}</em> : '—'}</td>
+                <td>{piece.endure}</td>
+                <td>{piece.genericCost || piece.cost || '—'}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        <h3>Reading the choices</h3>
+        <p className="rules-lede">{ARMOR_DOCTRINE.reading}</p>
+        <table className="rules-table">
+          <thead>
+            <tr>
+              <th>Build</th>
+              <th>What it gets</th>
+              <th>What kills it</th>
+            </tr>
+          </thead>
+          <tbody>
+            {ARMOR_BUILDS.map((row) => (
+              <tr key={row.id}>
+                <td><strong>{row.build}</strong></td>
+                <td>{row.gets}</td>
+                <td>{row.kills}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <p>{ARMOR_DOCTRINE.shieldFriend}</p>
+        <p>{ARMOR_DOCTRINE.mailForBreakers}</p>
+
+        <h3>Interactions</h3>
+        <table className="rules-table">
+          <thead>
+            <tr>
+              <th>Interaction</th>
+              <th>Result</th>
+            </tr>
+          </thead>
+          <tbody>
+            {ARMOR_INTERACTIONS.map((row) => (
+              <tr key={row.id}>
+                <td><strong>{row.name}</strong></td>
+                <td>{row.result}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        <h3>Guide notes</h3>
+        <p>{ARMOR_DOCTRINE.mailGuide}</p>
+        <p>{ARMOR_DOCTRINE.plateGuide}</p>
+        <p className="rules-note">{ARMOR_DOCTRINE.noRepair}</p>
+
+        <BackToTop />
+      </section>
+
+      {/* ── Signatures ─────────────────────────────────────────────────── */}
+      <section className="rules-section">
+        <SectionHeading section="signatures" icon={Sparkles} />
+
+        <p className="rules-lede">{SIGNATURE_DOCTRINE.problem}</p>
+        <p>{SIGNATURE_DOCTRINE.notABonus}</p>
+
+        <h3>Three currencies</h3>
+        <table className="rules-table">
+          <thead>
+            <tr>
+              <th>Currency</th>
+              <th>Who spends it</th>
+              <th>What it costs</th>
+            </tr>
+          </thead>
+          <tbody>
+            {THREE_CURRENCIES.map((row) => (
+              <tr key={row.id}>
+                <td><strong>{row.currency}</strong></td>
+                <td>{row.who}</td>
+                <td>{row.cost}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        <h3>The three costs</h3>
+        <div className="rules-stat-grid rules-stat-grid--3col">
+          {(Object.keys(SIGNATURE_COSTS) as Array<keyof typeof SIGNATURE_COSTS>).map((cost) => (
+            <article className="rules-card" key={cost}>
+              <h3>{cost}</h3>
+              <p>{SIGNATURE_COSTS[cost]}</p>
+            </article>
+          ))}
+        </div>
+        <p className="rules-note">{SIGNATURE_DOCTRINE.giveWorthIt}</p>
+
+        <h3>Properties by kind</h3>
+        {(['force', 'position', 'office', 'sight'] as const).map((kind) => (
+          <div key={kind} className="rules-subsection">
+            <h4>
+              {kind === 'force' && 'Arms and instruments of force'}
+              {kind === 'position' && 'Tools of position and attention'}
+              {kind === 'office' && 'Instruments of office'}
+              {kind === 'sight' && 'Instruments of sight'}
+            </h4>
+            <table className="rules-table">
+              <thead>
+                <tr>
+                  <th>Signature</th>
+                  <th>Property</th>
+                  <th>Cost</th>
+                </tr>
+              </thead>
+              <tbody>
+                {SIGNATURES.filter((signature) => signature.kind === kind).map((signature) => (
+                  <tr key={signature.id}>
+                    <td><strong>{signature.name}</strong></td>
+                    <td>
+                      <em>{signature.property}.</em> {signature.text}
+                    </td>
+                    <td>{signature.cost}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ))}
+
+        <p className="rules-crosslink">
+          Order lists live on the <Link to="/orders">Orders dossier</Link>. Old Work uses the same costs — see <a href="#old-work">Old Work</a>.
+        </p>
+
+        <BackToTop />
+      </section>
+
+      {/* ── Vectors ────────────────────────────────────────────────────── */}
+      <section className="rules-section">
+        <SectionHeading section="vectors" icon={Swords} />
+
+        <p className="rules-lede">{VECTOR_DOCTRINE.designRule}</p>
+        <p><strong>Stacking.</strong> {VECTOR_DOCTRINE.stacking}</p>
+        <p className="rules-note">{VECTOR_DOCTRINE.noCrits}</p>
+
+        {(['denial', 'punishment', 'reach', 'delay', 'structural', 'quiet'] as VectorFamily[]).map((family) => (
+          <div key={family} className="rules-subsection">
+            <h3>{VECTOR_FAMILY_LABELS[family].name}</h3>
+            <p className="muted">{VECTOR_FAMILY_LABELS[family].summary}</p>
+            <div className="rules-glossary">
+              <dl>
+                {WEAPON_VECTORS.filter((vector) => vector.family === family).map((vector) => (
+                  <div key={vector.id}>
+                    <dt>{vector.name}</dt>
+                    <dd>
+                      {vector.description}
+                      {vector.examples ? ` (${vector.examples})` : ''}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+          </div>
+        ))}
+
+        <BackToTop />
+      </section>
+
+      {/* ── Old Work ───────────────────────────────────────────────────── */}
+      <section className="rules-section">
+        <SectionHeading section="old-work" icon={Sparkles} />
+
+        <p className="rules-lede">{OLD_WORK_DOCTRINE.whatItIs}</p>
+        <p>{OLD_WORK_DOCTRINE.threeParts}</p>
+        <p>{OLD_WORK_DOCTRINE.cost}</p>
+        <p className="rules-note">{OLD_WORK_DOCTRINE.inheritance}</p>
+
+        <h3>Six pieces (martial)</h3>
+        <div className="rules-card-grid">
+          {OLD_WORK_MARTIAL.map((item) => (
+            <article className="rules-card" key={item.id}>
+              <h3>{item.name}</h3>
+              <p className="muted" style={{ fontStyle: 'italic' }}>{item.appearance}</p>
+              <div className="chip-row">
+                <span className="chip">{item.verb}</span>
+                <span className="chip">{item.property.cost}</span>
+                {item.impact != null && <span className="chip">Impact {item.impact}</span>}
+                {item.notAWeapon && <span className="chip">Not a weapon</span>}
+              </div>
+              <dl>
+                <dt>Anchor / off-switch</dt>
+                <dd>{item.anchor}</dd>
+                <dt>The old hand wanted</dt>
+                <dd>{item.oldHandWanted}</dd>
+                <dt>{item.property.name}</dt>
+                <dd>{item.property.text}</dd>
+                {item.property.tableMeaning && (
+                  <>
+                    <dt>At the table</dt>
+                    <dd>{item.property.tableMeaning}</dd>
+                  </>
+                )}
+              </dl>
+            </article>
+          ))}
+        </div>
+        <p className="rules-note">{OLD_WORK_DOCTRINE.notPlusOne}</p>
+
+        <h3>Civic examples</h3>
+        <div className="rules-card-grid rules-card-grid--2col">
+          {OLD_WORK_CIVIC.map((item) => (
+            <article className="rules-card" key={item.id}>
+              <h3>{item.name}</h3>
+              <div className="chip-row">
+                <span className="chip">{item.verb}</span>
+                <span className="chip">{item.property.cost}</span>
+              </div>
+              <p>{item.property.text}</p>
+              <p className="rules-note">Anchor: {item.anchor}</p>
+            </article>
+          ))}
+        </div>
 
         <BackToTop />
       </section>
@@ -804,30 +1159,36 @@ export function RulesPage() {
         <SectionHeading section="scene-cards" icon={Layers} />
 
         <p className="rules-lede">
-          The Scene Card is the Guide's operating surface. It tracks four quadrants
-          that define the state of play at every moment.
+          The Scene Card is the Guide's operating surface: Ground, Will, Shift, Drift.
+          Four boxes is real prep. If you fill two and wing the rest, Drift — the best feature — becomes optional.
         </p>
+        <div className="rules-callout">
+          <h3>Minimum viable card</h3>
+          <p>{SCENE_CARD_PREP.fillFirst}</p>
+          <p>{SCENE_CARD_PREP.fillSecond}</p>
+          <p>{SCENE_CARD_PREP.theRest}</p>
+        </div>
 
         <div className="rules-card-grid rules-card-grid--2col">
           <article className="rules-card">
             <h3>Ground</h3>
             <p>What is currently reliable, legal, physical, or available in the scene.</p>
-            <p className="rules-note">The baseline that characters can count on. When Ground changes, the scene shifts genre.</p>
+            <p className="rules-note">Can start as one sentence. Thickens in play.</p>
           </article>
           <article className="rules-card">
             <h3>Will</h3>
             <p>What pressure, agent, monster, faction, system, or mechanism is already acting.</p>
-            <p className="rules-note">Active opposition. Will has its own intent and advances independently of the characters.</p>
+            <p className="rules-note">Name who profits from this Rupture staying thin. See <a href="#factions">Who Profits</a>.</p>
           </article>
           <article className="rules-card">
             <h3>Shift</h3>
             <p>What changes when characters act.</p>
-            <p className="rules-note">Player-driven change. Every successful action updates Shift. Unsuccessful actions still produce Shift—just not the one intended.</p>
+            <p className="rules-note">Can start thin. Unsuccessful actions still produce Shift — just not the one intended.</p>
           </article>
           <article className="rules-card">
             <h3>Drift</h3>
             <p>What changes if characters do nothing. See <a href="#drift">Scene Drift</a>.</p>
-            <p className="rules-note">The scene's autonomous forward pressure. Drift is the clock.</p>
+            <p className="rules-note">Fill this first. Choose a type. Write one executable sentence. Do not wing it.</p>
           </article>
         </div>
 
@@ -839,12 +1200,12 @@ export function RulesPage() {
         <SectionHeading section="drift" icon={Layers} />
 
         <p className="rules-lede">
-          Drift is the core pacing engine. It answers one GM question:
-          <strong> what changes if the players do nothing?</strong>
+          Drift is the single most original thing in this game. It answers one Guide question:
+          <strong> what happens if they stall?</strong> Pre-answering that is the exact moment most Guides improvise badly.
         </p>
 
         <div className="rules-callout">
-          <h3>Drift Doctrine</h3>
+          <h3>Protect the type dial</h3>
           {DRIFT_DOCTRINE.map((d) => (
             <p key={d.title}>
               <strong>{d.title}:</strong> {d.summary}
@@ -852,6 +1213,27 @@ export function RulesPage() {
           ))}
         </div>
 
+        <h3>Drift types — what advances the clock</h3>
+        <p className="muted">Tringad default is Hesitation. Do not swap the type mid-scene unless the genre actually changed.</p>
+        <div className="rules-card-grid rules-card-grid--2col">
+          {DRIFT_TYPES.map((type) => (
+            <article className="rules-card" key={type.id} id={`drift-${type.id}`}>
+              <h3>{type.name}</h3>
+              <p className="rules-card__function">{type.feel}</p>
+              <dl>
+                <dt>What drives the clock</dt>
+                <dd>{type.drivesClock}</dd>
+                <dt>Where</dt>
+                <dd>{type.setting}</dd>
+                <dt>At the table</dt>
+                <dd>{type.guideUse}</dd>
+              </dl>
+            </article>
+          ))}
+        </div>
+
+        <h3>Hazard or trap — what the tick looks like</h3>
+        <p className="muted">Shape is not type. Type is why the clock moves. Shape is what you write on the card.</p>
         <div className="rules-card-grid rules-card-grid--2col">
           {DRIFT_MODES.map((mode) => (
             <article className="rules-card" key={mode.id}>
@@ -883,40 +1265,119 @@ export function RulesPage() {
         <SectionHeading section="conflict" icon={Swords} />
 
         <p className="rules-lede">
-          All contested action uses the same engine. Roll a <a href="#skills">skill die</a>,
-          compare to difficulty or opposing roll, apply consequences to <a href="#thresholds">thresholds</a>.
+          There is no to-hit roll. An attack is not a request for permission to matter.
+          The action matters. The question is how the target takes it. Both sides roll.
+          There is no target number and no passive defense score.
         </p>
 
-        <h3>Resolution Sequence</h3>
+        <h3>Core Exchange</h3>
         <ol className="procedure-list">
-          <li><strong>Declare intent:</strong> What are you trying to change in the fiction?</li>
-          <li><strong>Choose approach:</strong> Which skill governs the attempt? Force, Agility, or Willpower?</li>
-          <li><strong>Guide sets pressure:</strong> Is this contested, static, or escalated? Apply difficulty.</li>
-          <li><strong>Roll the die:</strong> Compare to opposing difficulty or contested roll.</li>
-          <li><strong>Apply result:</strong> On success, the intent happens. On failure, the Guide applies pressure to a threshold.</li>
-          <li><strong>Update the Scene Card:</strong> Record what changed (Shift) and what the scene does next (Drift).</li>
+          <li><strong>Acting side</strong> chooses Force, Agility, or Willpower.</li>
+          <li><strong>Responding side</strong> chooses Endure, Avoid, or Exert.</li>
+          <li><strong>Both roll.</strong></li>
+          <li><strong>Higher roll</strong> takes control of the exchange.</li>
+          <li>Effect, Impact, or Vector resolves.</li>
+          <li>The losing side routes the consequence through the chosen Threshold.</li>
         </ol>
 
-        <h3>Impact & Reduction</h3>
         <p>
-          When a successful attack lands, the attacker's <a href="#equipment">weapon Impact</a> determines
-          how many threshold circles are threatened. The defender's <a href="#equipment">armor Reduction</a>
-          subtracts from the circles lost. Any remaining loss is applied to the relevant threshold.
+          The responding side is not required to choose the matching Threshold.
+          A target may answer Force with Avoid, or Agility with Exert, if the fiction supports it.
+          The attacker declares one <a href="#vectors">Vector</a> before the dice, if the weapon carries any.
+        </p>
+
+        <div className="rules-stat-grid rules-stat-grid--3col">
+          <article className="rules-card">
+            <h3>Endure</h3>
+            <p>Taking pressure directly: absorbing impact, bracing, holding the line, staying upright.</p>
+            <p className="rules-note">Losing circles means being worn down or physically pressured.</p>
+          </article>
+          <article className="rules-card">
+            <h3>Avoid</h3>
+            <p>Refusing pressure by movement, timing, distance, or position.</p>
+            <p className="rules-note">Losing circles means running out of clean exits, timing, or safe angles.</p>
+          </article>
+          <article className="rules-card">
+            <h3>Exert</h3>
+            <p>Spending inner force to keep control: concentration, fear, a Working, pain, hesitation.</p>
+            <p className="rules-note">Losing circles means burning internal reserve. Powerful and limited.</p>
+          </article>
+        </div>
+
+        <h3>Ties</h3>
+        <p>
+          Default alpha rule: <strong>ties favor the responding side</strong>.
+          When they are answering with an <a href="#armor">armor permission</a>, ties go to the armored defender.
+          Optional test rule: a tie means neither side takes full control, but scene pressure increases.
+          Use one rule consistently during a playtest.
+        </p>
+
+        <h3>Impact, armor, and Threshold loss</h3>
+        <p>
+          When the acting side takes control of an attack, the attacker's{' '}
+          <a href="#equipment">weapon Impact</a> determines how many threshold circles are threatened.
+          The defender answers with a Threshold the fiction (and their <a href="#armor">armor permission</a>) still allows.
+          Remaining loss is applied to that Threshold.
         </p>
 
         <h3>Threshold Loss</h3>
         <p>
+          Threshold loss is the result of a lost exchange, not a separate attack roll.
           When a threshold reaches zero, the character is <strong>broken</strong> in that dimension:
         </p>
         <ul>
           <li><strong>Endure 0:</strong> Physically incapacitated, unable to act with Force.</li>
           <li><strong>Avoid 0:</strong> Pinned, cornered, or exposed with no tactical room.</li>
-          <li><strong>Exert 0:</strong> Mentally overwhelmed, unable to concentrate or cast.</li>
+          <li><strong>Exert 0:</strong> Mentally overwhelmed, unable to concentrate or hold a Working.</li>
         </ul>
 
         <p className="rules-note">
           Broken thresholds recover with rest, rites, or scene resolution. The Guide determines
           recovery pacing based on the fiction.
+        </p>
+
+        <h3>Emergency checks</h3>
+        <p>
+          There are no separate saving throw stats. Use these only when something bypasses ordinary
+          Threshold play or threatens agency directly: poison, paralysis, domination, forced sleep,
+          supernatural fear, sudden entrapment, catastrophic collapse, direct possession, reality correction.
+          Do not use them for normal attacks.
+        </p>
+        <table className="rules-table">
+          <thead>
+            <tr>
+              <th>Check</th>
+              <th>Roll</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Heroic</td>
+              <td><a href="#skills">Force</a></td>
+            </tr>
+            <tr>
+              <td>Evasive</td>
+              <td><a href="#skills">Agility</a></td>
+            </tr>
+            <tr>
+              <td>Mental</td>
+              <td><a href="#skills">Willpower</a></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Direct Pressure</h3>
+        <p>
+          Some things cannot be answered at all. A collapsing counting-house, a fall from the bell-yoke,
+          a sealed room filling with river water: no Threshold applies, and the character loses circles
+          from whichever Threshold the fiction dictates. Use this rarely, and never for an attack.
+          If a player asks how to defend, the answer is <em>do not be standing there</em> — which is
+          what <a href="#drift">Drift</a> was warning about two rounds ago.
+        </p>
+
+        <p className="rules-note">
+          Optional: if a die rolls its maximum face, the action may trigger a Vector, Order Ability,
+          or Signature effect if one applies. {VECTOR_DOCTRINE.noCrits}
         </p>
 
         <BackToTop />

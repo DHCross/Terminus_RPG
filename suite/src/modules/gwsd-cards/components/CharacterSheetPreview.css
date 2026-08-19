@@ -352,6 +352,98 @@
   padding-left: 4px;
 }
 
+.ts-fill-hint {
+  font-family: 'Inter', sans-serif;
+  font-size: 7.5pt;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ts-accent-color);
+  margin: -12px 0 12px;
+  opacity: 0.9;
+}
+
+.ts-sheet-input,
+.ts-sheet-textarea {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  font: inherit;
+  color: inherit;
+  padding: 0;
+  margin: 0;
+  outline: none;
+  box-shadow: none;
+  resize: none;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: text;
+}
+
+.ts-sheet-input {
+  min-height: 1.2em;
+}
+
+.ts-sheet-textarea {
+  display: block;
+  line-height: inherit;
+}
+
+.ts-sheet-input:hover,
+.ts-sheet-textarea:hover {
+  background: rgba(38, 56, 89, 0.05);
+}
+
+.ts-sheet-input:focus,
+.ts-sheet-textarea:focus {
+  background: rgba(38, 56, 89, 0.07);
+  outline: 1px dashed var(--ts-accent-color);
+  outline-offset: 2px;
+}
+
+.ts-rating-square-button {
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  padding: 0;
+}
+
+.ts-rating-square-button:hover,
+.ts-rating-square-button:focus-visible {
+  background: rgba(253, 251, 247, 0.95);
+  outline: 1px dashed var(--ts-accent-color);
+  outline-offset: 2px;
+}
+
+button.ts-bubble {
+  padding: 0;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  font: inherit;
+}
+
+button.ts-bubble:hover,
+button.ts-bubble:focus-visible {
+  transform: scale(1.18);
+  outline: 1px dashed var(--ts-accent-color);
+  outline-offset: 2px;
+}
+
+input.ts-ability-name {
+  display: block;
+  width: 100%;
+  text-align: left;
+}
+
+textarea.ts-ability-desc {
+  width: 100%;
+  opacity: 0.85;
+}
+
 /* SECTION II LINED BOX */
 .ts-lined-box {
   border: 1.5px solid var(--ts-main-border-color);
@@ -580,6 +672,7 @@
 .ts-field-row-full {
   display: flex;
   align-items: flex-end;
+  flex-wrap: wrap;
   gap: 8px;
   border-bottom: 1.5px solid var(--ts-main-border-color);
   padding-bottom: 2px;
@@ -652,5 +745,15 @@
     background: var(--ts-bg-color) !important;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
+  }
+  .ts-fill-hint {
+    display: none !important;
+  }
+  .ts-sheet-input,
+  .ts-sheet-textarea,
+  .ts-rating-square-button,
+  button.ts-bubble {
+    outline: none !important;
+    background: transparent !important;
   }
 }

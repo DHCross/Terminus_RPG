@@ -1,4 +1,8 @@
-import type { Character, CharacterIdentity } from '../../coherence-engine/src/index.ts';
+import { useEffect, useRef, useState, type CSSProperties } from 'react';
+import { DIE_SIZES, type Character, type CharacterIdentity, type DieSize } from '../../coherence-engine/src/index.ts';
+import { TERMINUS_SHEET_CHROME, type SheetChrome } from '../../../settings/sheetChrome';
+import { sheetAbilitiesForOrder } from '../../../data/terminus/orders';
+import { cycleBodyArmor, sheetArmorLine } from '../../../data/terminus/armor';
 import './CharacterSheetPreview.css';
 
 type SheetIdentity = CharacterIdentity & {
@@ -13,61 +17,232 @@ type SheetIdentity = CharacterIdentity & {
   rite?: string;
 };
 
-interface Props {
-  character: Character;
+export interface CharacterSheetPatch {
+  name?: string;
+  species?: string;
+  order?: string;
+  subtitle?: string;
+  approach?: string;
+  background?: string;
+  objective?: string;
+  primaryWeapon?: string;
+  secondaryItem?: string;
+  armor?: string;
+  force?: DieSize;
+  agility?: DieSize;
+  willpower?: DieSize;
+  endure?: number;
+  avoid?: number;
+  exert?: number;
+  abilities?: Array<{ name: string; desc: string }>;
 }
 
-// Dynamic definitions of game Order Abilities
-const ORDER_ABILITIES: Record<string, Array<{ name: string; desc: string }>> = {
-  seeker: [
-    { name: 'Weak Point', desc: 'Scan target layout to discover a vulnerability, reducing their Avoid threshold by 1.' },
-    { name: 'Trace Source', desc: 'Verify the origin of any active occult pressure or structural boundary fractures.' },
-    { name: 'Bring to Light', desc: 'Expose a hidden latent condition or hidden path within the active zone structure.' },
-  ],
-  breaker: [
-    { name: 'Rupture Casting', desc: 'Channel unstable fuel to force an environmental Shift, crumbling structural barriers.' },
-    { name: 'Kinetic Strike', desc: 'Exert physical force to shove, disarm, or destabilize a target’s position.' },
-    { name: 'Fracture Seam', desc: 'Target a map noun or structure to trigger an immediate, high-impact localized collapse.' },
-  ],
-  warden: [
-    { name: 'Bastion Gate', desc: 'Erect a physical or kinetic perimeter blocking enemy movement and kinetic vectors.' },
-    { name: 'Aegis Sentinel', desc: 'Interpose yourself to take the impact of an attack targeting an adjacent ally.' },
-    { name: 'Unyielding Stance', desc: 'Anchor your weight, rendering you immune to forced positioning or shoves.' },
-  ],
-  rival: [
-    { name: 'Parry & Riposte', desc: 'Spend Avoid defense to deflect a kinetic attack and strike back in the same motion.' },
-    { name: 'Disarming Gaze', desc: 'Leverage intense focus to halt an opponent’s planned active state trigger.' },
-    { name: 'Pressure Pivot', desc: 'Convert an incoming Drift pressure increase into a direct willpower check advantage.' },
-  ],
-  broker: [
-    { name: 'Procedural Writ', desc: 'Submit a formal permit or mandate that forces local authority NPCs to pause action.' },
-    { name: 'Information Deal', desc: 'Trade a verified secret to change a target NPC’s immediate want or social loyalty.' },
-    { name: 'Leverage Clause', desc: 'Exploit a prior contract to compel cooperation or extract assets in a social scene.' },
-  ],
-  shade: [
-    { name: 'Umbral Slip', desc: 'Slip into shadows or snags in the environment, bypassing physical search actions.' },
-    { name: 'Vanish from Record', desc: 'Erase your presence from logs, archives, or guard manifests completely.' },
-    { name: 'Silent Omission', desc: 'Perform a delicate kinetic or security action without making any sound or trigger.' },
-  ],
-};
+interface Props {
+  character: Character;
+  /** When false, the sheet stays a static print preview. Defaults to true. */
+  editable?: boolean;
+  onChange?: (patch: CharacterSheetPatch) => void;
+  /** Pack-specific document labels. Defaults to Terminus civic chrome. */
+  chrome?: SheetChrome;
+  /** When provided, these fill Section IV instead of Terminus Order lookup. */
+  abilities?: Array<{ name: string; desc: string }>;
+  /** Pack armor id (padded, leather, chain…). Falls back to the engine slot on the character. */
+  armorId?: string;
+}
 
-export default function CharacterSheetPreview({ character }: Props) {
+interface SheetFields {
+  name: string;
+  species: string;
+  order: string;
+  subtitle: string;
+  approach: string;
+  background: string;
+  objective: string;
+  primaryWeapon: string;
+  secondaryItem: string;
+  armor: string;
+  force: DieSize;
+  agility: DieSize;
+  willpower: DieSize;
+  endure: number;
+  avoid: number;
+  exert: number;
+}
+
+function formatWeaponLine(name: string, impact: number, vectors?: string[]): string {
+  if (vectors) {
+    return `${name} (${impact} Impact, ${vectors.join(', ') || 'No vectors'})`;
+  }
+  return `${name} (${impact} Impact)`;
+}
+
+function displayWeaponLine(name: string, impact: number, vectors?: string[]): string {
+  if (/\bImpact\b/i.test(name)) return name;
+  return formatWeaponLine(name, impact, vectors);
+}
+
+function extractSheetFields(character: Character, chrome: SheetChrome, armorId?: string): SheetFields {
   const identity = character.identity as SheetIdentity;
-  const species = identity.species || 'High Alfar';
-  const order = identity.order || 'Seeker';
-  const subtitle = identity.subtitle || 'Provisional Scholar Frame';
+  const species = identity.species || chrome.defaultSpecies;
+  const order = identity.order || chrome.defaultOrder;
+  const subtitle = identity.subtitle || identity.frame || 'Provisional Scholar Frame';
+  const background = identity.background || 'A responder shaped by the quiet wards, searching for boundary fault lines.';
+  const approach = identity.immediateWant
+    || `My approach is defined by my frame: ${subtitle}. I act with deliberate focus: "Observe local boundary fractures and locate the next breach."`;
 
-  const originRegion = identity.origin || 'Black Ward Coast';
-  const signatureItem = identity.signature || 'Notched brass compass';
-  const backgroundSentence = identity.background || 'A responder shaped by the quiet wards, searching for boundary fault lines.';
-  const currentObjective = character.notes?.[0] || 'Observe local boundary fractures and locate the next breach.';
+  return {
+    name: character.name || 'Unnamed Responder',
+    species,
+    order,
+    subtitle,
+    approach,
+    background,
+    objective: character.notes?.[0] || 'Observe local boundary fractures and locate the next breach.',
+    primaryWeapon: displayWeaponLine(
+      character.weapons.primary.name,
+      character.weapons.primary.impact,
+      character.weapons.primary.vectors,
+    ),
+    secondaryItem: displayWeaponLine(character.weapons.secondary.name, character.weapons.secondary.impact),
+    armor: armorId || character.armor || 'none',
+    force: character.actions.force,
+    agility: character.actions.agility,
+    willpower: character.actions.willpower,
+    endure: character.tracks.endure.current,
+    avoid: character.tracks.avoid.current,
+    exert: character.tracks.exert.current,
+  };
+}
+
+function maxFromDie(die: DieSize): number {
+  return Math.min(5, Math.max(1, (die - 2) / 2)) as number;
+}
+
+function cycleDie(current: DieSize): DieSize {
+  const index = DIE_SIZES.indexOf(current);
+  return DIE_SIZES[(index + 1) % DIE_SIZES.length];
+}
+
+function SheetInput({
+  value,
+  onChange,
+  className,
+  ariaLabel,
+  style,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  className?: string;
+  ariaLabel: string;
+  style?: CSSProperties;
+}) {
+  return (
+    <input
+      type="text"
+      aria-label={ariaLabel}
+      className={`ts-sheet-input ${className ?? ''}`.trim()}
+      value={value}
+      onChange={(event) => onChange(event.target.value)}
+      style={style}
+    />
+  );
+}
+
+function SheetTextArea({
+  value,
+  onChange,
+  className,
+  ariaLabel,
+  rows = 3,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  className?: string;
+  ariaLabel: string;
+  rows?: number;
+}) {
+  return (
+    <textarea
+      aria-label={ariaLabel}
+      className={`ts-sheet-textarea ${className ?? ''}`.trim()}
+      value={value}
+      rows={rows}
+      onChange={(event) => onChange(event.target.value)}
+    />
+  );
+}
+
+const EMPTY_SHEET_ABILITIES = [
+  { name: '', desc: '' },
+  { name: '', desc: '' },
+  { name: '', desc: '' },
+];
+
+function defaultAbilitiesForOrder(order: string) {
+  const fromPack = sheetAbilitiesForOrder(order);
+  return fromPack.length > 0 ? fromPack : EMPTY_SHEET_ABILITIES;
+}
+
+export default function CharacterSheetPreview({
+  character,
+  editable = true,
+  onChange,
+  chrome = TERMINUS_SHEET_CHROME,
+  abilities: abilitiesProp,
+  armorId,
+}: Props) {
+  const incoming = extractSheetFields(character, chrome, armorId);
+  const [fields, setFields] = useState<SheetFields>(incoming);
+  const prevIncoming = useRef(incoming);
+  const defaultAbilities = abilitiesProp || defaultAbilitiesForOrder(incoming.order);
+  const [abilities, setAbilities] = useState(defaultAbilities);
+  const prevOrder = useRef(incoming.order);
+
+  useEffect(() => {
+    const prev = prevIncoming.current;
+    const changed: Partial<SheetFields> = {};
+    (Object.keys(incoming) as Array<keyof SheetFields>).forEach((key) => {
+      if (incoming[key] !== prev[key]) {
+        changed[key] = incoming[key] as never;
+      }
+    });
+    if (Object.keys(changed).length > 0) {
+      setFields((current) => ({ ...current, ...changed }));
+    }
+    prevIncoming.current = incoming;
+  }, [incoming]);
+
+  useEffect(() => {
+    if (abilitiesProp) return;
+    if (fields.order !== prevOrder.current) {
+      const nextAbilities = defaultAbilitiesForOrder(fields.order);
+      setAbilities(nextAbilities);
+      prevOrder.current = fields.order;
+    }
+  }, [abilitiesProp, fields.order]);
+
+  const updateFields = (patch: CharacterSheetPatch) => {
+    const { abilities: _abilities, ...fieldPatch } = patch;
+    setFields((current) => ({
+      ...current,
+      ...fieldPatch,
+    }));
+    onChange?.(patch);
+  };
+
+  const species = fields.species;
+  const order = fields.order;
+  const backgroundSentence = fields.background;
+  const currentObjective = fields.objective;
 
   // Standardize values for mapping classes
-  const lineageNormalized = species.toLowerCase().replace(/\s+/g, '');
+  const lineageNormalized = (() => {
+    const raw = species.toLowerCase().replace(/\s+/g, '');
+    if (raw.includes('dwarf')) return 'stoneborn';
+    if (raw.includes('elf')) return 'high';
+    return raw;
+  })();
   const orderNormalized = order.toLowerCase();
-
-  // Determine Order Abilities based on selection
-  const abilities = ORDER_ABILITIES[orderNormalized] || ORDER_ABILITIES.seeker;
 
   // ── DYNAMIC LINEAGE RENDERING HELPERS ──
   
@@ -221,21 +396,26 @@ export default function CharacterSheetPreview({ character }: Props) {
 
   // Determine official stamp text and ink tone based on Order
   const getStampMeta = () => {
-    switch (orderNormalized) {
-      case 'breaker':
-        return { label: 'DEPT RUIN', text: 'BREAKER', code: 'Doc 808-Beta' };
-      case 'warden':
-        return { label: 'DEPT AEGIS', text: 'WARDEN', code: 'Doc 902-Alpha' };
-      case 'rival':
-        return { label: 'DEPT CLASH', text: 'RIVAL', code: 'Doc 705-Omega' };
-      case 'broker':
-        return { label: 'DEPT WRITS', text: 'BROKER', code: 'Doc 112-Kappa' };
-      case 'shade':
-        return { label: 'CLASSIFIED', text: 'SHADE', code: 'Doc 000-Void' };
-      case 'seeker':
-      default:
-        return { label: 'DEPT PROBE', text: 'SEEKER', code: 'Doc 049-Gamma' };
+    if (chrome.terminusStamps) {
+      switch (orderNormalized) {
+        case 'breaker':
+          return { label: 'DEPT RUIN', text: 'BREAKER', code: 'Doc 808-Beta' };
+        case 'warden':
+          return { label: 'DEPT AEGIS', text: 'WARDEN', code: 'Doc 902-Alpha' };
+        case 'rival':
+          return { label: 'DEPT CLASH', text: 'RIVAL', code: 'Doc 705-Omega' };
+        case 'broker':
+          return { label: 'DEPT WRITS', text: 'BROKER', code: 'Doc 112-Kappa' };
+        case 'shade':
+          return { label: 'CLASSIFIED', text: 'SHADE', code: 'Doc 000-Void' };
+        case 'seeker':
+          return { label: 'DEPT PROBE', text: 'SEEKER', code: 'Doc 049-Gamma' };
+        default:
+          break;
+      }
     }
+    const stampText = (order || chrome.defaultOrder).slice(0, 12).toUpperCase();
+    return { label: chrome.stampLabel.toUpperCase(), text: stampText, code: chrome.stampCode };
   };
 
   const stampMeta = getStampMeta();
@@ -303,16 +483,67 @@ export default function CharacterSheetPreview({ character }: Props) {
     }
   };
 
-  const renderThresholdCircles = (current: number, max: number) => {
+  const renderThresholdCircles = (
+    track: 'endure' | 'avoid' | 'exert',
+    current: number,
+    max: number,
+  ) => {
     return (
       <div className="ts-threshold-row-circles">
         {Array.from({ length: 5 }).map((_, i) => {
           let bubbleClass = 'ts-bubble';
           if (i < current) bubbleClass += ' filled';
           else if (i < max) bubbleClass += ' unlocked';
-          return <div key={i} className={bubbleClass} />;
+          const clickable = editable && i < max;
+          return clickable ? (
+            <button
+              key={i}
+              type="button"
+              className={bubbleClass}
+              aria-label={`${track} circle ${i + 1} of ${max}`}
+              onClick={() => {
+                const next = current === i + 1 ? i : i + 1;
+                updateFields({ [track]: next });
+              }}
+            />
+          ) : (
+            <div key={i} className={bubbleClass} />
+          );
         })}
       </div>
+    );
+  };
+
+  const renderDieRating = (stat: 'force' | 'agility' | 'willpower', size: DieSize) => {
+    if (!editable) {
+      return (
+        <div className="ts-rating-square">
+          <div className="ts-square-label">RATING</div>
+          <div className="ts-square-val">d{size}</div>
+        </div>
+      );
+    }
+
+    return (
+      <button
+        type="button"
+        className="ts-rating-square ts-rating-square-button"
+        aria-label={`Cycle ${stat} die. Current d${size}`}
+        title="Click to cycle die size"
+        onClick={() => {
+          const next = cycleDie(size);
+          const track = stat === 'force' ? 'endure' : stat === 'agility' ? 'avoid' : 'exert';
+          const nextMax = maxFromDie(next);
+          const currentTrack = fields[track];
+          updateFields({
+            [stat]: next,
+            [track]: Math.min(currentTrack, nextMax),
+          });
+        }}
+      >
+        <div className="ts-square-label">RATING</div>
+        <div className="ts-square-val">d{size}</div>
+      </button>
     );
   };
 
@@ -323,8 +554,8 @@ export default function CharacterSheetPreview({ character }: Props) {
           {/* HEADER TEXT & STAMP ROW */}
           <div className="ts-top-row">
             <div className="ts-brand">
-              <div className="ts-brand-main">TERMINUS RPG</div>
-              <div className="ts-brand-motto">GLORY IN SERVICE. ORDER IN ALL THINGS.</div>
+              <div className="ts-brand-main">{chrome.brand}</div>
+              <div className="ts-brand-motto">{chrome.motto}</div>
             </div>
             
             {/* SVG Center Crest - customized dynamically by Accord Order */}
@@ -340,7 +571,7 @@ export default function CharacterSheetPreview({ character }: Props) {
             <div className="ts-meta-stamp-area">
               <div className="ts-doc-number">{stampMeta.code}-9</div>
               <div className="ts-official-stamp-box">
-                <span className="ts-stamp-label">Official Stamp</span>
+                <span className="ts-stamp-label">{chrome.stampLabel}</span>
                 {/* Visual ink seal - color matched to dynamic skin */}
                 <div className="ts-red-ink-seal">
                   <svg viewBox="0 0 100 100" width="50" height="50">
@@ -357,9 +588,12 @@ export default function CharacterSheetPreview({ character }: Props) {
 
           {/* MAIN FIELD TITLE */}
           <div className="ts-header-plate">
-            <div className="ts-plate-sub">CIVIC FIELD DOCUMENT –</div>
-            <div className="ts-plate-main">BUREAU OF STRATEGIC AFFAIRS</div>
+            <div className="ts-plate-sub">{chrome.documentKind}</div>
+            <div className="ts-plate-main">{chrome.documentAuthority}</div>
           </div>
+          {editable && (
+            <p className="ts-fill-hint">Click any underlined field to type. Click a rating box to cycle dice. Click armor to cycle its permission. Click threshold circles to mark pressure.</p>
+          )}
 
           {/* SECTION I: IDENTITY */}
           <div className="ts-section-header">
@@ -369,15 +603,43 @@ export default function CharacterSheetPreview({ character }: Props) {
           <div className="ts-identity-fields">
             <div className="ts-field-inline" style={{ width: '40%' }}>
               <span className="ts-inline-label">Name</span>
-              <span className="ts-inline-value handwriting">{character.name.toUpperCase()}</span>
+              {editable ? (
+                <SheetInput
+                  className="ts-inline-value handwriting"
+                  ariaLabel="Name"
+                  value={fields.name}
+                  onChange={(value) => updateFields({ name: value })}
+                  style={{ textTransform: 'uppercase' }}
+                />
+              ) : (
+                <span className="ts-inline-value handwriting">{fields.name.toUpperCase()}</span>
+              )}
             </div>
             <div className="ts-field-inline" style={{ width: '30%' }}>
-              <span className="ts-inline-label">Species / Lineage</span>
-              <span className="ts-inline-value handwriting">{species}</span>
+              <span className="ts-inline-label">{chrome.speciesLabel}</span>
+              {editable ? (
+                <SheetInput
+                  className="ts-inline-value handwriting"
+                  ariaLabel={chrome.speciesLabel}
+                  value={species}
+                  onChange={(value) => updateFields({ species: value })}
+                />
+              ) : (
+                <span className="ts-inline-value handwriting">{species}</span>
+              )}
             </div>
             <div className="ts-field-inline" style={{ width: '30%' }}>
-              <span className="ts-inline-label">Accord Order</span>
-              <span className="ts-inline-value handwriting">{order}</span>
+              <span className="ts-inline-label">{chrome.orderLabel}</span>
+              {editable ? (
+                <SheetInput
+                  className="ts-inline-value handwriting"
+                  ariaLabel={chrome.orderLabel}
+                  value={order}
+                  onChange={(value) => updateFields({ order: value })}
+                />
+              ) : (
+                <span className="ts-inline-value handwriting">{order}</span>
+              )}
             </div>
           </div>
 
@@ -388,9 +650,17 @@ export default function CharacterSheetPreview({ character }: Props) {
           </div>
           <p className="ts-section-instruction">Describe your character's demeanor and defining action.</p>
           <div className="ts-lined-box">
-            <div className="handwriting-block">
-              {identity.immediateWant ? `My approach is defined by my frame: ${subtitle}. I act with deliberate focus: "${identity.immediateWant}"` : backgroundSentence}
-            </div>
+            {editable ? (
+              <SheetTextArea
+                className="handwriting-block"
+                ariaLabel="Approach and signature"
+                value={fields.approach}
+                onChange={(value) => updateFields({ approach: value })}
+                rows={4}
+              />
+            ) : (
+              <div className="handwriting-block">{fields.approach}</div>
+            )}
             {/* Winged eye decoration at bottom center - lineage matched */}
             <div className="ts-lined-box-divider">
               {renderLinedBoxDivider()}
@@ -407,19 +677,16 @@ export default function CharacterSheetPreview({ character }: Props) {
             <div className="ts-skill-column">
               <div className="ts-skill-header-row">
                 <div className="ts-skill-label-block">
-                  <div className="ts-skill-label-name">FORCE (d{character.actions.force})</div>
+                  <div className="ts-skill-label-name">FORCE (d{fields.force})</div>
                 </div>
                 <div className="ts-die-box-wrapper">
-                  {renderDieSvg(character.actions.force)}
+                  {renderDieSvg(fields.force)}
                 </div>
-                <div className="ts-rating-square">
-                  <div className="ts-square-label">RATING</div>
-                  <div className="ts-square-val">d{character.actions.force}</div>
-                </div>
+                {renderDieRating('force', fields.force)}
               </div>
               <div className="ts-threshold-track">
                 <span className="ts-track-label">ENDURE</span>
-                {renderThresholdCircles(character.tracks.endure.current, character.tracks.endure.max)}
+                {renderThresholdCircles('endure', fields.endure, maxFromDie(fields.force))}
               </div>
             </div>
 
@@ -427,19 +694,16 @@ export default function CharacterSheetPreview({ character }: Props) {
             <div className="ts-skill-column">
               <div className="ts-skill-header-row">
                 <div className="ts-skill-label-block">
-                  <div className="ts-skill-label-name">AGILITY (d{character.actions.agility})</div>
+                  <div className="ts-skill-label-name">AGILITY (d{fields.agility})</div>
                 </div>
                 <div className="ts-die-box-wrapper">
-                  {renderDieSvg(character.actions.agility)}
+                  {renderDieSvg(fields.agility)}
                 </div>
-                <div className="ts-rating-square">
-                  <div className="ts-square-label">RATING</div>
-                  <div className="ts-square-val">d{character.actions.agility}</div>
-                </div>
+                {renderDieRating('agility', fields.agility)}
               </div>
               <div className="ts-threshold-track">
                 <span className="ts-track-label">AVOID</span>
-                {renderThresholdCircles(character.tracks.avoid.current, character.tracks.avoid.max)}
+                {renderThresholdCircles('avoid', fields.avoid, maxFromDie(fields.agility))}
               </div>
             </div>
 
@@ -447,19 +711,16 @@ export default function CharacterSheetPreview({ character }: Props) {
             <div className="ts-skill-column">
               <div className="ts-skill-header-row">
                 <div className="ts-skill-label-block">
-                  <div className="ts-skill-label-name">WILLPOWER (d{character.actions.willpower})</div>
+                  <div className="ts-skill-label-name">WILLPOWER (d{fields.willpower})</div>
                 </div>
                 <div className="ts-die-box-wrapper">
-                  {renderDieSvg(character.actions.willpower)}
+                  {renderDieSvg(fields.willpower)}
                 </div>
-                <div className="ts-rating-square">
-                  <div className="ts-square-label">RATING</div>
-                  <div className="ts-square-val">d{character.actions.willpower}</div>
-                </div>
+                {renderDieRating('willpower', fields.willpower)}
               </div>
               <div className="ts-threshold-track">
                 <span className="ts-track-label">EXERT</span>
-                {renderThresholdCircles(character.tracks.exert.current, character.tracks.exert.max)}
+                {renderThresholdCircles('exert', fields.exert, maxFromDie(fields.willpower))}
               </div>
             </div>
           </div>
@@ -467,14 +728,46 @@ export default function CharacterSheetPreview({ character }: Props) {
           {/* SECTION IV: ORDER ABILITIES */}
           <div className="ts-section-header">
             <span className="ts-section-num">IV</span>
-            <span className="ts-section-title-text">Order Abilities</span>
+            <span className="ts-section-title-text">{chrome.abilitiesTitle}</span>
           </div>
           <div className="ts-abilities-grid">
             {abilities.map((ability, idx) => (
               <div key={idx} className="ts-ability-card">
                 <div className="ts-ability-badge">{idx + 1}</div>
-                <h4 className="ts-ability-name">{ability.name}</h4>
-                <p className="ts-ability-desc">{ability.desc}</p>
+                {editable ? (
+                  <>
+                    <SheetInput
+                      className="ts-ability-name"
+                      ariaLabel={`${chrome.abilitiesTitle} ${idx + 1} name`}
+                      value={ability.name}
+                      onChange={(value) => {
+                        const next = abilities.map((entry, abilityIndex) =>
+                          abilityIndex === idx ? { ...entry, name: value } : entry,
+                        );
+                        setAbilities(next);
+                        onChange?.({ abilities: next });
+                      }}
+                    />
+                    <SheetTextArea
+                      className="ts-ability-desc"
+                      ariaLabel={`${ability.name || chrome.abilitiesTitle} ${idx + 1} description`}
+                      value={ability.desc}
+                      rows={3}
+                      onChange={(value) => {
+                        const next = abilities.map((entry, abilityIndex) =>
+                          abilityIndex === idx ? { ...entry, desc: value } : entry,
+                        );
+                        setAbilities(next);
+                        onChange?.({ abilities: next });
+                      }}
+                    />
+                  </>
+                ) : (
+                  <>
+                    <h4 className="ts-ability-name">{ability.name}</h4>
+                    <p className="ts-ability-desc">{ability.desc}</p>
+                  </>
+                )}
               </div>
             ))}
           </div>
@@ -487,23 +780,73 @@ export default function CharacterSheetPreview({ character }: Props) {
           <div className="ts-gear-fields">
             <div className="ts-field-row-full">
               <span className="ts-row-label">Primary Weapon</span>
-              <span className="ts-row-value handwriting">
-                {character.weapons.primary.name} ({character.weapons.primary.impact} Impact, {character.weapons.primary.vectors.join(', ') || 'No vectors'})
-              </span>
+              {editable ? (
+                <SheetInput
+                  className="ts-row-value handwriting"
+                  ariaLabel="Primary weapon"
+                  value={fields.primaryWeapon}
+                  onChange={(value) => updateFields({ primaryWeapon: value })}
+                />
+              ) : (
+                <span className="ts-row-value handwriting">{fields.primaryWeapon}</span>
+              )}
             </div>
             <div className="ts-field-row-full">
               <span className="ts-row-label">Secondary Item</span>
-              <span className="ts-row-value handwriting">
-                {character.weapons.secondary.name} ({character.weapons.secondary.impact} Impact)
-              </span>
+              {editable ? (
+                <SheetInput
+                  className="ts-row-value handwriting"
+                  ariaLabel="Secondary item"
+                  value={fields.secondaryItem}
+                  onChange={(value) => updateFields({ secondaryItem: value })}
+                />
+              ) : (
+                <span className="ts-row-value handwriting">{fields.secondaryItem}</span>
+              )}
+            </div>
+            <div className="ts-field-row-full">
+              <span className="ts-row-label">Armor</span>
+              {editable ? (
+                <button
+                  type="button"
+                  className="ts-row-value handwriting"
+                  aria-label="Cycle armor permission"
+                  onClick={() => updateFields({ armor: cycleBodyArmor(fields.armor) })}
+                  style={{ textAlign: 'left', background: 'transparent', border: 0, padding: 0, cursor: 'pointer', width: '100%' }}
+                >
+                  {sheetArmorLine(fields.armor, chrome.terminusStamps ? 'terminus' : 'generic')}
+                </button>
+              ) : (
+                <span className="ts-row-value handwriting">
+                  {sheetArmorLine(fields.armor, chrome.terminusStamps ? 'terminus' : 'generic')}
+                </span>
+              )}
             </div>
             <div className="ts-field-row-full">
               <span className="ts-row-label">Background Sentence: "Write one defining sentence about your past."</span>
-              <span className="ts-row-value handwriting">{backgroundSentence}</span>
+              {editable ? (
+                <SheetInput
+                  className="ts-row-value handwriting"
+                  ariaLabel="Background sentence"
+                  value={backgroundSentence}
+                  onChange={(value) => updateFields({ background: value })}
+                />
+              ) : (
+                <span className="ts-row-value handwriting">{backgroundSentence}</span>
+              )}
             </div>
             <div className="ts-field-row-full">
               <span className="ts-row-label">Current Objective:</span>
-              <span className="ts-row-value handwriting">{currentObjective}</span>
+              {editable ? (
+                <SheetInput
+                  className="ts-row-value handwriting"
+                  ariaLabel="Current objective"
+                  value={currentObjective}
+                  onChange={(value) => updateFields({ objective: value })}
+                />
+              ) : (
+                <span className="ts-row-value handwriting">{currentObjective}</span>
+              )}
             </div>
           </div>
 
@@ -514,7 +857,7 @@ export default function CharacterSheetPreview({ character }: Props) {
               {renderCornerFlourish('left')}
             </div>
             
-            <div className="ts-footer-text">✦ THE BUREAU SEES ALL. THE BUREAU REMEMBERS. ✦</div>
+            <div className="ts-footer-text">✦ {chrome.footer} ✦</div>
 
             <div className="ts-gear-deco right">
               {renderCornerFlourish('right')}

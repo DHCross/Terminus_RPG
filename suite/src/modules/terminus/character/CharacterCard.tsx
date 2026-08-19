@@ -3,7 +3,7 @@ import { SKILLS, DIE_LADDER, CIRCLE_MAPPING, type Die } from '../../../data/term
 import { SKILL_TO_THRESHOLD_MAP } from '../../../data/terminus/thresholds';
 import { ORDERS_LIST } from '../../../data/terminus/orders';
 import { WEAPONS } from '../../../data/terminus/weapons';
-import { ARMOR_TYPES } from '../../../data/terminus/armor';
+import { BODY_ARMOR } from '../../../data/terminus/armor';
 import { useCharacterStorage } from './useCharacterStorage';
 import { useToast } from '../../../components/Toast';
 
@@ -457,11 +457,17 @@ export function CharacterCard() {
               outline: 'none',
             }}
           >
-            {ARMOR_TYPES.map((a) => (
-              <option key={a.id} value={a.id}>{a.name} (Reduction: {a.reduction})</option>
+            {BODY_ARMOR.map((piece) => (
+              <option key={piece.id} value={piece.id}>
+                {piece.terminus.name}
+                {piece.permission ? ` — ${piece.permission}` : ''}
+              </option>
             ))}
           </select>
         </div>
+        <p className="muted" style={{ fontSize: '0.8rem', marginTop: '-0.35rem' }}>
+          Permission to Endure, not a rating. A Board stacks with any of these and costs one hand.
+        </p>
       </section>
 
       <section className="card-body">

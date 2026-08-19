@@ -1,9 +1,8 @@
 /* ── Generic Fantasy Pack — Dashboard (Art & Interactive Alpha 0.2) ── */
 
-import { CoherenceCharacterCard } from './CoherenceCharacterCard';
 import { AurelStoryEngine } from './AurelStoryEngine';
 import { SignatureKeyLedger } from './SignatureKeyLedger';
-import { DWARVEN_FIGHTER, ELVEN_WIZARD, DIVINE_THEURGIST } from './characterData';
+import { Link } from 'react-router-dom';
 
 /* ── Section Divider with glyph ── */
 function SectionDivider({ glyph, label }: { glyph: string; label: string }) {
@@ -35,6 +34,7 @@ function SectionDivider({ glyph, label }: { glyph: string; label: string }) {
       </span>
       <span
         style={{
+          display: 'inline-flex',
           fontSize: 11,
           letterSpacing: '2.5px',
           textTransform: 'uppercase',
@@ -46,30 +46,6 @@ function SectionDivider({ glyph, label }: { glyph: string; label: string }) {
         {label}
       </span>
       <div style={{ flex: 1, height: 1, background: 'linear-gradient(90deg, #1e293b, transparent)' }} />
-    </div>
-  );
-}
-
-/* ── Character card wrapper with label ── */
-function CharacterCardEntry({ label, character }: { label: string; character: typeof DWARVEN_FIGHTER }) {
-  return (
-    <div style={{ marginBottom: 36 }}>
-      <div
-        style={{
-          fontSize: 12,
-          color: '#94a3b8',
-          fontFamily: 'Inter, sans-serif',
-          marginBottom: 12,
-          padding: '6px 14px',
-          border: '1px solid #1e293b',
-          borderRadius: 6,
-          background: 'rgba(15,23,42,0.6)',
-          display: 'inline-block',
-        }}
-      >
-        {label}
-      </div>
-      <CoherenceCharacterCard character={character} />
     </div>
   );
 }
@@ -166,6 +142,45 @@ export default function GenericFantasyDashboard() {
             and careless magic. In Aurel, magic runs on the Four Controlled Verbs, and Drift is the
             ambient weather.
           </p>
+          <div style={{ display: 'flex', gap: 12, marginTop: 16, flexWrap: 'wrap' }}>
+            <Link
+              to="/characters"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                padding: '10px 16px',
+                background: '#f59e0b',
+                color: '#1a1408',
+                fontWeight: 800,
+                fontSize: 13,
+                letterSpacing: '0.04em',
+                textTransform: 'uppercase',
+                borderRadius: 8,
+                textDecoration: 'none',
+              }}
+            >
+              Open Character Vault
+            </Link>
+            <Link
+              to="/npcs"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                padding: '10px 16px',
+                background: 'rgba(15,23,42,0.7)',
+                color: '#e2e8f0',
+                fontWeight: 700,
+                fontSize: 13,
+                letterSpacing: '0.04em',
+                textTransform: 'uppercase',
+                borderRadius: 8,
+                textDecoration: 'none',
+                border: '1px solid rgba(226,232,240,0.25)',
+              }}
+            >
+              NPC Vault
+            </Link>
+          </div>
         </div>
       </div>
 
@@ -176,23 +191,6 @@ export default function GenericFantasyDashboard() {
         <div style={{ marginBottom: 52 }}>
           <SectionDivider glyph="✦" label="The Aurel Story Engine &amp; Four Verbs (Alpha 0.2 §12)" />
           <AurelStoryEngine />
-        </div>
-
-        {/* Interactive Character Cards */}
-        <div style={{ marginBottom: 52 }}>
-          <SectionDivider glyph="⚔" label="Interactive Character Cards — Paired Skills &amp; Thresholds" />
-          <CharacterCardEntry
-            label="Example 1 · Durgrim Ironvow (Dwarf Vanguard) — front-line anchor, Endure 5 circles, Impact 3 Greatsword"
-            character={DWARVEN_FIGHTER}
-          />
-          <CharacterCardEntry
-            label="Example 2 · Sylarien Moon-Glass (Elven Esoteric Arts) — high Avoid, deep Exert, Unanchored Casting"
-            character={ELVEN_WIZARD}
-          />
-          <CharacterCardEntry
-            label="Example 3 · Brother Caedmon (Human Sacred Covenants) — bound by the Edgeless Vow, mending Workings"
-            character={DIVINE_THEURGIST}
-          />
         </div>
 
         {/* Signature Key Ledger */}

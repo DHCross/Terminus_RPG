@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import type { Enemy, EnemyDefinition, ValidationDiagnostic } from '../../coherence-engine/src/index.ts';
-import { ARMOR_REDUCTION } from '../../coherence-engine/src/index.ts';
+import { BODY_ARMOR, sheetArmorLine } from '../../../data/terminus/armor';
 import {
   buildMonsterFromDraft,
   cloneMonsterDraft,
@@ -148,9 +148,9 @@ export default function MonsterStudio() {
               </Field>
               <Field label="Armor">
                 <select value={draft.armor} onChange={(event) => setDraft({ ...draft, armor: event.target.value as MonsterDraft['armor'] })} style={selectStyle}>
-                  {Object.keys(ARMOR_REDUCTION).map((armor) => (
-                    <option key={armor} value={armor}>
-                      {armor} · -{ARMOR_REDUCTION[armor as keyof typeof ARMOR_REDUCTION]} impact
+                  {BODY_ARMOR.filter((piece) => piece.id === 'none' || piece.id === piece.engineArmor).map((piece) => (
+                    <option key={piece.id} value={piece.engineArmor}>
+                      {sheetArmorLine(piece.id, 'generic')}
                     </option>
                   ))}
                 </select>
@@ -207,7 +207,7 @@ export default function MonsterStudio() {
             </div>
             <div style={{ display: 'grid', gap: 8, gridTemplateColumns: 'repeat(2, minmax(0, 1fr))' }}>
               {summaryChip('Initiative', `Phase ${preview.enemy.initiativePhase}`)}
-              {summaryChip('Armor', `${preview.enemy.armor} · -${ARMOR_REDUCTION[preview.enemy.armor]}`)}
+              {summaryChip('Armor', sheetArmorLine(preview.enemy.armor, 'generic'))}
               {summaryChip('Force', statLine(preview.enemy.actions.force))}
               {summaryChip('Agility', statLine(preview.enemy.actions.agility))}
               {summaryChip('Willpower', statLine(preview.enemy.actions.willpower))}

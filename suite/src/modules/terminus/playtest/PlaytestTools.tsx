@@ -3,7 +3,7 @@ import { ClipboardList, Dices, Gauge, Waves, ArrowDown } from 'lucide-react';
 import { DIE_LADDER, type Die } from '../../../data/terminus/skills';
 import { getSecureRandom } from '../../../utils/crypto';
 import { ConflictResolver } from '../conflict/ConflictResolver';
-import { DRIFT_DOCTRINE, DRIFT_MODES, DRIFT_WRITING_RULES, type DriftMode } from '../../../data/terminus/drift';
+import { DRIFT_DOCTRINE, DRIFT_MODES, DRIFT_TYPES, DRIFT_WRITING_RULES, type DriftMode, type DriftTypeId } from '../../../data/terminus/drift';
 import { FallCalculator } from './FallCalculator';
 
 type Tool = 'conflict' | 'dice' | 'drift' | 'questionnaire' | 'fall';
@@ -196,7 +196,9 @@ function DiceRoller() {
 }
 
 function DriftResolver() {
+  const [driftType, setDriftType] = useState<DriftTypeId>('hesitation');
   const [driftMode, setDriftMode] = useState<DriftMode>('hazard');
+  const selectedType = DRIFT_TYPES.find((type) => type.id === driftType) || DRIFT_TYPES[0];
   const driftOptions = DRIFT_MODES.find((mode) => mode.id === driftMode)?.examples || DRIFT_MODES[0].examples;
   const [customOptions, setCustomOptions] = useState<string[]>([]);
   const [customDraft, setCustomDraft] = useState('');
@@ -232,8 +234,8 @@ function DriftResolver() {
         Drift Resolver
       </h3>
       <p style={{ color: '#94a3b8', marginBottom: '1.5rem', lineHeight: 1.6 }}>
-        Drift is the scene's Else statement: what changes if the players do nothing.
-        Write it as an executable end-of-round trigger.
+        Drift is the fill-in-the-blank: what happens if they stall? Choose the type first.
+        That dial is the genre. Do not skip it.
       </p>
 
       <div style={{
@@ -262,6 +264,38 @@ function DriftResolver() {
         ))}
       </div>
 
+      <p style={{ color: '#94a3b8', fontSize: '0.8rem', margin: '0 0 0.4rem', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+        Type — what advances the clock
+      </p>
+      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.75rem', flexWrap: 'wrap' }}>
+        {DRIFT_TYPES.map((type) => (
+          <button
+            key={type.id}
+            type="button"
+            onClick={() => {
+              setDriftType(type.id);
+              setResult(null);
+            }}
+            style={{
+              padding: '0.65rem 1rem',
+              backgroundColor: driftType === type.id ? '#3b82f6' : '#0f172a',
+              color: driftType === type.id ? '#fff' : '#94a3b8',
+              border: `1px solid ${driftType === type.id ? '#3b82f6' : '#334155'}`,
+              borderRadius: '0.375rem',
+              cursor: 'pointer',
+            }}
+          >
+            {type.name}
+          </button>
+        ))}
+      </div>
+      <p style={{ color: '#cbd5e1', fontSize: '0.875rem', lineHeight: 1.5, marginBottom: '1.25rem' }}>
+        {selectedType.guideUse} {selectedType.setting}
+      </p>
+
+      <p style={{ color: '#94a3b8', fontSize: '0.8rem', margin: '0 0 0.4rem', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+        Shape — what the tick looks like
+      </p>
       <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
         {DRIFT_MODES.map((mode) => (
           <button
@@ -443,13 +477,28 @@ function PlaytestQuestionnaire() {
     'Did Endure / Avoid / Exert create real choices?',
     'Did anyone miss separate saving throws?',
     'Did the no-to-hit exchange feel active?',
-    'Did the defender\'s response choice matter?',
+    "Did the defender's response choice matter?",
     'Did Order Abilities feel like permissions rather than bonuses?',
     'Did Species matter enough, too much, or not at all?',
     'Did the Scene Card help the Guide?',
     'Did the battle map and Scene Card conflict?',
+    'Did the world feel resilient before it felt fragile?',
     'Did any rule create dead space?',
+    'Did armor feel like a permission (what you may Endure) rather than a soak number?',
+    "Did mail's Take the Room matter in corridors, doorways, or crowds?",
+    "Did plate's No Avoid, ever feel like a real cost?",
+    'Did Breaks Protection stripping the permission for the scene feel fair?',
     'What confused the table first?',
+    'Did non-casters feel as able to change the situation as casters?',
+    'Did anyone spend a Signature on Give, and did it feel worth it?',
+    'Did Mark create interesting downtime pressure or just bookkeeping?',
+    'Did you fill all four Scene Card boxes before the scene, or did two get winged?',
+    'If you winged boxes, did Drift become optional?',
+    'Did you choose a Drift type (hesitation / ambient / alert / entropy) before play?',
+    'Who profited from the Rupture staying thin? Did that matter?',
+    'Did the cell encounter anyone whose interests differed from theirs?',
+    'Did restoring the Quiet Day cost anybody anything?',
+    'Did the players ask who benefited?',
   ];
 
   const [answers, setAnswers] = useState<Record<number, string>>({});

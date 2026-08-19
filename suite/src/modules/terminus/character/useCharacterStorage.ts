@@ -19,6 +19,11 @@ export interface CharacterData {
   primaryWeapon?: string;
   secondaryWeapon?: string;
   armor?: string;
+  background?: string;
+  objective?: string;
+  abilities?: Array<{ name: string; desc: string }>;
+  advancementPoints?: number;
+  completedOperations?: number;
   createdAt: string;
   updatedAt: string;
 }

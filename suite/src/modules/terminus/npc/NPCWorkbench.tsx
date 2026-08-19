@@ -5,14 +5,15 @@ import { VaultNPCCard } from './VaultNPCCard';
 import { useNPCStorage, type NPCData } from './useNPCStorage';
 
 export function NPCWorkbench() {
-  const [tab, setTab] = useState<'generator' | 'vault'>('generator');
-  const { npcs, saveNPC, deleteNPC } = useNPCStorage();
+  const { npcs, saveNPC, updateNPC, deleteNPC } = useNPCStorage();
+  const [tab, setTab] = useState<'generator' | 'vault'>(() => (npcs.length > 0 ? 'vault' : 'generator'));
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
 
   const handleSave = (npcData: Omit<NPCData, 'id' | 'createdAt' | 'updatedAt'>) => {
     const saved = saveNPC(npcData);
-    setSaveMessage(`${saved.name} saved to the vault.`);
+    setSaveMessage(`${saved.name} saved. The civic sheet is now the vault file.`);
     window.setTimeout(() => setSaveMessage(null), 4000);
+    setTab('vault');
   };
 
   return (
@@ -75,7 +76,7 @@ export function NPCWorkbench() {
                 <p style={{ color: '#94a3b8', margin: 0, fontSize: '0.85rem' }}>
                   {npcs.length === 0
                     ? 'No NPCs on file. Generate one in the Generator.'
-                    : `${npcs.length} NPC${npcs.length !== 1 ? 's' : ''} on file`
+                    : `${npcs.length} NPC${npcs.length !== 1 ? 's' : ''} on file. Each file is the civic field document.`
                   }
                 </p>
               </div>
@@ -102,14 +103,15 @@ export function NPCWorkbench() {
             {npcs.length > 0 && (
               <div style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-                gap: '1rem',
+                gridTemplateColumns: '1fr',
+                gap: '1.25rem',
               }}>
                 {npcs.map((npc) => (
                   <VaultNPCCard
                     key={npc.id}
                     npc={npc}
                     onDelete={() => deleteNPC(npc.id)}
+                    onUpdate={(updates) => updateNPC(npc.id, updates)}
                   />
                 ))}
               </div>

@@ -4,8 +4,9 @@ import { ORDERS_LIST } from '../../../data/terminus/orders';
 import { ORIGINS, generateArchetype, applyArchetypeUpgrades, generateRandomCharacter, type OriginId } from '../../../data/terminus/archetypes';
 import { deriveThresholds, type CharacterCreationState } from '../../../data/terminus/advancement';
 import type { Die } from '../../../data/terminus/skills';
-import CharacterSheetPreview from '../../gwsd-cards/components/CharacterSheetPreview';
+import CharacterSheetPreview, { type CharacterSheetPatch } from '../../gwsd-cards/components/CharacterSheetPreview';
 import { createCharacter, type Character } from '../../coherence-engine/src/index';
+import { toEngineArmor } from '../../../data/terminus/armor';
 
 interface CharacterGeneratorProps {
   onSave?: (character: CharacterCreationState) => void;
@@ -62,6 +63,16 @@ export function CharacterGenerator({ onSave }: CharacterGeneratorProps = {}) {
       Willpower: skills.Willpower,
       ...thresholds,
     }));
+    setSheetCopy({
+      species: '',
+      orderName: '',
+      approach: '',
+      background: '',
+      objective: '',
+      primaryWeapon: '',
+      secondaryItem: '',
+      armor: 'none',
+    });
     
     setStep('review');
   };
@@ -82,6 +93,16 @@ export function CharacterGenerator({ onSave }: CharacterGeneratorProps = {}) {
     }));
     
     setSelectedOrigin(archetype.origin);
+    setSheetCopy({
+      species: '',
+      orderName: '',
+      approach: '',
+      background: '',
+      objective: '',
+      primaryWeapon: '',
+      secondaryItem: '',
+      armor: 'none',
+    });
     setStep('review');
   };
 
@@ -99,6 +120,16 @@ export function CharacterGenerator({ onSave }: CharacterGeneratorProps = {}) {
   };
 
   const [saved, setSaved] = useState(false);
+  const [sheetCopy, setSheetCopy] = useState({
+    species: '',
+    orderName: '',
+    approach: '',
+    background: '',
+    objective: '',
+    primaryWeapon: '',
+    secondaryItem: '',
+    armor: 'none',
+  });
 
   const handleSaveCharacter = () => {
     const thresholds = deriveThresholds({
@@ -107,9 +138,18 @@ export function CharacterGenerator({ onSave }: CharacterGeneratorProps = {}) {
       Willpower: character.Willpower,
     });
     
+    const originName = character.origin ? ORIGINS.find(o => o.id === character.origin)?.name : 'Unknown Lineage';
+
     const finalCharacter = {
       ...character,
       ...thresholds,
+      speciesLabel: sheetCopy.species || originName,
+      approach: sheetCopy.approach,
+      backgroundSentence: sheetCopy.background,
+      currentObjective: sheetCopy.objective,
+      primaryWeapon: sheetCopy.primaryWeapon,
+      secondaryItem: sheetCopy.secondaryItem,
+      armor: sheetCopy.armor,
     };
     
     onSave?.(finalCharacter);
@@ -118,14 +158,17 @@ export function CharacterGenerator({ onSave }: CharacterGeneratorProps = {}) {
   };
 
   const getPreviewCharacter = (): Character => {
+    const originName = character.origin ? ORIGINS.find(o => o.id === character.origin)?.name : 'Unknown Lineage';
+    const orderName = character.order ? ORDERS_LIST.find(o => o.id === character.order)?.name : 'Unknown Order';
+
     return createCharacter({
       id: character.name.toLowerCase().replace(/[^a-z0-9]+/g, '-') || 'new-character',
       name: character.name || 'Unnamed Responder',
       identity: {
-        background: 'A denizen shaped by the hidden machine, searching for fault lines.',
-        immediateWant: 'Observe local simulation snags and locate the next breach.',
-        species: character.origin ? ORIGINS.find(o => o.id === character.origin)?.name : 'Unknown Lineage',
-        order: character.order ? ORDERS_LIST.find(o => o.id === character.order)?.name : 'Unknown Order',
+        background: sheetCopy.background || 'A denizen of Tringad, searching for fault lines in the quiet day.',
+        immediateWant: sheetCopy.approach || 'Name how you work in the field.',
+        species: sheetCopy.species || originName,
+        order: sheetCopy.orderName || orderName,
       } as any,
       actions: {
         force: parseInt(character.Force.replace('d', '')) as any,
@@ -137,13 +180,45 @@ export function CharacterGenerator({ onSave }: CharacterGeneratorProps = {}) {
         avoid: parseInt(character.Agility.replace('d', '')) as any,
         exert: parseInt(character.Willpower.replace('d', '')) as any,
       },
-      armor: 'none',
+      armor: toEngineArmor(sheetCopy.armor),
       weapons: {
-        primary: { name: 'Work blade', impact: 1, vectors: [] },
-        secondary: { name: 'Backup tool', impact: 1, vectors: [] },
+        primary: { name: sheetCopy.primaryWeapon || 'Work blade', impact: 1, vectors: [] },
+        secondary: { name: sheetCopy.secondaryItem || 'Backup tool', impact: 1, vectors: [] },
       },
-      notes: ['Observe local simulation snags and locate the next breach.'],
+      notes: [sheetCopy.objective || 'Observe local simulation snags and locate the next breach.'],
     });
+  };
+
+  const applySheetPatch = (patch: CharacterSheetPatch) => {
+    if (patch.name !== undefined) {
+      setCharacter((prev) => ({ ...prev, name: patch.name || 'Unnamed Responder' }));
+    }
+
+    const nextSkills = {
+      Force: patch.force ? (`d${patch.force}` as Die) : character.Force,
+      Agility: patch.agility ? (`d${patch.agility}` as Die) : character.Agility,
+      Willpower: patch.willpower ? (`d${patch.willpower}` as Die) : character.Willpower,
+    };
+
+    if (patch.force || patch.agility || patch.willpower) {
+      setCharacter((prev) => ({
+        ...prev,
+        ...nextSkills,
+        ...deriveThresholds(nextSkills),
+      }));
+    }
+
+    setSheetCopy((prev) => ({
+      ...prev,
+      species: patch.species ?? prev.species,
+      orderName: patch.order ?? prev.orderName,
+      approach: patch.approach ?? prev.approach,
+      background: patch.background ?? prev.background,
+      objective: patch.objective ?? prev.objective,
+      primaryWeapon: patch.primaryWeapon ?? prev.primaryWeapon,
+      secondaryItem: patch.secondaryItem ?? prev.secondaryItem,
+      armor: patch.armor ?? prev.armor,
+    }));
   };
 
   return (
@@ -230,20 +305,27 @@ export function CharacterGenerator({ onSave }: CharacterGeneratorProps = {}) {
             </button>
             <h3 className="text-lg font-semibold text-slate-200">2. Choose Your Order</h3>
           </div>
+          <p className="text-sm text-slate-400">
+            An Order is a licensed field identity, not a job. Abilities are free standing permission.
+            After this step you will still pick three of the four starter abilities on the sheet.
+          </p>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
             {ORDERS_LIST.map(order => (
               <button
                 key={order.id}
                 onClick={() => handleSelectOrder(order.id)}
-                className="relative overflow-hidden p-5 min-h-[140px] bg-slate-900 border border-slate-700 rounded-lg hover:border-amber-400 hover:shadow-[0_0_20px_rgba(245,158,11,0.15)] hover:-translate-y-1 transition-all duration-300 text-left group"
+                className="relative overflow-hidden p-5 min-h-[220px] bg-slate-900 border border-slate-700 rounded-lg hover:border-amber-400 hover:shadow-[0_0_20px_rgba(245,158,11,0.15)] hover:-translate-y-1 transition-all duration-300 text-left group"
               >
                 <div className="absolute inset-0 opacity-30 group-hover:opacity-70 transition-opacity duration-300">
                   <img src={`/images/orders/${order.id}.png.png`} alt={order.name} className="w-full h-full object-cover object-top mix-blend-screen grayscale contrast-125" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/80 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/90 to-transparent" />
                 </div>
-                <div className="relative z-10 mt-12">
+                <div className="relative z-10 mt-8">
                   <div className="font-bold text-lg text-amber-400 group-hover:text-amber-300 drop-shadow-md">{order.name}</div>
-                  <div className="text-xs font-medium text-slate-400 mt-1 uppercase tracking-wider">{order.fieldFunction || order.id}</div>
+                  <div className="text-xs font-medium text-slate-400 mt-1 uppercase tracking-wider">{order.fieldFunction}</div>
+                  <p className="text-xs text-slate-300 mt-3 leading-relaxed line-clamp-3">{order.identity}</p>
+                  <p className="text-xs text-slate-500 mt-2 italic">{order.notThis}</p>
+                  <p className="text-xs text-amber-200/80 mt-2">{order.howToPlay[0]}</p>
                 </div>
               </button>
             ))}
@@ -295,7 +377,11 @@ export function CharacterGenerator({ onSave }: CharacterGeneratorProps = {}) {
           {/* Character Preview Sheet */}
           <div className="bg-slate-900 border border-slate-700 rounded p-4 flex justify-center">
             <div style={{ transform: 'scale(0.85)', transformOrigin: 'top center' }}>
-              <CharacterSheetPreview character={getPreviewCharacter()} />
+              <CharacterSheetPreview
+                character={getPreviewCharacter()}
+                armorId={sheetCopy.armor}
+                onChange={applySheetPatch}
+              />
             </div>
           </div>
 

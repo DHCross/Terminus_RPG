@@ -1128,21 +1128,21 @@ ${orderLines || '- No order hooks provided.'}
               </div>
               <div className="space-y-1">
                 <label className="text-xs font-semibold text-purple-400">Drift <span className="text-slate-600 font-normal ml-1">Else statement: what changes if no one acts</span></label>
-                <textarea name="drift" value={formData.drift} onChange={handleInputChange} rows={3} className="w-full bg-slate-950 border border-slate-700 rounded p-2 text-sm text-slate-200 focus:border-amber-500 outline-none resize-none font-mono text-xs" placeholder="At the end of each round, ..." />
+                <textarea name="drift" value={formData.drift} onChange={handleInputChange} rows={3} className="w-full bg-slate-950 border border-slate-700 rounded p-2 text-sm text-slate-200 focus:border-amber-500 outline-none resize-none font-mono text-xs" placeholder="Type: Hesitation. If the cell stalls, ..." />
               </div>
             </div>
             <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
               <div className="bg-slate-950 border border-slate-800 rounded p-3 text-slate-400">
-                <strong className="block text-amber-400 mb-1">Else Statement</strong>
-                Drift answers what happens if the players do nothing.
+                <strong className="block text-amber-400 mb-1">Fill Drift first</strong>
+                Four boxes is real prep. If you only fill one, fill Drift. Choose a type (hesitation, ambient, alert, entropy).
               </div>
               <div className="bg-slate-950 border border-slate-800 rounded p-3 text-slate-400">
-                <strong className="block text-amber-400 mb-1">Executable State</strong>
-                Write an end-of-round trigger with a visible state change.
+                <strong className="block text-amber-400 mb-1">Who profits</strong>
+                Will is not only the monster. Name who needs this Rupture to stay thin.
               </div>
               <div className="bg-slate-950 border border-slate-800 rounded p-3 text-slate-400">
-                <strong className="block text-amber-400 mb-1">Threat Shape</strong>
-                Hazard worsens environment. Trap escalates response or intent.
+                <strong className="block text-amber-400 mb-1">Type, then shape</strong>
+                Type is why the clock moves. Hazard/Trap is only what the tick looks like.
               </div>
             </div>
           </section>

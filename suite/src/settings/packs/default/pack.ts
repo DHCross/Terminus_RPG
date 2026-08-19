@@ -1,8 +1,10 @@
 /* ── Coherence baseline pack (no setting flavor) ── */
 
-import { LayoutDashboard } from 'lucide-react';
+import { LayoutDashboard, Users } from 'lucide-react';
 import type { SettingPackUI } from '../../types';
 import DefaultDashboard from './DefaultDashboard';
+import { BaselineCharacterVault } from './BaselineCharacterVault';
+import { BaselineNpcVault } from './BaselineNpcVault';
 
 export const DEFAULT_PACK_UI: SettingPackUI = {
   id: 'coherence-baseline',
@@ -19,10 +21,14 @@ export const DEFAULT_PACK_UI: SettingPackUI = {
 
   nav: [
     { to: '/', label: 'Dashboard', icon: LayoutDashboard, end: true },
+    { to: '/characters', label: 'Characters', icon: Users },
+    { to: '/npcs', label: 'NPC Vault', icon: Users },
   ],
 
   routes: [
     { path: '', element: DefaultDashboard, index: true },
+    { path: 'characters', element: BaselineCharacterVault },
+    { path: 'npcs', element: BaselineNpcVault },
   ],
 
   dashboard: DefaultDashboard,

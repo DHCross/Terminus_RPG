@@ -32,14 +32,14 @@ export const TERMINUS_PACK: SettingPackUI = {
   id: 'terminus',
   name: 'Terminus RPG',
   genre: 'civic dark fantasy',
-  version: '0.1.0',
+  version: '0.2.0',
   description:
     'Responders sent into districts where roads move, laws contradict themselves, and bells ring for people who no longer exist. The secret architecture beneath the world of Tringad.',
 
   branding: {
     title: 'Terminus RPG',
     subtitle: 'Civic Archive Suite',
-    badge: 'Alpha 0.1',
+    badge: 'Alpha 0.2',
     crest: '/terminus-logo.svg',
   },
 

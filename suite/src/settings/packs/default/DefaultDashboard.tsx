@@ -1,4 +1,5 @@
-import { Sparkles } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Sparkles, Users } from 'lucide-react';
 import '../../../App.css';
 
 function DefaultDashboard() {
@@ -11,8 +12,16 @@ function DefaultDashboard() {
           <p>
             The Coherence System is a fiction-first tabletop engine built on paired Skill and
             Threshold dice, Scene Cards, and pressure-driven play. No setting flavor is applied
-            here. Choose a Setting Pack from the switcher in the header to load a world.
+            here. The fillable field document lives in the vault — click a line, type, and it saves.
           </p>
+          <div className="dashboard-actions">
+            <Link className="btn btn-primary" to="/characters">
+              <Users size={18} /> Character Vault
+            </Link>
+            <Link className="btn btn-secondary" to="/npcs">
+              <Users size={18} /> NPC Vault
+            </Link>
+          </div>
         </div>
       </section>
 
