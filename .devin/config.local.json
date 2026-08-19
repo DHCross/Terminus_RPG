@@ -24,7 +24,8 @@
       "Exec(xargs grep)",
       "Exec(git remote)",
       "Exec(node)",
-      "Exec(npm install)"
+      "Exec(npm install)",
+      "Exec(git mv)"
     ]
   }
 }

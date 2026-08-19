@@ -60,6 +60,7 @@ export function SceneCardsWorkbench() {
             <GWSDApp
               pendingScene={pendingScene}
               pendingScenes={pendingScenes}
+              sceneForge={SceneCardForge}
               onPendingSceneConsumed={() => {
                 setPendingScene(null);
                 setPendingScenes(null);

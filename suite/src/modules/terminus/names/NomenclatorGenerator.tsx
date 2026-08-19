@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Sparkles, Activity, Save, Cpu, Plus, Check, Volume2, Globe, FileText, WifiOff } from 'lucide-react';
-import { generateNamesFromAI } from '../../../services/aiService';
+import { generateNamesFromAI } from '../../../settings/packs/terminus/ai';
 import {
   type CultureProfile,
   type NameUsage,

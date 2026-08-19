@@ -1,4 +1,4 @@
-/* ── Silhouette RPG — Character Model ── */
+/* ── Coherence System — Character Model ── */
 
 import type { DieSize, InitiativePhase } from './dice';
 import { initiativePhaseFromAgility, pipCount } from './dice';

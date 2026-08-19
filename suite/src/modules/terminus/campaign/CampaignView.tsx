@@ -25,23 +25,23 @@ const QA_DATA: QAItem[] = [
     topic: 'What is Terminus about?',
     question: 'What is Terminus about?',
     asker: 'zerotheory',
-    answer: 'Terminus is about an AI named Terminus—not trains—that creates and maintains a dark fantasy world. The AI operates deep beneath the substrate as an alien, emotionless Coherence Engine, enforcing absolute control in order to maintain perfect computational equilibrium. But it does not understand how to balance free will inside the world it has created. As a result, Ruptures manifest: physical expressions of computational stress, conflicting constraints, and broken routines.\n\nWhen the system detects instability, it sends out Correctors: operatives that function like the Engine’s blind immune response. They are dispatched to violently prune errors and repair the machine’s broken logic. The protagonists are those who resist, investigate, and try to survive these failures, though they do not begin play with a full understanding of the true nature of their reality.'
+    answer: 'Terminus is a dark fantasy roleplaying game about characters trained, licensed, or forced to respond when stable reality begins to fail.\n\nTringad is a rain-slicked city of cold brass, oxblood ink, and bone paper, and its paperwork is load-bearing. The Arch-Sumner’s bells sounding on rhythm, tollgates closing on the exact second, conscript-court scribes turning ledger pages in unison: no single one of them holds physical law in place. Together, repeated, they do. A missed bell is nothing. Enough of them over seasons, and the pattern stops resolving—and you get a Rupture: a street-porter caught in a repeating loop, a tollgate demanding a coin that hasn’t been minted yet, or a street that remembers a different city.\n\nYou play field responders from the licensed Orders—Seekers, Breakers, Wardens, Rivals, Brokers, and Shades—dispatched in mixed cells to pull the anomaly back inside tolerance. A Quiet Day isn’t a perfect day. It’s one the city can absorb.'
   },
   {
     id: 'is-simulated',
     category: 'setting',
-    topic: 'Is the entire world simulated?',
-    question: 'Is the entire world simulated? Or is it an AI existing within a larger physical world?',
+    topic: 'How does the world hold itself together?',
+    question: 'How does reality hold itself together in Tringad?',
     asker: 'zerotheory',
-    answer: 'In a way, the AI exists within a larger physical world—our own. Someone is responsible for having created it. But the people, creatures, and places within Tringad do not know they are part of a simulation. That reveal is not the immediate aim of play, although the implications and fallout of that revelation can become very important later.\n\nThe setting exists as the active computational topology of Terminus. The cosmos, the trees, the walls, the cobblestones, and the denizens of Tringad are all variables and rendering logic inside the world.'
+    answer: 'Reality in Tringad wants stability. Routine is cheap, predictability is efficient, and repetition keeps the world quiet.\n\nCivic habits—toll sequences, market awning schedules, and ledger entries—form stabilizing patterns. When healthy, the city absorbs thousands of small daily failures without cracking. A Rupture comes from accumulation: a ward where the bells have run wide for a winter, or a court whose records have drifted page by page. The pattern thins, and then it stops resolving.'
   },
   {
     id: 'if-absent',
     category: 'setting',
-    topic: 'If Terminus were absent, would the world become normal?',
-    question: 'If the AI wasn’t there, would it be a normal world? As in, minus magic and monsters?',
+    topic: 'What is the role of the Orders?',
+    question: 'Why do the Orders exist instead of ordinary town guards or soldiers?',
     asker: 'zerotheory',
-    answer: 'Technically, if Terminus were absent, Tringad would not revert to a normal mundane setting. The world would simply cease to exist. But I know what you mean. On the surface, the setting has familiar dark fantasy elements: ruined places, monsters, magic, factions, danger, and exploration. What makes it different is how magic works, why reality behaves the way it does, and how the fact that Terminus is the genesis of the world affects what characters can do.\n\nAs with some of my earlier work, I did not want to reinvent every part of the baseline fantasy experience. The game still needs recognizable points of entry. The strange part is beneath the surface: the hidden reality of the world and the way that reality shapes the system, the lore, and the player options.'
+    answer: 'The Orders are not formed to seek adventure. They exist because some failures cannot be handled by law, violence, money, prayer, or scholarship alone.\n\nWhen an anomaly cannot be stabilized by one method, multiple Orders are sent. A Seeker traces where the pattern broke; a Breaker forces an opening through a warded barrier; a Warden holds the collapsing crowd line; a Broker applies immediate social leverage to panic-stricken guilds. That is why player characters work together in mixed cells.'
   },
   {
     id: 'world-distinctions',
@@ -49,7 +49,7 @@ const QA_DATA: QAItem[] = [
     topic: 'What distinguishes the world?',
     question: 'What are some of the world distinctions? How much of the larger world do typical inhabitants know?',
     asker: 'zerotheory',
-    answer: 'If by “larger world” you mean the simulated planet, typical inhabitants know what people in a premodern or dark fantasy world would know. They may be familiar with nearby factions, nations, trade routes, religions, or civic powers, but they do not have global communication. It is not as connected as a setting like Eberron, for example.\n\nPart of that is because of Terminus’s own design logic. It is trying to construct what it understands as “dark fantasy,” which means it does not make life easy everywhere. There is a central region of the planet I focus on first, as many settings do, but the opportunities for exploration can extend well beyond that region and eventually beyond one planet.\n\nI’m also building a website to support the game with maps, Orders, rules, scene cards, and other material.'
+    answer: 'Tringad has the feel of a late-medieval, early-modern civic bureaucracy under severe metaphysical pressure. Typical inhabitants know their ward, their guild, their trade river, and the bells that mark their curfew. They are familiar with local factions, churches of the Old Offices, and the tollgates of the Sixfold Accord.\n\nIt is not steampunk or gaslamp—there are no trains, factories, or steam engines. It is cold brass, water-ferries, stone bridges, and hand-copied ledgers.'
   },
   {
     id: 'familiar-vs-new',
@@ -57,23 +57,23 @@ const QA_DATA: QAItem[] = [
     topic: 'What will feel familiar, and what will feel new?',
     question: 'When someone picks up your game, what about the dark fantasy will be familiar and what will be new and different?',
     asker: 'zerotheory',
-    answer: 'The core adventure loop remains recognizable: investigate dangerous locations, confront hostile threats, go on missions, and survive perilous scenes. The environment has familiar dark fantasy elements—ruins, medieval architecture, heavy iron infrastructure, low technology, and magic—but with a gothic-industrial tone.\n\nSociety is divided into established ancestries, including humans, Stoneborn, and varied Alfar factions, many of whom operate under strict feudal, bureaucratic, or guild structures.\n\nWhat is new is the way the system interprets action. Terminus uses Scene Cards to support the Guide, and the Coherence System avoids traditional to-hit rolls. Aberrations and major threats can manifest as algorithmic instabilities or automated immune responses, although the characters do not understand them that way. To them, these are horrors, anomalies, civic failures, cursed places, or monsters.\n\nWhen the system escalates far enough, Correctors appear. These are unfeeling agents sent to conduct “administrative audits,” often with lethal consequences. A room, district, or entire civic process can become hostile because reality itself has begun enforcing impossible regulations.'
+    answer: 'The core adventure loop remains recognizable: investigate dangerous anomalies, confront hostile threats, negotiate with powerful factions, and survive perilous scenes. The environment has familiar dark fantasy weight—ruins, rain-soaked masonry, heavy iron gates, and ancient magic.\n\nWhat is new is the way the system interprets action. Terminus uses Scene Cards (Ground, Will, Shift, Drift) to support the Guide, and the Coherence System resolves conflict without to-hit rolls or hit point pools. When a situation breaks down, responders manage escalating Drift on the scene clock.'
   },
   {
     id: 'living-things',
     category: 'setting',
-    topic: 'Are all living things part of the simulation?',
-    question: 'Are all living things part of the simulation?',
+    topic: 'How do people live under this strain?',
+    question: 'How do ordinary people live under this pressure?',
     asker: 'zerotheory',
-    answer: 'Yes, within Tringad they are. But Terminus itself does not necessarily understand them as sentient people trapped in a machine. It sees them as constituent components of the architecture.\n\nTerminus uses its population almost like an external hippocampus. Civic routines, social behaviors, rituals, and obligations help maintain the world’s continuity between processing frames. When an inhabitant dies, their data may be pruned or recycled to free computational bandwidth for the Engine’s ongoing stability requirements. Of course, nobody inside the world wants to know that.\n\nI’ve been fascinated with artificial intelligence since I was young, including the usual cultural influences like The Matrix and Terminator. I wanted to build an RPG that used some of my own thoughts about the nature of intelligence, simulation, and control as part of the design.'
+    answer: 'When the world is healthy, people are allowed to be ordinary. They walk, eat, bargain, quarrel, read, sleep, and love without testing their thresholds. The air is light. The day proceeds.\n\nMost citizens trust the bells and pay their tolls without realizing that their collective routine is what holds physical law in place. Only when the bells desync and the streets begin repeating do ordinary citizens look to the licensed Orders to restore the quiet day.'
   },
   {
     id: 'magic-rupture',
     category: 'magic',
     topic: 'Magic and Rupture magic',
-    question: 'Does magic change reality? And what makes Rupture magic different?',
+    question: 'Does magic change reality? And what makes Rupture casting different?',
     asker: 'zerotheory',
-    answer: 'Magic changes what reality accepts. In Terminus, magic is permission, law, oath, infrastructure, rite, and controlled exception. It is not just “energy” in the abstract. It is a sanctioned way to alter what the world will allow.\n\nAnother kind of magic is called Rupture magic, though that term may not be used by the magic-users themselves. Rupture magic is unsanctioned by the Engine, and in some areas it is also feared or hated by the public. More importantly, it gets unpleasant responses from the system.'
+    answer: 'Magic in Terminus is built on Four Controlled Verbs: Seal, Expose, Bridge, and Nullify. It is permission, law, oath, and recognized authority.\n\nA Sanctioned Working costs Exert circles—the caster pays personal mental strain to keep the world quiet. Rupture Casting is a desperate override that costs 0 Exert, but takes its price out of the world instead, immediately escalating the scene’s Drift and triggering a secret Hostile Trace check from the Guide.'
   },
   {
     id: 'magic-risky',
@@ -81,15 +81,15 @@ const QA_DATA: QAItem[] = [
     topic: 'How risky is it to use?',
     question: 'How risky is it to use? What are some examples?',
     asker: 'zerotheory',
-    answer: 'Sanctioned Workings have internal risk. Every use drains the caster’s Exert threshold, which represents both cognitive capacity and defense against internal or external pressure. Pushing beyond those limits to force reality into alignment leaves the caster vulnerable.\n\nRupture castings can be much worse. They can behave like wild magic in some fantasy worlds, but they also escalate Scene Drift, which means they can accelerate the environmental collapse of a district. The wrong casting, or even the right casting at the wrong time, can turn a manageable investigation into a hazard—or get the party out of danger fast at a serious cost.'
+    answer: 'Sanctioned Workings have personal risk. Every use drains the caster’s Exert threshold, which represents inner reserve, concentration, and defense against strain. Exhausting Exert leaves the caster mentally defenseless.\n\nRupture castings are much more dangerous for the scene. They cost 0 Exert, but every cast pushes Scene Drift up by +1 or +2. At high Drift, reality fractures rapidly, and Hostile Trace rolls mean unexpected horrors or rival enforcers arrive.'
   },
   {
     id: 'env-collapse',
     category: 'magic',
     topic: 'Environmental collapse',
-    question: 'What is environmental collapse exactly? How bad can that be?',
+    question: 'What is a Rupture cascade exactly? How bad can that be?',
     asker: 'zerotheory',
-    answer: 'When reality gets sundered, the characters quickly realize they are in serious trouble. Access to magic powerful enough to attract the attention of Terminus’s Correctors is not necessarily immediate, but once the Coherence Engine loses the ability to render an environment consistently, the failure can cascade.\n\nIf the Engine removes operational permissions from a district, that district enters a state of un-being. The local laws of physics, space, and time begin to degrade. That is not a normal disaster. It is a place losing the right to continue existing.'
+    answer: 'When routine fails completely, a district enters a Rupture cascade. Time and geography become inconsistent: steps repeat in endless loops, doors open into different seasons, and tollgates demand unminted currency.\n\nIf responders cannot contain the anomaly, the district must be physically cordoned off by Wardens and closed from civic registers.'
   },
   {
     id: 'coherence-resolve',
@@ -97,7 +97,7 @@ const QA_DATA: QAItem[] = [
     topic: 'How does the Coherence System resolve conflict?',
     question: 'How does the basic mechanic work?',
     asker: 'zerotheory',
-    answer: 'The Coherence System resolves conflict by pitting a character’s active Skill—Force, Agility, or Willpower—against the target’s Threshold: Endure, Avoid, or Exert. That is the basic mechanic.\n\nInstead of depleting a generic health pool, success forces a state change in the scene. A result might shift the balance of power, force an opponent into a defensive position, compromise someone’s footing, damage the environment, or open a tactical opportunity. It still depletes the opponent’s ability to defend, but it is not just counting down hit points.\n\nPlayers also manage Exert as a dual-purpose resource. Exert fuels special abilities and magic, but it is also the primary defense against internal and external pressure. Exhausting it leaves the character vulnerable.'
+    answer: 'The Coherence System resolves conflict through the Core Exchange: the acting side rolls an Action Skill (Force, Agility, or Willpower) against the defender’s chosen Threshold (Endure, Avoid, or Exert).\n\nThere are no to-hit rolls and no passive armor class. Higher roll takes control of the exchange. The losing side routes the consequence through their chosen Threshold, marking off limited Threshold Circles based on the weapon\'s Impact and Vectors.'
   },
   {
     id: 'one-to-one',
@@ -105,7 +105,7 @@ const QA_DATA: QAItem[] = [
     topic: 'Are Force, Agility, and Willpower one-to-one with Endure, Avoid, and Exert?',
     question: 'Are they about a one-to-one relationship? For example, Force and Endure?',
     asker: 'zerotheory',
-    answer: 'There is a direct thematic link: Force pairs naturally with Endure, Agility with Avoid, and Willpower with Exert. But the system does not force a rigid one-to-one damage path where Force must always damage Endure.\n\nIn a Pressure Exchange, the attacker rolls a Skill and the defender rolls a Threshold to resist. If the attacker wins, the margin becomes Impact. Impact converts directly into Threshold loss, with one point of Impact depleting one Threshold Circle.\n\nThe important part is tactical routing. The defender chooses which Threshold absorbs the loss. If a monster hits you with overwhelming Force, you might soak the blow with armor and burn Endure, dive out of position and burn Avoid, or strain your resolve to hold your ground and burn Exert. Every hit becomes a meaningful state change, not just damage.'
+    answer: 'There is a natural link: Force pairs with Endure, Agility with Avoid, and Willpower with Exert. But the defender chooses how to answer based on the fiction.\n\nYou can answer a Force attack with Avoid (slipping away before impact) or Exert (bracing through sheer psychic resolve). If you lose control, you mark Threshold circles from the resisting stat you committed.'
   },
   {
     id: 'roll-example',
@@ -113,7 +113,7 @@ const QA_DATA: QAItem[] = [
     topic: 'Example of a roll',
     question: 'Could you give an example of a roll?',
     asker: 'zerotheory',
-    answer: 'Sure. A Stoneborn Warden is holding a corridor while a Corrector slams into them with a hydraulic spear-arm. Not a typical day, but it works as an example.\n\nThe Corrector attacks with Force d10. The Warden chooses to resist with Endure d8, trusting armor and bulk.\n\nThe Corrector rolls an 8. The Warden rolls a 5. The Corrector wins by 3, so the attack creates 3 Impact. Since Impact converts one-for-one, the Warden must lose 3 Threshold Circles.\n\nBut because of tactical routing, the Warden does not have to put all 3 Impact into Endure. The player says, “I take part of it on the armor, but the hit drives me back from the doorway.”\n\nSo the player routes the Impact this way: Endure loses 2 circles, and Avoid loses 1 circle.\n\nThat means the Warden is not just “down 3 HP.” Their armor buckles, their footing breaks, and the Corrector has forced them off the ideal defensive position. The scene state changes. The corridor is no longer fully held.\n\nConflict is not only about eroding a health bar; it is about tactical degradation of the scene state. The mechanical result translates directly into a meaningful tactical disadvantage.'
+    answer: 'Sure. A Stoneborn Warden is holding a breach while an anomaly strikes with an iron flail.\n\nThe attacker rolls Force (d10) and gets an 8. The Warden chooses to resist with Endure (d8), trusting heavy plate and bulk, and rolls a 5.\n\nThe attacker takes control. The flail has Impact 3 and the "breaks protection" vector. The Warden marks off Endure circles to absorb the blow. Because Endure circles are limited (derived from Force), taking heavy hits forces the Warden to reposition or call for help before their Threshold breaks.'
   },
   {
     id: 'dice-ladder',
@@ -121,15 +121,15 @@ const QA_DATA: QAItem[] = [
     topic: 'What dice are used?',
     question: 'What different dice are used for Force, Agility, and Willpower? Do NPCs use the same dice, or do tough enemies have dice higher than PCs?',
     asker: 'zerotheory',
-    answer: 'Force, Agility, and Willpower use a standard die ladder that scales from d4 up to a maximum of d12.\n\nNPCs use the same d4-to-d12 ladder as the players. Tough enemies do not roll higher die types. Their danger comes from unique innate traits, heavier Impact, special abilities, and the way some threats passively escalate Scene Drift just by being present.'
+    answer: 'Force, Agility, and Willpower use the standard die ladder from d4 up to d12.\n\nThreshold Circles are derived directly from the die rank: d4 gives 1 circle, d6 gives 2, d8 gives 3, d10 gives 4, and d12 gives 5 circles.\n\nNPCs use the same die ladder. Tough monsters are dangerous because of heavy Impact, lethal Vectors, and abilities that escalate Scene Drift.'
   },
   {
     id: 'antagonists',
     category: 'setting',
     topic: 'Who are the antagonists from the characters’ point of view?',
-    question: 'From the point of view of someone inside the simulation, who or what are the primary antagonists?',
+    question: 'From the point of view of the characters, who or what are the primary antagonists?',
     asker: 'Dan (Hardboiled GMshoe)',
-    answer: 'Because the inhabitants do not know they live inside a simulation, they do not see themselves as fighting an AI or “glitches.” To them, the primary antagonists are the physical horrors of a Rupture, where reality itself fails. They fight anomalies, which may be understood as remnants of failed civic seals, curses, divine judgments, broken laws, or other supernatural disasters.\n\nWhen a district completely breaks down, the characters may have to survive Correctors: terrifying, unfeeling entities. Some might look like walking public offices or execution devices made of black iron and brass. Others may be more like doppelgangers or masked functionaries. Beyond those anomalies, players also face mundane threats: corrupt Accord Houses, rival factions, dangerous beasts, exploitative authorities, and ordinary people making bad decisions under pressure.'
+    answer: 'The primary antagonists are the physical horrors of a Rupture: looping anomalies, fractured beasts, rogue cults exploiting the desync, and corrupt guild masters who let routines slip for profit.\n\nBeyond anomalies, responders face rival cells, desperate factions, and the harsh realities of municipal politics in a rain-slicked city.'
   },
   {
     id: 'character-creation',
@@ -137,7 +137,7 @@ const QA_DATA: QAItem[] = [
     topic: 'Character creation',
     question: 'How does character creation go?',
     asker: 'zerotheory',
-    answer: 'It is designed to be fast.\n\nFirst, you choose Lineage: your species and origin. Species include humans, Stoneborn, and Alfar. You also define your national homeland, civic function, optional Rupture trauma, and Accord obligation. Civic function is the routine you maintained before reality tore open. Rupture trauma is how your home district failed. Accord obligation is the debt or systemic claim that pulled you into service.\n\nThen you choose your Order, which is your field-response identity within the Sixfold Accord. The Orders are Seeker, Breaker, Warden, Rival, Broker, and Shade.\n\nAfter that, you choose an Approach, which is a tactical keyword such as Direct, Cautious, Daring, Calculating, Tenacious, or Flowing. It defines how your character tends to act and gives you a bonus when you play into that style.\n\nYou also choose a Signature: a defining narrative item that links you to the world. It might be a notched brass gavel from a dead court, a weapon, a magic item, or some emblematic object tied to your character.\n\nThen you assign your Skill Dice. You distribute 5 build steps among Force, Agility, and Willpower. Each step raises a Skill die from a base d4 up one rank, to a maximum of d12.\n\nYour Thresholds are then derived from your Skill ranks, giving you Circles in Endure, Avoid, and Exert.\n\nFinally, you choose three Order abilities, pick a primary weapon or tool and a secondary item, define your name, write a single background sentence, and state your current objective.'
+    answer: 'It is front-loaded and fast.\n\n1. Choose Species: Human, High Alfar, Deep Alfar, Wild Alfar, or Stoneborn.\n2. Choose Order: Seeker, Breaker, Warden, Rival, Broker, or Shade.\n3. Choose Approach: e.g. Reveal, Sever, Anchor, Bind, Slip, Challenge.\n4. Choose Signature: a defining item (lantern, seal, greatsword, contract case, mask).\n5. Assign Skill Dice: distribute 5 build steps among Force, Agility, and Willpower (starting at d4).\n6. Derive Thresholds: d4=1, d6=2, d8=3, d10=4, d12=5 circles.\n7. Choose 3 Order Abilities.\n8. Choose Equipment: primary weapon/tool (Impact & Vector), armor, and secondary gear.\n9. Name the character, add one sentence of background, and state one thing you will risk.'
   },
   {
     id: 'order-abilities',
@@ -145,7 +145,7 @@ const QA_DATA: QAItem[] = [
     topic: 'Interesting Order abilities',
     question: 'What are some interesting abilities like? Feel free to dive into any of the Orders you want to point out.',
     asker: 'zerotheory',
-    answer: 'Many special abilities in Terminus cost 1 Exert Circle. Because Exert also functions as your mental health and defense track, spending it creates real tactical tension. Doing the cool thing makes you more vulnerable to collapse.\n\nA Warden is a defensive anchor. Wardens hold the line when the environment starts collapsing. One of their signature abilities is Absorb the Drift. When scene pressure worsens and Scene Drift increases, a Warden can spend Exert to delay or negate that increase, literally holding the room together by force of will. They also have Hold the Line, which lets them interpose and take a Threshold loss meant for an ally.\n\nA Breaker is a force specialist. Breakers are about creating openings through physical and systemic barriers. They can use Breach Point to smash a barrier and create a temporary passage, or Break the Tool to target an enemy’s weapon, device, or mechanism instead of the creature itself.\n\nThe Coherence System is meant to act as an interpreter, not a straitjacket. The core rule is: do not police player verbs; translate them. The design is intentionally semantic.\n\nSome Orders have abilities that can sound strange if phrased badly. For example, a Broker should not feel like they are saying, “I attack you with an obligation.” That turns social leverage into a psychic laser, which is not how leverage works at the table. A Broker does not simply damage someone with debt. A Broker changes the available consequences.\n\nzerotheory: Would a good way of saying that be that the Broker is wearing down their will to resist the offer?\n\nDH Cross: Yes, that is closer. When a Broker presents a binding obligation or irrefutable leverage, they are applying pressure against the NPC’s ability to maintain defiance. The target can still refuse, but refusal now has a cost. They may have to burn Exert, risk exposure, accept faction consequences, or suffer some other meaningful pressure.\n\nThat does not work on everyone. If the target has no relevant obligation, debt, faction tie, fear of exposure, or social stake, then the fiction overrides the move. The Broker is powerful because they understand networks of obligation, not because they can magically mind-control anyone with paperwork.'
+    answer: 'Order Abilities are permissions that bend the action grammar.\n\nA Warden has Hold the Line (interpose and take an ally’s Threshold loss) and Anchor Point (lock a doorway or boundary so nothing can cross).\n\nA Breaker has Breach Point (open a gap in any barrier) and Break the Tool (target enemy weapons and mechanisms instead of their body).\n\nA Seeker has Weak Point (name one way a target can be pressured) and Trace Source (discover the origin of any wound or anomaly).'
   },
   {
     id: 'player-death',
@@ -153,31 +153,31 @@ const QA_DATA: QAItem[] = [
     topic: 'Is player death possible?',
     question: 'Is player death possible?',
     asker: 'zerotheory',
-    answer: 'Yes. Character death is possible, but it ties directly into the Threshold mechanics rather than simply hitting zero hit points.\n\nIf your Endure threshold breaks, your body gives out. You may be incapacitated, bleeding out, unconscious, or physically defeated.\n\nIf your Avoid threshold breaks, you suffer a total tactical collapse. You may be cornered, disarmed, pinned down, isolated, or overwhelmed.\n\nBecause the game takes place inside a simulated Coherence Engine, death can also have existential forms in the lore.\n\nData Pruning is what happens when an inhabitant of Tringad dies and the Engine recycles or removes their data to free computational bandwidth.\n\nUn-computation can occur when someone moves outside the established boundaries of the map. They do not simply fall off the world; they cease to be computed.\n\nTotal Erasure happens when a district reaches the final stage of systemic collapse. The zone and everything in it may be permanently erased from the topology, leaving an unrendered gap in the world.'
+    answer: 'Yes. When Threshold circles run out, characters suffer severe consequences:\n\n- If Endure breaks, your physical body gives out (incapacitated, bleeding out, crushed).\n- If Avoid breaks, you suffer total tactical collapse (cornered, pinned down, disarmed, cut off).\n- If Exert breaks, you suffer complete mental collapse (catatonic, panic-stricken, vulnerable to psychic trauma).\n\nConsequences are fiction-first and dangerous.'
   },
   {
     id: 'total-erasure',
     category: 'magic',
-    topic: 'Are the PCs fighting against Total Erasure?',
-    question: 'Is Total Erasure something the PCs are combating against, or is it something you just avoid at all costs?',
+    topic: 'What is the victory condition for a cell?',
+    question: 'What constitutes a victory for a responder cell?',
     asker: 'zerotheory',
-    answer: 'As field agents of the Sixfold Accord, the PCs do not run away from reality failing. They are emergency responders sent directly into unstable Rupture zones to keep the collapse from spreading.\n\nWhen their cell resolves a Rupture and prevents a district from being deleted, they are functionally acting as part of the Coherence Engine’s immune response, even if they do not understand that at first. Behind the scenes, the PCs are repairing conflicting logic so the machine does not have to amputate the region to survive.\n\nSo the victory condition is not just “kill the boss.” It is fix the broken routine, restore the Quiet Day, and keep the world intact. Of course, if the PCs eventually realize what they are preserving, and who benefits from that preservation, they may start to resent the job. They are fighting against erasure, but they may also be serving the very system that makes erasure possible.\n\nMechanically, that means the PCs must keep the room’s Scene Drift from reaching its final stage while they are still inside it. Those are extreme scenes, not every encounter. But when Drift reaches that level, the question stops being “can we win the fight?” and becomes “can we keep this place from ceasing to exist?”'
+    answer: 'Victory is restoring the Quiet Day: containing the Rupture, stabilizing the routine, bridging the gap, and keeping the district inside safe tolerance.\n\nResponders win not by grinding down generic HP pools, but by understanding what failed in the scene and applying the right Order leverage to set it true.'
   },
   {
     id: 'start-corruption',
     category: 'magic',
-    topic: 'What starts corruption?',
-    question: 'What usually starts corruption to begin with?',
+    topic: 'What starts a Rupture?',
+    question: 'What usually starts a Rupture to begin with?',
     asker: 'zerotheory',
-    answer: 'Usually, corruption begins when a district is forced to sustain a contradiction the Coherence Engine cannot cleanly resolve. That might be a broken civic routine, an old oath that conflicts with a newer law, a sanctioned Working pushed beyond its safe limits, or a community repeating a pattern the system was never meant to support.\n\nI do want plenty of room for traditional adventures in feel. Not every scene or scenario is about those larger metaphysical forces. Sometimes the problem really is a monster, a corrupt official, a dangerous road, or a bad bargain. But when a Rupture is involved, the deeper cause is often some local rule, ritual, office, memory, or obligation that has broken badly enough for reality to start failing around it.'
+    answer: 'A Rupture begins when routine breaks down over time: a tollgate that has stuck every morning for months, bells that run a half-beat wide across a winter, or an ancient oath that has been ignored by three generations of magistrates.\n\nOne mistake is absorbed. Accumulated degradation is what causes the pattern to stop resolving.'
   },
   {
     id: 'how-know-fix',
     category: 'magic',
-    topic: 'How do PCs know what needs to be fixed?',
-    question: 'Do those causes get translated into the world for the PCs so they somehow know what needs to be fixed, in addition to the AI sending in its own defenses?',
+    topic: 'How do responders diagnose anomalies?',
+    question: 'How do responders figure out what needs to be fixed?',
     asker: 'zerotheory',
-    answer: 'Yes. The PCs do not see the underlying computational problem directly. They experience it as a broken civic or magical routine in the world itself.\n\nA Rupture is not labeled “constraint conflict” for them. It appears as something concrete and dangerous. Sometimes it is simply a monster. Sometimes it is stranger: a street that gets longer the harder people try to leave it, a court verdict that rewrites itself every morning, or a ferry that keeps arriving with passengers who already drowned.\n\nThe visible disaster is the puzzle. In some cases, the cell has to figure out what local rule, oath, ritual, office, memory, or obligation has broken badly enough that reality is starting to fail around it.\n\nThat is also where the Orders matter. A Seeker is especially good at diagnosing the source of pressure. They might trace a wound in the scene back to its origin, notice which routine keeps repeating, or use a Working to make hidden constraints and structural flaws legible.'
+    answer: 'They look for the broken pattern. A Seeker reads the repeated step; a Breaker tests the structural flaw; a Broker questions the ledger discrepancies; a Warden checks which boundary is leaking.\n\nThe anomaly is an active condition on the Scene Card (Ground, Will, Shift, Drift). The cell works together to shift the state back into balance.'
   },
   {
     id: 'outro',

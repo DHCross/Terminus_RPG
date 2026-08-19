@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
-import type { Enemy, EnemyDefinition, ValidationDiagnostic } from '../../silhouette-engine/src/index.ts';
-import { ARMOR_REDUCTION } from '../../silhouette-engine/src/index.ts';
+import type { Enemy, EnemyDefinition, ValidationDiagnostic } from '../../coherence-engine/src/index.ts';
+import { ARMOR_REDUCTION } from '../../coherence-engine/src/index.ts';
 import {
   buildMonsterFromDraft,
   cloneMonsterDraft,
@@ -9,7 +9,7 @@ import {
   MONSTER_ENCOUNTER_PACKS,
   MONSTER_PRESETS,
   type MonsterDraft,
-} from '../silhouetteStudio';
+} from '../coherenceStudio';
 import {
   DiagnosticsList,
   DiceEditor,
@@ -24,7 +24,7 @@ import {
   summaryChip,
   textAreaStyle,
   WeaponEditor,
-} from './SilhouetteStudioCommon';
+} from './CoherenceStudioCommon';
 
 interface MonsterRecord {
   savedAt: string;
@@ -58,7 +58,7 @@ export default function MonsterStudio() {
   };
 
   const exportRoster = () => {
-    downloadJson('silhouette_monsters.json', {
+    downloadJson('coherence_monsters.json', {
       exportedAt: new Date().toISOString(),
       monsters: roster.map((entry) => ({
         savedAt: entry.savedAt,
@@ -107,7 +107,7 @@ export default function MonsterStudio() {
         <>
           <PanelSection
             title="Monster Studio"
-            description="Generate Silhouette enemy frames that sit beside the scene cards and use the same force, pressure, and rupture vocabulary. Includes a starter bestiary roster to bootstrap encounter design."
+            description="Generate Coherence System enemy frames that sit beside the scene cards and use the same force, pressure, and rupture vocabulary. Includes a starter bestiary roster to bootstrap encounter design."
           >
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
               {MONSTER_PRESETS.map((preset) => (

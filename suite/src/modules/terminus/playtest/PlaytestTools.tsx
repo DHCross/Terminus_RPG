@@ -1,16 +1,18 @@
 import { useState } from 'react';
-import { ClipboardList, Dices, Gauge, Waves } from 'lucide-react';
+import { ClipboardList, Dices, Gauge, Waves, ArrowDown } from 'lucide-react';
 import { DIE_LADDER, type Die } from '../../../data/terminus/skills';
 import { getSecureRandom } from '../../../utils/crypto';
 import { ConflictResolver } from '../conflict/ConflictResolver';
 import { DRIFT_DOCTRINE, DRIFT_MODES, DRIFT_WRITING_RULES, type DriftMode } from '../../../data/terminus/drift';
+import { FallCalculator } from './FallCalculator';
 
-type Tool = 'conflict' | 'dice' | 'drift' | 'questionnaire';
+type Tool = 'conflict' | 'dice' | 'drift' | 'questionnaire' | 'fall';
 
 const toolTabs = [
   { id: 'conflict' as const, label: 'Conflict', icon: Gauge },
   { id: 'dice' as const, label: 'Dice Roller', icon: Dices },
   { id: 'drift' as const, label: 'Drift Resolver', icon: Waves },
+  { id: 'fall' as const, label: 'Fall Damage', icon: ArrowDown },
   { id: 'questionnaire' as const, label: 'Questionnaire', icon: ClipboardList },
 ];
 
@@ -40,6 +42,7 @@ export function PlaytestTools() {
       {activeTool === 'conflict' && <ConflictResolver onTriggerDrift={() => setActiveTool('drift')} />}
       {activeTool === 'dice' && <DiceRoller />}
       {activeTool === 'drift' && <DriftResolver />}
+      {activeTool === 'fall' && <FallCalculator />}
       {activeTool === 'questionnaire' && <PlaytestQuestionnaire />}
     </div>
   );

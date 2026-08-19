@@ -685,7 +685,7 @@ Terminus is the buried truth behind the world’s stability, rupture, routine, a
 
 But discovering that ultimate reality is not the goal of play.
 
-The campaign is not about solving the metaphysical origin of the world any more than Ainerêve play was about proving exactly how Ainerêve was formed. That truth may exist. It may shape everything. It may explain why routine matters and why rupture happens. But it should remain deep structure, not the default player objective.
+The campaign is not about solving the metaphysical origin of the world any more than Aurel play was about proving exactly how Aurel was formed. That truth may exist. It may shape everything. It may explain why routine matters and why rupture happens. But it should remain deep structure, not the default player objective.
 
 Players deal with lived failures:
 

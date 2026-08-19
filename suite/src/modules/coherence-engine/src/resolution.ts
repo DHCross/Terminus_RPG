@@ -1,4 +1,4 @@
-/* ── Silhouette RPG — Resolution Engine ── */
+/* ── Coherence System — Resolution Engine ── */
 
 import { getSecureRandom } from '../../../utils/crypto';
 import type { DieSize } from './dice';
@@ -17,7 +17,7 @@ interface OutcomeAccumulator {
   preventedByBurn: boolean;
   losses: TrackLoss;
   avoidConsequence?: ConsequenceName;
-  rupture: RuptureType;
+  breach: BreachType;
   notes: string[];
 }
 
@@ -28,7 +28,7 @@ export interface DieRoll {
 
 export type DefenseChoice = DefenseStat;
 export type DefenseResultType = 'full-block' | 'softened' | 'full-impact';
-export type RuptureType = 'endure' | 'vitality' | 'avoid' | 'exert' | null;
+export type BreachType = 'endure' | 'vitality' | 'avoid' | 'exert' | null;
 
 export interface AttackRequest {
   attackerId: string;
@@ -71,7 +71,7 @@ export interface ExchangeResult {
   };
   losses: TrackLoss;
   avoidConsequence?: ConsequenceName;
-  rupture: RuptureType;
+  breach: BreachType;
   notes: string[];
 }
 
@@ -118,7 +118,7 @@ function createOutcomeAccumulator(remaining: number): OutcomeAccumulator {
     armorReduced: 0,
     preventedByBurn: false,
     losses: { endure: 0, vitality: 0, avoid: 0, exert: 0 },
-    rupture: null,
+    breach: null,
     notes: [],
   };
 }
@@ -145,12 +145,12 @@ function applyVitalityLoss(outcome: OutcomeAccumulator, defender: Character): vo
     return;
   }
 
-  if (outcome.rupture === 'endure') {
+  if (outcome.breach === 'endure') {
     outcome.notes.push('Endure overflow spilled into Vitality.');
   }
 
   if (trackDepleted(defender.tracks.vitality.current, outcome.losses.vitality)) {
-    outcome.rupture = 'vitality';
+    outcome.breach = 'vitality';
   }
 }
 
@@ -175,7 +175,7 @@ function resolveEndureOutcome(
   outcome.losses.endure = Math.min(outcome.remaining, defender.tracks.endure.current);
   outcome.remaining -= outcome.losses.endure;
   if (trackDepleted(defender.tracks.endure.current, outcome.losses.endure)) {
-    outcome.rupture = 'endure';
+    outcome.breach = 'endure';
   }
 
   applyVitalityLoss(outcome, defender);
@@ -196,7 +196,7 @@ function resolveAvoidOutcome(
   outcome.notes.push('Avoid traded injury for position and consequence.');
 
   if (trackDepleted(defender.tracks.avoid.current, outcome.losses.avoid)) {
-    outcome.rupture = 'avoid';
+    outcome.breach = 'avoid';
   }
 }
 
@@ -218,7 +218,7 @@ function resolveExertOutcome(
   }
 
   if (trackDepleted(defender.tracks.exert.current, outcome.losses.exert)) {
-    outcome.rupture = 'exert';
+    outcome.breach = 'exert';
   }
 
   if (outcome.remaining > 0) {
@@ -270,7 +270,7 @@ export function resolveExchange(
     },
     losses: outcome.losses,
     avoidConsequence: outcome.avoidConsequence,
-    rupture: outcome.rupture,
+    breach: outcome.breach,
     notes: outcome.notes,
   };
 }

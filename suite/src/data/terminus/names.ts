@@ -158,7 +158,7 @@ export const PRE_CURATED_NAMES: Omit<GeneratedName, 'id'>[] = [
     cultureProfile: "Gaelic",
     usage: "threat",
     shortMeaning: "Host Barrier / Ghost Wall",
-    publicDescription: "A shimmering curtain of cold air that bars entry to the Old Docks, filled with whispering faces of missing citizens.",
+    publicDescription: "A shimmering curtain of cold air that bars entry to the Old Docks, filled with the repeating faces of missing citizens.",
     internalNote: "Requires a social-mode scene resolution to pass without injury. The faces will bargain for physical tokens of active memories."
   },
   {

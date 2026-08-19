@@ -427,7 +427,7 @@ export default function FullSpreadPrintLayout({ scenes }: Props) {
       `}</style>
 
       {scenes.map((scene) => {
-        const meta = scene.terminus;
+        const meta = scene.meta;
         const isLatent = scene.stateType === 'latent';
 
         // Extract the Ground, Will, Shift, Drift contents

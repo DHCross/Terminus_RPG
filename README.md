@@ -1,8 +1,29 @@
 # Terminus RPG
 
-A modern TRPG system with an interactive AI-powered character and campaign system.
+**Reality wants stability, and civic routine is what keeps it quiet.**
 
-**Terminus RPG** combines a tabletop RPG game system with an interactive web application and AI backend to support character generation, advancement tracking, and dynamic gameplay.
+Tringad is a rain-slicked city of cold brass, oxblood ink, and bone paper, and its
+paperwork is load-bearing. The Arch-Sumner's bells, tollgates closing on the exact
+second, conscript-court scribes turning ledger pages in unison: no single one of
+them holds physical law in place. Together, repeated, they do. A missed bell is
+nothing. Enough of them and the pattern stops resolving, and you get a **Rupture**:
+a street-porter caught in a repeating loop, a tollgate demanding a coin that hasn't
+been minted yet.
+
+You play field responders from the licensed Orders — Seekers who expose hidden
+structure, Breakers who force sealed things open, Wardens who hold collapsing
+boundaries — dispatched in mixed cells to pull the anomaly back inside tolerance.
+A **Quiet Day** isn't a perfect day. It's one the city can absorb.
+
+No one in Tringad has ever heard the name Terminus. That's the point.
+
+Terminus runs on the **Coherence System**: no to-hit rolls, no armor class, no mana.
+Scenes are live state machines, and hesitation is a mechanic: every turn you don't
+act, **Drift** ticks up.
+
+Late-medieval, bureaucratically precise, quietly apocalyptic.
+
+---
 
 ## Project Structure
 

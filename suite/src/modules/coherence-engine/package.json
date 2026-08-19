@@ -1,7 +1,7 @@
 {
-  "name": "@silhouette-rpg/engine",
+  "name": "@coherence-system/engine",
   "version": "0.1.0",
-  "description": "Silhouette RPG — state engine for scene cards, character frames, and combat exchange resolution",
+  "description": "Coherence System — genre-agnostic state engine for scene cards, character frames, and combat exchange resolution",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

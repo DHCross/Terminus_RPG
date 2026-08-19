@@ -20,13 +20,13 @@ import type {
   SceneChunk,
   StoryFunction,
   ConnectiveTrigger,
-  TerminusSceneMeta,
-  TerminusSceneMode,
+  SceneMeta,
+  SceneMode,
 } from './types';
 import { ACTIVE_STATE_ORDER, LATENT_STATE_ORDER, isLatentBody } from './types';
 import { detectScenes } from './sceneDetector';
 import { heuristicGWSD, qualifyGWSD } from './aiExtractor';
-import { buildSilhouetteProjection } from './silhouetteAdapter';
+import { buildCoherenceProjection } from './coherenceAdapter';
 
 let idCounter = 0;
 function uid(): string {
@@ -397,7 +397,7 @@ function createSceneRecord(args: {
   scope?: GWSDScope;
   contentType?: ContentType;
   validationWarnings?: string[];
-  terminus?: TerminusSceneMeta;
+  meta?: SceneMeta;
   storyFunction?: StoryFunction;
   connectiveTriggers?: ConnectiveTrigger[];
 }): Scene {
@@ -413,7 +413,7 @@ function createSceneRecord(args: {
     scope,
     contentType,
     validationWarnings,
-    terminus,
+    meta,
     storyFunction,
     connectiveTriggers,
   } = args;
@@ -430,7 +430,7 @@ function createSceneRecord(args: {
     scope,
     contentType,
     validationWarnings,
-    silhouette: buildSilhouetteProjection({
+    coherence: buildCoherenceProjection({
       id: sceneId,
       title,
       adventure,
@@ -438,7 +438,7 @@ function createSceneRecord(args: {
       raw,
       scope,
     }),
-    terminus,
+    meta,
     storyFunction,
     connectiveTriggers,
   };
@@ -939,9 +939,9 @@ export function parseCanonicalMarkdown(text: string, adventureName = 'Adventure'
     // Scene Mode
     const modeMatch = searchBlock.match(/(?:-\s*)?\*\*(?:Scene\s+Mode|Mode)\*\*:\s*([^\n]+)/i);
     const sceneModeRaw = modeMatch ? modeMatch[1].trim().toLowerCase() : undefined;
-    let finalSceneMode: TerminusSceneMode | undefined;
+    let finalSceneMode: SceneMode | undefined;
     if (sceneModeRaw && ['social', 'kinetic', 'hazard', 'confrontation', 'discovery', 'puzzle'].includes(sceneModeRaw)) {
-      finalSceneMode = sceneModeRaw as TerminusSceneMode;
+      finalSceneMode = sceneModeRaw as SceneMode;
     }
 
     // Scene Pressure
@@ -973,7 +973,7 @@ export function parseCanonicalMarkdown(text: string, adventureName = 'Adventure'
     const validation = validateGWSDBody(parsedBody);
     const connectiveTriggers = extractConnectiveTriggers(block, sceneId);
 
-    const terminus: TerminusSceneMeta = {
+    const meta: SceneMeta = {
       location,
       sceneMode: finalSceneMode,
       scenePressure,
@@ -991,7 +991,7 @@ export function parseCanonicalMarkdown(text: string, adventureName = 'Adventure'
       cards,
       raw: block.trim(),
       validationWarnings: validation.warnings,
-      terminus,
+      meta,
       storyFunction,
       connectiveTriggers,
     }));

@@ -1,4 +1,4 @@
-/* ── Silhouette RPG — Campaign Layer ── */
+/* ── Coherence System — Campaign Layer ── */
 
 import type { SceneCard } from './scene';
 
@@ -31,6 +31,12 @@ export interface Campaign {
   id: string;
   name: string;
   version: string;
+  /**
+   * The Setting Pack this campaign belongs to, e.g. "terminus" or
+   * "generic-fantasy". Omitted means the Coherence baseline. The frontend pack
+   * registry resolves this id to a {@link SettingPack} for validation and UI.
+   */
+  packId?: string;
   simulationTruth: SimulationTruth;
   faultLines: FaultLine[];
   phases: CampaignPhase[];

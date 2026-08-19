@@ -24,26 +24,26 @@ export const GWSD_STATE_DEFINITIONS = {
   ground: {
     question: 'What actions are legally possible here?',
     purpose: 'Decision Physics — establishes the boundary conditions. Defines what CAN happen, what is FORBIDDEN, and what COSTS something.',
-    gmUse: 'Write as a rule, not atmosphere. Executable: "Rupture Casting triggers a d6 Force Pressure Surge." Not: "Wild magic fills the chamber."',
-    terminusNote: 'Use Silhouette dice (d4–d12), Scene Pressure values, and Order permissions. Reference Threshold types (Endure/Avoid/Exert) where relevant.',
+    gmUse: 'Write as a rule, not atmosphere. Executable: "A failed Force check triggers a d6 pressure surge." Not: "Wild magic fills the chamber."',
+    settingNote: 'Use Coherence System dice (d4–d12), Scene Pressure values, and character-role permissions. Reference Threshold types (Endure/Avoid/Exert) where relevant.',
   },
   will: {
     question: 'What force is applying pressure RIGHT NOW?',
     purpose: 'Active Prioritization — the existing pressure before players act. NOT backstory or lore; the force\'s current tactic.',
     gmUse: 'Executable: "Lich prioritizes maintaining the ritual shield over killing intruders." Not: "The lich hates mortals." Hazards have NO Will — the environment has no goal.',
-    terminusNote: 'Name the actor and their current priority. For traps/mechanisms: name what the device is trying to do. For pure hazards: leave Will empty.',
+    settingNote: 'Name the actor and their current priority. For traps/mechanisms: name what the device is trying to do. For pure hazards: leave Will empty.',
   },
   shift: {
     question: 'What immediately changes if players act?',
     purpose: 'Automatic Reaction — the If/Then conditional trigger. Guarantees action produces concrete state change.',
     gmUse: 'Executable: "Touching the altar summons 1d4 defenders." Not: "If the players investigate carefully..." Use hard causality.',
-    terminusNote: 'Wire to Connective Triggers where the Shift hands off to another Scene Card. Prefer Force/Agility/Willpower checks over vague perception prompts.',
+    settingNote: 'Wire to Connective Triggers where the Shift hands off to another Scene Card. Prefer Force/Agility/Willpower checks over vague perception prompts.',
   },
   drift: {
     question: 'What worsens if the state is not resolved?',
     purpose: 'Rhythm Engine — the accumulator. Drives Calm → Complication → Escalation → Irreversible Change without player input.',
     gmUse: 'Executable: "Each round, the water level rises 5 ft" or "+1 Scene Pressure per round." Not: "The ritual will eventually succeed."',
-    terminusNote: 'Drift IS the pacing engine. Every Scene Card should answer this. Empty Drift = static world = no consequence for delay.',
+    settingNote: 'Drift IS the pacing engine. Every Scene Card should answer this. Empty Drift = static world = no consequence for delay.',
   },
 } as const;
 
@@ -164,7 +164,7 @@ const URGENCY_KEYWORDS = /\b(rush|racing|race|urgent|before\s+it'?s\s+too\s+late
 const VAGUE_TRIGGER_KEYWORDS = /\b(might|maybe|possibly|if\s+lucky|if\s+they\s+look\s+closely|perception\s+check|notice\s+something\s+odd)\b/i;
 const MOOD_WORDS = /\b(oppressive|sad|eerie|ominous|tense|unsettling|haunting|melancholic|gloomy|foreboding|dreadful)\b/i;
 const ACTOR_HINTS = /\b(guards?|cultists?|monster|beast|shadows?|wind|clockwork|trap|ward|sentries?|patrol|leader|npc|they|it|force|hazard)\b/i;
-const PERMISSION_DELTA_KEYWORDS = /\b(unlock|open|sealed|barred|allow|permission|access|blocked|breach|override|deactivate|disable|enable|free|capture|detain|escape|can\s+now|no\s+longer|must|cannot|can't|forbidden|admit|entry|exit)\b/i;
+const PERMISSION_DELTA_KEYWORDS = /\b(unlock|open|breach|rupture|sealed|barred|allow|permission|access|blocked|breach|override|deactivate|disable|enable|free|capture|detain|escape|can\s+now|no\s+longer|must|cannot|can't|forbidden|admit|entry|exit)\b/i;
 const TRAP_INTENT_KEYWORDS = /\b(trap|snare|tripwire|pressure\s+plate|glyph|ward|alarm|trigger|countermeasure|detonat|disarm|bypass|reset|intruder|tamper|armed)\b/i;
 const TRAP_AGENTIVE_WILL = /\b(attempts?|tries\s+to|seeks\s+to|targets?|punishes?|alerts?|locks\s+down|activates|responds\s+to\s+intrusion)\b/i;
 const TRAP_TRIGGER_KEYWORDS = /\b(step|touch|open|cross|tamper|disturb|insert|remove|break|trigger|intrud|trip|when\s+entered?)\b/i;
@@ -172,21 +172,21 @@ const HAZARD_ENVIRONMENT_KEYWORDS = /\b(hazard|unstable|toxic|gas|fumes?|heat|co
 const HAZARD_EXPOSURE_KEYWORDS = /\b(exposure|prolonged|for\s+each\s+round|per\s+turn|while\s+inside|endure|resist|protective\s+gear|ventilation|breathing|fatigue|accumulat)\b/i;
 const HP_TAX_PATTERN = /\b(take\s+damage|suffer\s+damage|when\s+touched|on\s+contact|takes?\s+\d+d?\d*\s+damage)\b/i;
 const WILL_ACTOR_PATTERN = /\b(guards?|cultists?|captain|commander|rat\s+king|beast|monster|swarm|trap|ward|shadows?|civilians?|patrol|npc|faction|ritualists?)\b/gi;
-const DRIFT_RESPONSE_PATTERN = /\b(alert|alarms?|reinforce|mobiliz|locks?\s+seal|seal(?:ed|s)?|reset|respond|countermeasure|hunts?|patrols?\s+increase|retaliat)\b/i;
+const DRIFT_RESPONSE_PATTERN = /\b(alert|alarms?|reinforce|mobiliz|locks?\s+breach|rupture|seal|breach|rupture|seal(?:ed|s)?|reset|respond|countermeasure|hunts?|patrols?\s+increase|retaliat)\b/i;
 const DRIFT_INEVITABILITY_PATTERN = /\b(thickens?|spreads?|rises?|worsens?|collapses?|crumbles?|floods?|freezes?|burns?|decays?|exposure|entropy|degrad|deteriorat)\b/i;
 const EXPLICIT_TRAP_MECHANICS = /\b(trigger\s*:|save\s*:|effect\s*:|reflex\s+dc\s*\d+|fort\s+dc\s*\d+|will\s+dc\s*\d+|dc\s*\d+|weight\s+of\s*\d+|drop\s+\d+\s*(?:ft|feet)|pit\s*:|damage\s*:|immediate\s+\w+\s+check)\b/i;
 const EXPLICIT_HAZARD_EXPOSURE = /\b(per\s+round|each\s+round|onset\s+\d+d\d+|save\s+again|contact\s+or\s+inhaled|ingested|swim\s+check\s+dc\s*\d+|water\s+rises?\s+\d+\s*(?:ft|feet)\s+per\s+round)\b/i;
 const HARD_STATE_CHANGE = /\b(trigger\s*:|if\s+all\s+three\s+cranks|if\s+any\s+crank|success\s*:|failure\s*:|consequence\s*:|after\s+\d+\s+rounds?|water\s+rises?\s+\d+\s*(?:ft|feet)\s+per\s+round|breach(?:es|ed)?|reverse\s+sluice|aquatic\s+combat\s+rules)\b/i;
-const IRREVERSIBLE_STATE_KEYWORDS = /\b(dead|destroyed|burned|breached|ritual\s+complete|flooded|sealed\s+forever|captured|lost\s+for\s+good|no\s+return|doomed|after\s+\d+\s+rounds?|failure\s*:|consequence\s*:|reverse\s+sluice|water\s+rises?\s+\d+\s*(?:ft|feet)\s+per\s+round)\b/i;
+const IRREVERSIBLE_STATE_KEYWORDS = /\b(dead|destroyed|burned|breached|ritual\s+complete|flooded|breach|rupture|sealed\s+forever|captured|lost\s+for\s+good|no\s+return|doomed|after\s+\d+\s+rounds?|failure\s*:|consequence\s*:|reverse\s+sluice|water\s+rises?\s+\d+\s*(?:ft|feet)\s+per\s+round)\b/i;
 const ESCALATION_STATE_KEYWORDS = /\b(alert|mobilize|reinforce|combat|attack|surge|spread|collapse|critical|outbreak|hunt|lockdown|save\s*:|dc\s*\d+|damage\s*:|swim\s+check\s+dc\s*\d+|trigger\s*:|effect\s*:)\b/i;
 
 // ── Runnable State Machine diagnostics ──────────────────────────────────────
 
 /**
  * EXECUTABLE_CONSTRAINT: signals that Ground contains mechanical rules, not just prose.
- * Terminus-aware: includes d-notation (d6, d10), Scene Pressure, Threshold types.
+ * Coherence-aware: includes d-notation (d6, d10), Scene Pressure, Threshold types.
  */
-const EXECUTABLE_CONSTRAINT = /\b(damage|penalty|bonus|check|dc\s*\d+|d\d+|prevents?|blocks?|restricts?|costs?\s*\d+|requires?|allows?|threshold|pressure|per\s+round|per\s+turn|each\s+round|cannot|can't|forbidden|maximum|minimum|force|agility|willpower|endure|avoid|exert|impact|surge|rupture|seal|nullify|expose|bridge)\b/i;
+const EXECUTABLE_CONSTRAINT = /\b(damage|penalty|bonus|check|dc\s*\d+|d\d+|prevents?|blocks?|restricts?|costs?\s*\d+|requires?|allows?|threshold|pressure|per\s+round|per\s+turn|each\s+round|cannot|can't|forbidden|maximum|minimum|force|agility|willpower|endure|avoid|exert|impact|surge|breach|rupture|seal|breach|rupture|seal|nullify|expose|bridge)\b/i;
 
 /**
  * VAGUE_ATMOSPHERE: signals that Ground is flavor/atmosphere rather than physics.
@@ -225,7 +225,7 @@ const PRESSURE_KEYWORDS: Record<PressureLevel, RegExp> = {
   calm: /\b(quiet|stable|hold|watch|observe|survey|waiting|patrol|idle|normal|routine)\b/i,
   complication: /\b(suspicion|noticed|clue|warning|delay|complication|pressure|alarmed|friction|cost|risk)\b/i,
   escalation: /\b(alert|mobilize|reinforce|combat|attack|surge|spread|collapse|critical|outbreak|hunt|lockdown)\b/i,
-  irreversible: /\b(dead|destroyed|burned|breached|ritual\s+complete|flooded|sealed\s+forever|captured|lost\s+for\s+good|no\s+return|doomed)\b/i,
+  irreversible: /\b(dead|destroyed|burned|breached|ritual\s+complete|flooded|breach|rupture|sealed\s+forever|captured|lost\s+for\s+good|no\s+return|doomed)\b/i,
 };
 
 /**
@@ -606,7 +606,7 @@ export function runNarrativeDiagnostics(scenes: Scene[]): NarrativeDiagnosticsRe
     // Vague Ground: atmospheric prose with no executable constraint.
     // Spec: "Not Flavor: 'Wild magic fills the chamber.' (Vague)
     //        Executable: 'Casting spells triggers immediate 1d6 force damage.' (Rule)"
-    // Terminus: check for d-notation, Scene Pressure, Threshold keywords.
+    // Coherence: check for d-notation, Scene Pressure, Threshold keywords.
     if (!isLatent && body.ground.trim()) {
       const groundWc = wordCount(body.ground);
       const atmosphereMatches = (body.ground.match(VAGUE_ATMOSPHERE) || []).length;
@@ -617,7 +617,7 @@ export function runNarrativeDiagnostics(scenes: Scene[]): NarrativeDiagnosticsRe
           icon: '🌫️',
           name: 'Vague Ground',
           diagnosis: 'Ground is atmospheric description, not executable Decision Physics.',
-          fix: 'State the actual constraint as a rule: what is prevented, what costs something, what triggers a Threshold check. Use Terminus dice notation (d6, d10) or Scene Pressure values.',
+          fix: 'State the actual constraint as a rule: what is prevented, what costs something, what triggers a Threshold check. Use Coherence dice notation (d6, d10) or Scene Pressure values.',
           severity: 'medium',
           sceneTitle: scene.title,
           sceneOrder: scene.order,
@@ -683,7 +683,7 @@ export function runNarrativeDiagnostics(scenes: Scene[]): NarrativeDiagnosticsRe
       });
     }
 
-    if (/\b(only\s+exit|sealed\s+exit|lethal\s+trap|deadly\s+gauntlet)\b/i.test(body.ground) && /\b(guards?\s+patrol|live\s+here|regular\s+traffic|come\s+and\s+go)\b/i.test(body.will)) {
+    if (/\b(only\s+exit|breach|rupture|sealed\s+exit|lethal\s+trap|deadly\s+gauntlet)\b/i.test(body.ground) && /\b(guards?\s+patrol|live\s+here|regular\s+traffic|come\s+and\s+go)\b/i.test(body.will)) {
       signals.push({
         code: 'logic-conflict',
         icon: '🧩',

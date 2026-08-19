@@ -13,7 +13,7 @@ import type { Scene } from '../../gwsd-cards/types';
  */
 export function exportCanonicalMarkdown(scene: Scene): string {
   const lines: string[] = [];
-  const meta = scene.terminus;
+  const meta = scene.meta;
 
   // Header block
   lines.push(`# ${scene.title}`);
@@ -130,7 +130,7 @@ export function exportInlineGWSD(scene: Scene): string {
  * Header band → GWSD body → optional footer.
  */
 export function exportVisualCard(scene: Scene): string {
-  const meta = scene.terminus;
+  const meta = scene.meta;
   const w = 60;
   const hr = '─'.repeat(w);
   const lines: string[] = [];

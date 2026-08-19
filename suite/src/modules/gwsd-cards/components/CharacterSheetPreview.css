@@ -2,7 +2,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;800&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@400;600;700;800&family=Reenie+Beanie&display=swap');
 
 /* ── BASE CSS VARIABLE SYSTEM ── */
-.terminus-sheet-container {
+.coherence-sheet-container {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -53,7 +53,7 @@
   --ts-sheet-border: 4px double var(--ts-accent-color);
   --ts-border-radius: 6px;
 }
-.skin-lineage-highalfar .terminus-sheet, .skin-lineage-high .terminus-sheet {
+.skin-lineage-highalfar .coherence-sheet, .skin-lineage-high .coherence-sheet {
   outline: 1px solid var(--ts-main-border-color);
   outline-offset: -8px;
 }
@@ -124,7 +124,7 @@
 
 /* ── 3. COMPONENT STYLES UTILIZING DYNAMIC VARS ── */
 
-.terminus-sheet {
+.coherence-sheet {
   background-color: var(--ts-bg-color);
   background-image: 
     radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.4) 0%, rgba(253, 251, 247, 0) 100%),
@@ -636,13 +636,13 @@
   body {
     background: white !important;
   }
-  .terminus-sheet-container {
+  .coherence-sheet-container {
     background: transparent !important;
     border: none !important;
     box-shadow: none !important;
     padding: 0 !important;
   }
-  .terminus-sheet {
+  .coherence-sheet {
     box-shadow: none !important;
     border-width: 6px !important;
     width: 8.5in !important;

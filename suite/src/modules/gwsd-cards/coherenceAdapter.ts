@@ -5,15 +5,15 @@ import type {
   PressureType,
   SimulationSecret,
   WeaponVector,
-} from '../silhouette-engine/src/index.ts';
+} from '../coherence-engine/src/index.ts';
 import type {
   GWSDBody,
   GWSDScope,
-  SilhouetteProjection,
+  CoherenceProjection,
 } from './types';
 import {
   isLatentBody,
-  SILHOUETTE_SECTION_ORDER,
+  COHERENCE_SECTION_ORDER,
 } from './types';
 
 interface ProjectionInput {
@@ -235,7 +235,7 @@ function buildSimulationSecret(raw: string): SimulationSecret | undefined {
   };
 }
 
-export function buildSilhouetteProjection(input: ProjectionInput): SilhouetteProjection {
+export function buildCoherenceProjection(input: ProjectionInput): CoherenceProjection {
   const agencyText = projectAgencyText(input.body);
   const pressureText = projectPressureText(input.body);
   const contingencyText = projectContingencyText(input.body);
@@ -283,7 +283,7 @@ export function buildSilhouetteProjection(input: ProjectionInput): SilhouettePro
       simulation: buildSimulationSecret(input.raw),
       tags,
     },
-    sections: SILHOUETTE_SECTION_ORDER.map((key) => {
+    sections: COHERENCE_SECTION_ORDER.map((key) => {
       switch (key) {
         case 'agency':
           return { key, text: agencyText };
@@ -294,7 +294,7 @@ export function buildSilhouetteProjection(input: ProjectionInput): SilhouettePro
         case 'consequence':
           return { key, text: consequenceText };
       }
-    }) as SilhouetteProjection['sections'],
+    }) as CoherenceProjection['sections'],
     pressureType,
     environmentSummary,
   };

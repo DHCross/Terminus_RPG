@@ -1,8 +1,8 @@
 import type { CSSProperties, ReactNode } from 'react';
-import type { DieSize } from '../../silhouette-engine/src/index.ts';
-import { buildPointCost } from '../../silhouette-engine/src/index.ts';
-import type { WeaponDraft } from '../silhouetteStudio';
-import { DIE_OPTIONS, VECTOR_OPTIONS } from '../silhouetteStudio';
+import type { DieSize } from '../../coherence-engine/src/index.ts';
+import { buildPointCost } from '../../coherence-engine/src/index.ts';
+import type { WeaponDraft } from '../coherenceStudio';
+import { DIE_OPTIONS, VECTOR_OPTIONS } from '../coherenceStudio';
 
 export const panelStyle: CSSProperties = {
   border: '1px solid #1E293B',
@@ -137,7 +137,7 @@ export function DiceEditor<TName extends string>({
   return (
     <PanelSection title={title} description="Each ladder step spends one build point from d4 upward.">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <span style={{ fontSize: 12, color: '#94A3B8' }}>Silhouette build budget target: 5 points</span>
+        <span style={{ fontSize: 12, color: '#94A3B8' }}>Coherence build budget target: 5 points</span>
         <PointsBadge points={totalPoints} />
       </div>
       <div style={{ display: 'grid', gap: 12, gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))' }}>
@@ -177,7 +177,7 @@ export function WeaponEditor({
   onChange: (nextWeapon: WeaponDraft) => void;
 }>) {
   return (
-    <PanelSection title={title} description="Impact, vectors, and notes feed straight into the Silhouette engine output.">
+    <PanelSection title={title} description="Impact, vectors, and notes feed straight into the Coherence System engine output.">
       <div style={{ display: 'grid', gap: 12, gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))' }}>
         <Field label="Weapon Name">
           <input

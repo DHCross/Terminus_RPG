@@ -25,7 +25,7 @@ import {
   Calendar,
   AlertCircle
 } from 'lucide-react';
-import { generateAdventureOutline } from '../../../services/aiService';
+import { generateAdventureOutline } from '../../../settings/packs/terminus/ai';
 import { useAdventureStorage } from './useAdventureStorage';
 import { exportAdventureToMarkdown } from './exportAdventure';
 import { sampleAdventureOutline } from './sampleAdventure';
@@ -176,7 +176,7 @@ export function AdventureWorkbench() {
     },
     {
       title: "The Silent Silt Wards",
-      premise: "The silt-walls surrounding a plague fortress are slowly shifting inwards, whispering rules that restrict the movement of iron weapons or metal gears.",
+      premise: "The silt-walls surrounding a plague fortress are slowly shifting inwards, echoing rules that restrict the movement of iron weapons or metal gears.",
       structure: "survival",
       culture: "Egyptian"
     }

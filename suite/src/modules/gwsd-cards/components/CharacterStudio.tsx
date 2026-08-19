@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
-import type { Character, CharacterDefinition, ValidationDiagnostic } from '../../silhouette-engine/src/index.ts';
-import { ARMOR_REDUCTION } from '../../silhouette-engine/src/index.ts';
+import type { Character, CharacterDefinition, ValidationDiagnostic } from '../../coherence-engine/src/index.ts';
+import { ARMOR_REDUCTION } from '../../coherence-engine/src/index.ts';
 import {
   buildCharacterFromDraft,
   CHARACTER_PRESETS,
@@ -8,7 +8,7 @@ import {
   defaultCharacterDraft,
   downloadJson,
   type CharacterDraft,
-} from '../silhouetteStudio';
+} from '../coherenceStudio';
 import {
   DiagnosticsList,
   DiceEditor,
@@ -21,7 +21,7 @@ import {
   StudioGrid,
   textAreaStyle,
   WeaponEditor,
-} from './SilhouetteStudioCommon';
+} from './CoherenceStudioCommon';
 import CharacterSheetPreview from './CharacterSheetPreview';
 
 interface CharacterRecord {
@@ -55,7 +55,7 @@ export default function CharacterStudio() {
   };
 
   const exportRoster = () => {
-    downloadJson('silhouette_characters.json', {
+    downloadJson('coherence_characters.json', {
       exportedAt: new Date().toISOString(),
       characters: roster.map((entry) => ({
         savedAt: entry.savedAt,
@@ -80,7 +80,7 @@ export default function CharacterStudio() {
         <>
           <PanelSection
             title="Character Studio"
-            description="Build live Silhouette player frames with actual action dice, defense dice, armor, weapons, and validation from the engine. Includes simplified NPC starter templates."
+            description="Build live Coherence System player frames with actual action dice, defense dice, armor, weapons, and validation from the engine. Includes simplified NPC starter templates."
           >
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
               {CHARACTER_PRESETS.map((preset) => (
@@ -99,7 +99,7 @@ export default function CharacterStudio() {
             </div>
           </PanelSection>
 
-          <PanelSection title="Identity" description="These fields become the character frame identity in the Silhouette engine.">
+          <PanelSection title="Identity" description="These fields become the character frame identity in the Coherence System engine.">
             <div style={{ display: 'grid', gap: 12, gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))' }}>
               <Field label="Name">
                 <input value={draft.name} onChange={(event) => setDraft({ ...draft, name: event.target.value })} style={inputStyle} />

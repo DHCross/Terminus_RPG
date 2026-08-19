@@ -1,11 +1,13 @@
-/* ── Silhouette RPG — Schema Validation & Linting ── */
+/* ── Coherence System — Schema Validation & Linting ── */
 
 import type { Campaign } from './campaign';
-import type { Character } from './character';
+import type { Character, ArmorType } from './character';
 import type { SceneCard } from './scene';
+import type { SettingPack } from './pack';
 import {
   ACTION_STATS,
   ARMOR_TYPES,
+  ARMOR_REDUCTION,
   DEFENSE_STATS,
 } from './character';
 import {
@@ -17,6 +19,24 @@ import {
 } from './dice';
 
 export type Severity = 'error' | 'warning' | 'info';
+
+/** Resolved vocabulary + budgets used by validation, merged from a pack over defaults. */
+interface ResolvedVocabulary {
+  armorTypes: readonly ArmorType[];
+  armorReduction: Record<ArmorType, number>;
+  actionBudget: number;
+  defenseBudget: number;
+}
+
+function resolveVocabulary(pack?: SettingPack): ResolvedVocabulary {
+  const armor = pack?.vocabulary?.armor;
+  return {
+    armorTypes: armor?.types ?? ARMOR_TYPES,
+    armorReduction: armor?.reduction ?? ARMOR_REDUCTION,
+    actionBudget: pack?.buildBudgets?.actions ?? 5,
+    defenseBudget: pack?.buildBudgets?.defenses ?? 5,
+  };
+}
 
 export interface ValidationDiagnostic {
   code: string;
@@ -64,13 +84,14 @@ export function validateSceneCard(card: SceneCard): ValidationDiagnostic[] {
   return diags;
 }
 
-export function validateCharacter(char: Character): ValidationDiagnostic[] {
+export function validateCharacter(char: Character, pack?: SettingPack): ValidationDiagnostic[] {
+  const vocab = resolveVocabulary(pack);
   return [
     ...validateCharacterIdentity(char),
     ...validateActionDice(char),
     ...validateDefenseDice(char),
-    ...validateBuildBudgets(char),
-    ...validateArmor(char),
+    ...validateBuildBudgets(char, vocab),
+    ...validateArmor(char, vocab),
     ...validateTrackConsistency(char),
     ...validateTrackRanges(char),
     ...validateInitiative(char),
@@ -78,7 +99,7 @@ export function validateCharacter(char: Character): ValidationDiagnostic[] {
   ];
 }
 
-export function validateCampaign(campaign: Campaign): ValidationDiagnostic[] {
+export function validateCampaign(campaign: Campaign, pack?: SettingPack): ValidationDiagnostic[] {
   const diags: ValidationDiagnostic[] = [];
 
   if (!campaign.id) diags.push({ code: 'CAMPAIGN_NO_ID', severity: 'error', path: '/id', message: 'Campaign must have an id.' });
@@ -87,7 +108,7 @@ export function validateCampaign(campaign: Campaign): ValidationDiagnostic[] {
     diags.push({ code: 'CAMPAIGN_NO_PREMISE', severity: 'error', path: '/simulationTruth/hiddenPremise', message: 'Campaign must define the hidden simulation premise.' });
   }
   if (campaign.simulationTruth.denizensAware) {
-    diags.push({ code: 'CAMPAIGN_PREMISE_EXPOSED', severity: 'warning', path: '/simulationTruth/denizensAware', message: 'Silhouette assumes the denizens do not know they live inside a system.' });
+    diags.push({ code: 'CAMPAIGN_PREMISE_EXPOSED', severity: 'warning', path: '/simulationTruth/denizensAware', message: 'The Coherence System assumes the denizens do not know they live inside a system.' });
   }
 
   const sceneIds = new Set<string>();
@@ -155,24 +176,24 @@ function validateDefenseDice(char: Character): ValidationDiagnostic[] {
   return diags;
 }
 
-function validateBuildBudgets(char: Character): ValidationDiagnostic[] {
+function validateBuildBudgets(char: Character, vocab: ResolvedVocabulary): ValidationDiagnostic[] {
   const diags: ValidationDiagnostic[] = [];
   const actionPoints = totalBuildPoints(Object.values(char.actions));
   const defensePoints = totalBuildPoints(Object.values(char.defenses));
 
-  if (actionPoints !== 5) {
-    diags.push({ code: 'CHAR_ACTION_POINT_MISMATCH', severity: 'warning', path: '/actions', message: `Action dice spend ${actionPoints} build points; Silhouette player characters normally spend 5.` });
+  if (actionPoints !== vocab.actionBudget) {
+    diags.push({ code: 'CHAR_ACTION_POINT_MISMATCH', severity: 'warning', path: '/actions', message: `Action dice spend ${actionPoints} build points; Coherence System player characters normally spend ${vocab.actionBudget}.` });
   }
 
-  if (defensePoints !== 5) {
-    diags.push({ code: 'CHAR_DEFENSE_POINT_MISMATCH', severity: 'warning', path: '/defenses', message: `Defense dice spend ${defensePoints} build points; Silhouette player characters normally spend 5.` });
+  if (defensePoints !== vocab.defenseBudget) {
+    diags.push({ code: 'CHAR_DEFENSE_POINT_MISMATCH', severity: 'warning', path: '/defenses', message: `Defense dice spend ${defensePoints} build points; Coherence System player characters normally spend ${vocab.defenseBudget}.` });
   }
 
   return diags;
 }
 
-function validateArmor(char: Character): ValidationDiagnostic[] {
-  if (ARMOR_TYPES.includes(char.armor)) {
+function validateArmor(char: Character, vocab: ResolvedVocabulary): ValidationDiagnostic[] {
+  if (vocab.armorTypes.includes(char.armor)) {
     return [];
   }
 
@@ -180,7 +201,7 @@ function validateArmor(char: Character): ValidationDiagnostic[] {
     code: 'CHAR_INVALID_ARMOR',
     severity: 'error',
     path: '/armor',
-    message: `Armor type ${String(char.armor)} is not supported.`,
+    message: `Armor type ${String(char.armor)} is not supported by this setting pack.`,
   }];
 }
 

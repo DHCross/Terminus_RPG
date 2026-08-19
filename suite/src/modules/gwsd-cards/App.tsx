@@ -1,7 +1,8 @@
 /* ── GWSD Card Generator — Main Application ── */
 
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
-import type { Scene, SilhouetteSectionKey, StoryFunction, ConnectiveTrigger } from './types';
+import type { ComponentType } from 'react';
+import type { Scene, CoherenceSectionKey, StoryFunction, ConnectiveTrigger } from './types';
 import Card from './components/Card';
 import { smartParse, type DetectedMode } from './parser';
 import { detectScenes } from './sceneDetector';
@@ -23,8 +24,6 @@ import DiagnosticsViewer from './components/DiagnosticsViewer';
 import CharacterStudio from './components/CharacterStudio';
 import MonsterStudio from './components/MonsterStudio';
 import { parseDiagnosticsReport, type ParsedDiagnosticsReport } from './diagnosticsParser';
-import { SceneCardForge } from '../terminus/scene/SceneCardForge';
-
 type View = 'deck' | 'print' | 'play';
 type DeckOrganize = 'scene-order' | 'scene-type';
 type Workspace = 'cards' | 'characters' | 'monsters';
@@ -33,14 +32,14 @@ type CardsMode = 'parse' | 'builder';
 const WORKSPACE_META: Record<Workspace, { title: string; subtitle: string }> = {
   cards: {
     title: 'GWSD Card Generator',
-    subtitle: 'Silhouette scene cards projected from GWSD extraction grammar for live Guide use',
+    subtitle: 'Coherence scene cards projected from GWSD extraction grammar for live Guide use',
   },
   characters: {
-    title: 'Silhouette Character Studio',
-    subtitle: 'Interactive frame builder for player characters using the live Silhouette engine',
+    title: 'Coherence Character Studio',
+    subtitle: 'Interactive frame builder for player characters using the live Coherence System engine',
   },
   monsters: {
-    title: 'Silhouette Monster Studio',
+    title: 'Coherence Monster Studio',
     subtitle: 'Interactive threat generator for enemy frames and pressure creatures',
   },
 };
@@ -122,12 +121,12 @@ function textForState(scene: Scene, state: string): string {
   return card?.text || '';
 }
 
-function textForSilhouetteSection(scene: Scene, section: SilhouetteSectionKey): string {
-  return scene.silhouette?.sections.find((entry) => entry.key === section)?.text || '';
+function textForCoherenceSection(scene: Scene, section: CoherenceSectionKey): string {
+  return scene.coherence?.sections.find((entry) => entry.key === section)?.text || '';
 }
 
 function pressureTypeLabel(scene: Scene): string {
-  const pressureType = scene.silhouette?.pressureType;
+  const pressureType = scene.coherence?.pressureType;
   return pressureType
     ? pressureType.charAt(0).toUpperCase() + pressureType.slice(1)
     : 'Unknown';
@@ -240,12 +239,19 @@ Armed when counterfeit credentials are flag-detected at the gate.
 Corridor alarm levels increase, summoning heavy interceptor units.
 [/gwsd]`;
 
-export default function App({ pendingScene, pendingScenes, onPendingSceneConsumed }: { pendingScene?: Scene | null; pendingScenes?: Scene[] | null; onPendingSceneConsumed?: () => void }) {
+export interface SceneForgeProps {
+  onSceneForged: (scene: Scene) => void;
+  onScenesForged: (scenes: Scene[]) => void;
+  onCancel: () => void;
+}
+
+export default function App({ pendingScene, pendingScenes, onPendingSceneConsumed, sceneForge }: { pendingScene?: Scene | null; pendingScenes?: Scene[] | null; onPendingSceneConsumed?: () => void; sceneForge?: ComponentType<SceneForgeProps> }) {
   const [scenes, setScenes] = useState<Scene[]>(() => {
     const parsed = smartParse(DEMO_MANUSCRIPT);
     return parsed.scenes;
   });
-  const [deckName, setDeckName] = useState('Silhouette GWSD Deck');
+  const SceneForge = sceneForge;
+  const [deckName, setDeckName] = useState('Coherence GWSD Deck');
   const [view, setView] = useState<View>('play');
   const [workspace, setWorkspace] = useState<Workspace>('cards');
   const [organizeBy, setOrganizeBy] = useState<DeckOrganize>('scene-order');
@@ -743,7 +749,7 @@ export default function App({ pendingScene, pendingScenes, onPendingSceneConsume
                 drift: textForState(s, 'drift'),
               }),
         },
-        silhouette: s.silhouette?.sceneCard ?? null,
+        coherence: s.coherence?.sceneCard ?? null,
       })),
     };
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -760,11 +766,11 @@ export default function App({ pendingScene, pendingScenes, onPendingSceneConsume
       const labeled = [
         `**${s.title}**`,
         `**Type** — ${s.stateType === 'latent' ? 'Latent' : 'Active'} / ${pressureTypeLabel(s)} Pressure`,
-        `**Environment** — ${s.silhouette?.environmentSummary || textForState(s, 'ground')}`,
-        `**Agency** — ${textForSilhouetteSection(s, 'agency')}`,
-        `**Pressure** — ${textForSilhouetteSection(s, 'pressure')}`,
-        `**Contingency** — ${textForSilhouetteSection(s, 'contingency')}`,
-        `**Consequence** — ${textForSilhouetteSection(s, 'consequence')}`,
+        `**Environment** — ${s.coherence?.environmentSummary || textForState(s, 'ground')}`,
+        `**Agency** — ${textForCoherenceSection(s, 'agency')}`,
+        `**Pressure** — ${textForCoherenceSection(s, 'pressure')}`,
+        `**Contingency** — ${textForCoherenceSection(s, 'contingency')}`,
+        `**Consequence** — ${textForCoherenceSection(s, 'consequence')}`,
         '',
       ];
       return labeled.join('\n');
@@ -1124,8 +1130,8 @@ export default function App({ pendingScene, pendingScenes, onPendingSceneConsume
           <CharacterStudio />
         ) : workspace === 'monsters' ? (
           <MonsterStudio />
-        ) : workspace === 'cards' && cardsMode === 'builder' ? (
-          <SceneCardForge
+        ) : workspace === 'cards' && cardsMode === 'builder' && SceneForge ? (
+          <SceneForge
             onSceneForged={handleAddScene}
             onScenesForged={handleAddScenes}
             onCancel={() => setCardsMode('parse')}
@@ -1151,7 +1157,7 @@ export default function App({ pendingScene, pendingScenes, onPendingSceneConsume
                 }}
               >
                 <p style={{ fontSize: 16 }}>
-                  GWSD distills scene prose into a live Silhouette rules card so the Guide can run agency, pressure, contingency, and consequence at speed.
+                  GWSD distills scene prose into a live Coherence rules card so the Guide can run agency, pressure, contingency, and consequence at speed.
                 </p>
                 <p style={{ fontSize: 13, lineHeight: 1.6 }}>
                   Paste or open a manuscript. Supports <code>[gwsd]</code> tagged blocks, <code>[sidebar]</code> blocks,<br/>
@@ -1732,7 +1738,7 @@ export default function App({ pendingScene, pendingScenes, onPendingSceneConsume
                                 >
                                   <input
                                     name="badgeText"
-                                    placeholder="e.g. Broken Archway, Rupture Caste..."
+                                    placeholder="e.g. Broken Archway, Sealed Gate..."
                                     style={{
                                       flex: 1,
                                       padding: '4px 8px',
@@ -1886,7 +1892,7 @@ export default function App({ pendingScene, pendingScenes, onPendingSceneConsume
                             </div>
 
                             {/* Read Aloud block if available */}
-                            {activeScene.terminus?.readAloud && (
+                            {activeScene.meta?.readAloud && (
                               <div
                                 style={{
                                   borderTop: '1px solid #1E293B',
@@ -1911,7 +1917,7 @@ export default function App({ pendingScene, pendingScenes, onPendingSceneConsume
                                     borderLeft: '2px solid #8B5CF6',
                                   }}
                                 >
-                                  {activeScene.terminus.readAloud}
+                                  {activeScene.meta.readAloud}
                                 </div>
                               </div>
                             )}

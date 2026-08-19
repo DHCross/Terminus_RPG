@@ -15,7 +15,7 @@
  */
 
 import type { Scene } from '../types';
-import { SILHOUETTE_SECTION_META, SCOPE_STYLES, STATE_META } from '../types';
+import { COHERENCE_SECTION_META, SCOPE_STYLES, STATE_META } from '../types';
 
 interface Props {
   scene: Scene;
@@ -44,14 +44,14 @@ export default function Card({
   carryoverBadges = [],
 }: Props) {
   const isLatent = scene.stateType === 'latent';
-  const useSilhouetteRules = Boolean(scene.silhouette) && !editable;
+  const useCoherenceRules = Boolean(scene.coherence) && !editable;
   const scopeStyle = scene.scope
     ? SCOPE_STYLES[scene.scope.depth] || SCOPE_STYLES.scene
     : SCOPE_STYLES.scene;
-  const sectionEntries = useSilhouetteRules && scene.silhouette
-    ? scene.silhouette.sections.map((section) => ({
+  const sectionEntries = useCoherenceRules && scene.coherence
+    ? scene.coherence.sections.map((section) => ({
         id: `${scene.id}-${section.key}`,
-        label: SILHOUETTE_SECTION_META[section.key].label,
+        label: COHERENCE_SECTION_META[section.key].label,
         text: section.text,
         key: section.key,
       }))
@@ -61,7 +61,7 @@ export default function Card({
         text: card.cardText || card.text,
         key: card.state,
         sourceIndex: idx,
-        terminus: card.terminus,
+        meta: card.meta,
       }));
 
   const headerBadges: Array<{ key: string; label: string; title: string }> = [];
@@ -80,11 +80,11 @@ export default function Card({
       title: `${sceneMode.label} mode — primary verb: ${sceneMode.verb}`,
     });
   }
-  if (useSilhouetteRules && scene.silhouette) {
+  if (useCoherenceRules && scene.coherence) {
     headerBadges.push({
       key: 'pressure-type',
-      label: `PRESSURE: ${scene.silhouette.pressureType.toUpperCase()}`,
-      title: `Silhouette pressure type: ${scene.silhouette.pressureType}`,
+      label: `PRESSURE: ${scene.coherence.pressureType.toUpperCase()}`,
+      title: `Coherence pressure type: ${scene.coherence.pressureType}`,
     });
   }
 
@@ -194,7 +194,7 @@ export default function Card({
             </div>
           )}
         </div>
-        {useSilhouetteRules && scene.silhouette && (
+        {useCoherenceRules && scene.coherence && (
           <div
             style={{
               marginTop: 4,
@@ -203,7 +203,7 @@ export default function Card({
               color: printMode ? '#E8DCC8' : 'rgba(255,255,255,0.82)',
             }}
           >
-            {scene.silhouette.environmentSummary}
+            {scene.coherence.environmentSummary}
           </div>
         )}
         {!printMode && lintWarnings.length > 0 && (
@@ -259,8 +259,8 @@ export default function Card({
         {sectionEntries.map((section, idx) => {
           const displayText = section.text;
           const useBalancedPrintSpacing = printMode && displayText.trim().length <= 95;
-          const isLatentLowerHalf = !useSilhouetteRules && isLatent && idx >= 2;
-          const isPressureBand = useSilhouetteRules && (section.key === 'pressure' || section.key === 'consequence');
+          const isLatentLowerHalf = !useCoherenceRules && isLatent && idx >= 2;
+          const isPressureBand = useCoherenceRules && (section.key === 'pressure' || section.key === 'consequence');
 
           return (
             <div
@@ -357,51 +357,51 @@ export default function Card({
                     {displayText}
                   </div>
                   {/* Terminus Metadata Pills */}
-                  {'terminus' in section && section.terminus && (
+                  {'meta' in section && section.meta && (
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: printMode ? '2px' : '4px', marginTop: printMode ? '4px' : '8px' }}>
-                      {section.terminus.scenePressure !== undefined && (
+                      {section.meta.scenePressure !== undefined && (
                         <span style={{ fontSize: printMode ? '8px' : '10px', background: 'rgba(236, 72, 153, 0.1)', color: '#EC4899', border: '1px solid rgba(236, 72, 153, 0.3)', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold' }}>
-                          Pressure: {section.terminus.scenePressure}
+                          Pressure: {section.meta.scenePressure}
                         </span>
                       )}
-                      {section.terminus.conflict?.hazardDie && (
+                      {section.meta.conflict?.hazardDie && (
                         <span style={{ fontSize: printMode ? '8px' : '10px', background: 'rgba(239, 68, 68, 0.1)', color: '#EF4444', border: '1px solid rgba(239, 68, 68, 0.3)', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold' }}>
-                          Hazard: {section.terminus.conflict.hazardDie}
+                          Hazard: {section.meta.conflict.hazardDie}
                         </span>
                       )}
-                      {section.terminus.conflict?.actorDie && (
+                      {section.meta.conflict?.actorDie && (
                         <span style={{ fontSize: printMode ? '8px' : '10px', background: 'rgba(239, 68, 68, 0.1)', color: '#EF4444', border: '1px solid rgba(239, 68, 68, 0.3)', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold' }}>
-                          Actor: {section.terminus.conflict.actorDie}
+                          Actor: {section.meta.conflict.actorDie}
                         </span>
                       )}
-                      {section.terminus.conflict?.targetThresholds && section.terminus.conflict.targetThresholds.length > 0 && (
+                      {section.meta.conflict?.targetThresholds && section.meta.conflict.targetThresholds.length > 0 && (
                         <span style={{ fontSize: printMode ? '8px' : '10px', background: 'rgba(245, 158, 11, 0.1)', color: '#F59E0B', border: '1px solid rgba(245, 158, 11, 0.3)', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold' }}>
-                          vs {section.terminus.conflict.targetThresholds.join(', ')}
+                          vs {section.meta.conflict.targetThresholds.join(', ')}
                         </span>
                       )}
-                      {section.terminus.conflict?.suggestedSkill && (
+                      {section.meta.conflict?.suggestedSkill && (
                         <span style={{ fontSize: printMode ? '8px' : '10px', background: 'rgba(16, 185, 129, 0.1)', color: '#10B981', border: '1px solid rgba(16, 185, 129, 0.3)', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold' }}>
-                          Skill: {section.terminus.conflict.suggestedSkill}
+                          Skill: {section.meta.conflict.suggestedSkill}
                         </span>
                       )}
-                      {section.terminus.conflict?.impact && (
+                      {section.meta.conflict?.impact && (
                         <span style={{ fontSize: printMode ? '8px' : '10px', background: 'rgba(245, 158, 11, 0.1)', color: '#F59E0B', border: '1px solid rgba(245, 158, 11, 0.3)', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold' }}>
-                          Impact: {section.terminus.conflict.impact}
+                          Impact: {section.meta.conflict.impact}
                         </span>
                       )}
-                      {section.terminus.conflict?.vector?.label && (
+                      {section.meta.conflict?.vector?.label && (
                         <span style={{ fontSize: printMode ? '8px' : '10px', background: 'rgba(139, 92, 246, 0.1)', color: '#8B5CF6', border: '1px solid rgba(139, 92, 246, 0.3)', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold' }}>
-                          Vector: {section.terminus.conflict.vector.label}
+                          Vector: {section.meta.conflict.vector.label}
                         </span>
                       )}
-                      {section.terminus.orderTags?.map(tag => (
+                      {section.meta.orderTags?.map(tag => (
                         <span key={tag} style={{ fontSize: printMode ? '8px' : '10px', background: 'rgba(59, 130, 246, 0.1)', color: '#3B82F6', border: '1px solid rgba(59, 130, 246, 0.3)', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold' }}>
                           [{tag}]
                         </span>
                       ))}
-                      {section.terminus.zoneId && (
+                      {section.meta.zoneId && (
                         <span style={{ fontSize: printMode ? '8px' : '10px', background: 'rgba(16, 185, 129, 0.1)', color: '#10B981', border: '1px solid rgba(16, 185, 129, 0.3)', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold' }}>
-                          Zone: {section.terminus.zoneId}
+                          Zone: {section.meta.zoneId}
                         </span>
                       )}
                     </div>

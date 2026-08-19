@@ -1,4 +1,4 @@
-/* ── Silhouette RPG — State Engine ── */
+/* ── Coherence System — State Engine ── */
 
 export {
   DIE_SIZES,
@@ -72,6 +72,18 @@ export type {
 } from './campaign';
 
 export {
+  DEFAULT_PACK,
+} from './pack';
+export type {
+  SettingPack,
+  PackVocabulary,
+  StatLabels,
+  ArmorLabels,
+  WeaponVectorLabels,
+  BuildBudgets,
+} from './pack';
+
+export {
   rollDie,
   calculateImpact,
   resolveDefenseReduction,
@@ -82,7 +94,7 @@ export type {
   DieRoll,
   DefenseChoice,
   DefenseResultType,
-  RuptureType,
+  BreachType,
   AttackRequest,
   DefenseRequest,
   TrackLoss,

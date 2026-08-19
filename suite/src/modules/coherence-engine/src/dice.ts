@@ -1,4 +1,4 @@
-/* ── Silhouette RPG — Dice Primitives ── */
+/* ── Coherence System — Dice Primitives ── */
 
 export const DIE_SIZES = [4, 6, 8, 10, 12] as const;
 export type DieSize = typeof DIE_SIZES[number];
@@ -8,7 +8,7 @@ export type DieLabel = typeof DIE_LABELS[number];
 
 export type InitiativePhase = 1 | 2 | 3 | 4 | 5;
 
-/** Silhouette uses pip counts derived directly from the die ladder. */
+/** The Coherence System uses pip counts derived directly from the die ladder. */
 export const PIP_COUNTS: Record<DieSize, number> = {
   4: 1,
   6: 2,

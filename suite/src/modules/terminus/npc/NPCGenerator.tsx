@@ -248,7 +248,7 @@ export function NPCGenerator({ onSave }: NPCGeneratorProps) {
               </div>
               <div className="space-y-1">
                 <label className="text-xs text-slate-400 font-inter font-semibold">Lineage</label>
-                <input type="text" name="lineage" value={formData.lineage} onChange={handleInputChange} className="w-full bg-slate-950 border border-slate-700 rounded p-2 text-sm text-slate-200 focus:border-amber-500 outline-none transition-all placeholder:text-slate-600" placeholder="e.g. Synth, Cursed" />
+                <input type="text" name="lineage" value={formData.lineage} onChange={handleInputChange} className="w-full bg-slate-950 border border-slate-700 rounded p-2 text-sm text-slate-200 focus:border-amber-500 outline-none transition-all placeholder:text-slate-600" placeholder="e.g. Human, Stoneborn, Deep Alfar" />
               </div>
               <div className="space-y-1">
                 <label className="text-xs text-slate-400 font-inter font-semibold">Role / Faction</label>

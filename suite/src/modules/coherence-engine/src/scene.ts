@@ -1,4 +1,4 @@
-/* ── Silhouette RPG — Scene Card Schema ── */
+/* ── Coherence System — Scene Card Schema ── */
 
 import type { ActionStat, ConsequenceName, WeaponVector } from './character';
 

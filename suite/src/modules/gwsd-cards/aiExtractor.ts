@@ -1,7 +1,7 @@
 /* ── AI Extractor — Pass B: GWSD State Distillation ──
  *
  * GWSD (Ground-Will-Shift-Drift) is the Guide-side runtime compression layer
- * inside Silhouette RPG. It pre-digests a scene's spatial and narrative logic
+ * inside Coherence System. It pre-digests a scene's spatial and narrative logic
  * so the Guide does not have to extract it from dense prose. It identifies
  * what the space is doing under pressure — how movement flows, where tension
  * accumulates, what changes if the party advances or stalls — and presents

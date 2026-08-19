@@ -475,3 +475,6 @@ export const ORDERS_LIST: OrderInfo[] = [
 ];
 
 export type Order = typeof ORDERS_LIST[number]['name'];
+
+/** The six Terminus Order ids: seeker, breaker, warden, rival, broker, shade. */
+export type OrderId = typeof ORDERS_LIST[number]['id'];

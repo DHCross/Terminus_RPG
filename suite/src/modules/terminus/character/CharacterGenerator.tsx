@@ -4,6 +4,8 @@ import { ORDERS_LIST } from '../../../data/terminus/orders';
 import { ORIGINS, generateArchetype, applyArchetypeUpgrades, generateRandomCharacter, type OriginId } from '../../../data/terminus/archetypes';
 import { deriveThresholds, type CharacterCreationState } from '../../../data/terminus/advancement';
 import type { Die } from '../../../data/terminus/skills';
+import CharacterSheetPreview from '../../gwsd-cards/components/CharacterSheetPreview';
+import { createCharacter, type Character } from '../../coherence-engine/src/index';
 
 interface CharacterGeneratorProps {
   onSave?: (character: CharacterCreationState) => void;
@@ -113,6 +115,35 @@ export function CharacterGenerator({ onSave }: CharacterGeneratorProps = {}) {
     onSave?.(finalCharacter);
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
+  };
+
+  const getPreviewCharacter = (): Character => {
+    return createCharacter({
+      id: character.name.toLowerCase().replace(/[^a-z0-9]+/g, '-') || 'new-character',
+      name: character.name || 'Unnamed Responder',
+      identity: {
+        background: 'A denizen shaped by the hidden machine, searching for fault lines.',
+        immediateWant: 'Observe local simulation snags and locate the next breach.',
+        species: character.origin ? ORIGINS.find(o => o.id === character.origin)?.name : 'Unknown Lineage',
+        order: character.order ? ORDERS_LIST.find(o => o.id === character.order)?.name : 'Unknown Order',
+      } as any,
+      actions: {
+        force: parseInt(character.Force.replace('d', '')) as any,
+        agility: parseInt(character.Agility.replace('d', '')) as any,
+        willpower: parseInt(character.Willpower.replace('d', '')) as any,
+      },
+      defenses: {
+        endure: parseInt(character.Force.replace('d', '')) as any,
+        avoid: parseInt(character.Agility.replace('d', '')) as any,
+        exert: parseInt(character.Willpower.replace('d', '')) as any,
+      },
+      armor: 'none',
+      weapons: {
+        primary: { name: 'Work blade', impact: 1, vectors: [] },
+        secondary: { name: 'Backup tool', impact: 1, vectors: [] },
+      },
+      notes: ['Observe local simulation snags and locate the next breach.'],
+    });
   };
 
   return (
@@ -261,40 +292,11 @@ export function CharacterGenerator({ onSave }: CharacterGeneratorProps = {}) {
             </button>
           </div>
 
-          {/* Character Summary */}
-          <div className="bg-slate-900 border border-slate-700 rounded p-4 space-y-4">
-            <div className="grid grid-cols-3 gap-4">
-              <div>
-                <label className="text-xs text-slate-500 uppercase">Order</label>
-                <div className="text-lg font-semibold text-amber-400">{character.order || 'Select Order'}</div>
-              </div>
-              <div>
-                <label className="text-xs text-slate-500 uppercase">Origin</label>
-                <div className="text-lg font-semibold text-amber-400">{character.origin || 'Select Origin'}</div>
-              </div>
-              <div>
-                <label className="text-xs text-slate-500 uppercase">AP / Operations</label>
-                <div className="text-sm text-slate-300">{character.advancementPoints} AP / {character.completedOperations} ops</div>
-              </div>
+          {/* Character Preview Sheet */}
+          <div className="bg-slate-900 border border-slate-700 rounded p-4 flex justify-center">
+            <div style={{ transform: 'scale(0.85)', transformOrigin: 'top center' }}>
+              <CharacterSheetPreview character={getPreviewCharacter()} />
             </div>
-          </div>
-
-          {/* Skills Grid */}
-          <div className="grid grid-cols-3 gap-4">
-            {(['Force', 'Agility', 'Willpower'] as const).map(skill => {
-              const thresholdMap = { Force: 'Endure', Agility: 'Avoid', Willpower: 'Exert' } as const;
-              const threshold = character[thresholdMap[skill]];
-              
-              return (
-                <div key={skill} className="bg-slate-900 border border-slate-700 rounded p-3 space-y-2">
-                  <div className="text-sm font-semibold text-amber-400">{skill}</div>
-                  <div className="text-2xl font-bold text-slate-200">{character[skill]}</div>
-                  <div className="text-xs text-slate-500">
-                    {thresholdMap[skill]}: <span className="text-slate-300 font-semibold">{threshold}</span>
-                  </div>
-                </div>
-              );
-            })}
           </div>
 
           {/* Character Name Input */}

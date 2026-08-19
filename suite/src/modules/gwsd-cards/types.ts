@@ -2,8 +2,8 @@
 
 import type {
   PressureType,
-  SceneCard as SilhouetteSceneCard,
-} from '../silhouette-engine/src/index.ts';
+  SceneCard as CoherenceSceneCard,
+} from '../coherence-engine/src/index.ts';
 
 export const ACTIVE_STATE_ORDER = ['ground', 'will', 'shift', 'drift'] as const;
 export const LATENT_STATE_ORDER = ['ground', 'will', 'trigger', 'accumulation'] as const;
@@ -13,17 +13,17 @@ export type LatentGWSDState = typeof LATENT_STATE_ORDER[number];
 export type GWSDState = ActiveGWSDState | LatentGWSDState;
 export type SceneStateType = 'active' | 'latent';
 
-export const SILHOUETTE_SECTION_ORDER = ['agency', 'pressure', 'contingency', 'consequence'] as const;
-export type SilhouetteSectionKey = typeof SILHOUETTE_SECTION_ORDER[number];
+export const COHERENCE_SECTION_ORDER = ['agency', 'pressure', 'contingency', 'consequence'] as const;
+export type CoherenceSectionKey = typeof COHERENCE_SECTION_ORDER[number];
 
-export interface SilhouetteSection {
-  key: SilhouetteSectionKey;
+export interface CoherenceSection {
+  key: CoherenceSectionKey;
   text: string;
 }
 
-export interface SilhouetteProjection {
-  sceneCard: SilhouetteSceneCard;
-  sections: [SilhouetteSection, SilhouetteSection, SilhouetteSection, SilhouetteSection];
+export interface CoherenceProjection {
+  sceneCard: CoherenceSceneCard;
+  sections: [CoherenceSection, CoherenceSection, CoherenceSection, CoherenceSection];
   pressureType: PressureType;
   environmentSummary: string;
 }
@@ -56,23 +56,22 @@ export interface GWSDScope {
 
 export type DieRank = 'd4' | 'd6' | 'd8' | 'd10' | 'd12';
 
-export type TerminusThreshold = 'endure' | 'avoid' | 'exert';
-export type TerminusSkill = 'force' | 'agility' | 'willpower';
-export type TerminusOrder = 'seeker' | 'breaker' | 'warden' | 'rival' | 'broker' | 'shade';
+export type CoherenceThreshold = 'endure' | 'avoid' | 'exert';
+export type CoherenceSkill = 'force' | 'agility' | 'willpower';
 
-export type TerminusVector = {
+export type CoherenceVector = {
   label: string;
   impact?: number;
   notes?: string;
 };
 
-export type TerminusConflictData = {
+export type ConflictData = {
   hazardDie?: DieRank;
   actorDie?: DieRank;
-  targetThresholds?: TerminusThreshold[];
-  suggestedSkill?: TerminusSkill;
+  targetThresholds?: CoherenceThreshold[];
+  suggestedSkill?: CoherenceSkill;
   impact?: number;
-  vector?: TerminusVector;
+  vector?: CoherenceVector;
 };
 
 export type StoryFunction = 'hook' | 'obstacle' | 'prospect' | 'latent';
@@ -82,7 +81,7 @@ export interface ConnectiveTrigger {
   label: string;               // e.g., "If the central arch completely collapses..."
   triggerType: 'bound' | 'unbound';
   targetNodeId: string;        // The destination Scene Card ID
-  activationCriteria?: string; // For Unbound triggers (e.g., "Rupture Casting used")
+  activationCriteria?: string; // For Unbound triggers (e.g., "a breach occurs")
   stateHandoff?: {
     pressureModifier?: number; // Escalates/degrades Section 4 Scene Pressure
     groundInject?: string;     // Seamlessly updates Section 3 Ground text
@@ -90,20 +89,20 @@ export interface ConnectiveTrigger {
   };
 }
 
-export type TerminusSceneMode = 'social' | 'kinetic' | 'hazard' | 'confrontation' | 'discovery' | 'puzzle';
+export type SceneMode = 'social' | 'kinetic' | 'hazard' | 'confrontation' | 'discovery' | 'puzzle';
 
-export type TerminusSceneMeta = {
+export type SceneMeta = {
   scenePressure?: number;
   pressureTriggers?: Array<{
     at: number;
     entryId: string;
     note?: string;
   }>;
-  orderTags?: TerminusOrder[];
+  orderTags?: string[];
   zoneId?: string;
-  conflict?: TerminusConflictData;
+  conflict?: ConflictData;
   location?: string;
-  sceneMode?: TerminusSceneMode;
+  sceneMode?: SceneMode;
   driftLadder?: string;
   mapHooks?: string;
   readAloud?: string;
@@ -121,8 +120,8 @@ export interface BaseGWSDCard<TStateType extends SceneStateType, TState extends 
   /** Card register — imperative fragments for physical table cards */
   cardText?: string;
   source: 'parsed' | 'manual' | 'ai' | 'hoskbrew';
-  /** Optional Terminus RPG specific conflict and state data */
-  terminus?: TerminusSceneMeta;
+  /** Optional setting-specific conflict and state data */
+  meta?: SceneMeta;
 }
 
 export type ActiveGWSDCard = BaseGWSDCard<'active', ActiveGWSDState>;
@@ -178,16 +177,16 @@ export interface Scene {
   scenePressure?: number;
   cards: [GWSDCard, GWSDCard, GWSDCard, GWSDCard];
   raw: string;
-  /** Terminus RPG scene-level metadata used by export and builder flows */
-  terminus?: TerminusSceneMeta;
+  /** Scene-level metadata used by export and builder flows */
+  meta?: SceneMeta;
   /** Hierarchical scope (position in adventure structure) */
   scope?: GWSDScope;
   /** Content type — only 'scene_state' produces valid GWSD cards */
   contentType?: ContentType;
   /** Validation warnings from post-extraction checks */
   validationWarnings?: string[];
-  /** Silhouette RPG scene-card projection used by the live rules view */
-  silhouette?: SilhouetteProjection;
+  /** Coherence System scene-card projection used by the live rules view */
+  coherence?: CoherenceProjection;
   storyFunction?: StoryFunction;
   connectiveTriggers?: ConnectiveTrigger[];
 }
@@ -230,7 +229,7 @@ export const STATE_META: Record<GWSDState, { label: string; color: string; hex: 
   accumulation: { label: 'ACCUMULATION', color: 'Muted Dark', hex: '#374151' },
 };
 
-export const SILHOUETTE_SECTION_META: Record<SilhouetteSectionKey, { label: string; color: string; hex: string }> = {
+export const COHERENCE_SECTION_META: Record<CoherenceSectionKey, { label: string; color: string; hex: string }> = {
   agency: { label: 'AGENCY', color: 'Muted Dark', hex: '#374151' },
   pressure: { label: 'PRESSURE', color: 'Muted Dark', hex: '#374151' },
   contingency: { label: 'CONTINGENCY', color: 'Muted Dark', hex: '#374151' },

@@ -9,7 +9,7 @@ import type {
   ValidationDiagnostic,
   WeaponProfile,
   WeaponVector,
-} from '../silhouette-engine/src/index.ts';
+} from '../coherence-engine/src/index.ts';
 import {
   ACTION_STATS,
   ARMOR_TYPES,
@@ -20,7 +20,7 @@ import {
   createCharacter,
   createEnemy,
   validateCharacter,
-} from '../silhouette-engine/src/index.ts';
+} from '../coherence-engine/src/index.ts';
 
 export interface WeaponDraft {
   name: string;

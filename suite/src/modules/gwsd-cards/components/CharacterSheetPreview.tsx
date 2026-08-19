@@ -1,4 +1,4 @@
-import type { Character, CharacterIdentity } from '../../silhouette-engine/src/index.ts';
+import type { Character, CharacterIdentity } from '../../coherence-engine/src/index.ts';
 import './CharacterSheetPreview.css';
 
 type SheetIdentity = CharacterIdentity & {
@@ -317,8 +317,8 @@ export default function CharacterSheetPreview({ character }: Props) {
   };
 
   return (
-    <div className={`terminus-sheet-container skin-lineage-${lineageNormalized} skin-order-${orderNormalized}`}>
-      <div className="terminus-sheet">
+    <div className={`coherence-sheet-container skin-lineage-${lineageNormalized} skin-order-${orderNormalized}`}>
+      <div className="coherence-sheet">
         <div className="ts-inner-border">
           {/* HEADER TEXT & STAMP ROW */}
           <div className="ts-top-row">

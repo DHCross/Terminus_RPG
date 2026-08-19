@@ -11,7 +11,8 @@ import {
   Gauge
 } from 'lucide-react';
 import { useToast } from '../../../components/Toast';
-import type { Scene, GWSDCard, ActiveGWSDCard, ActiveGWSDState, TerminusOrder, TerminusSceneMode, StoryFunction } from '../../gwsd-cards/types';
+import type { Scene, GWSDCard, ActiveGWSDCard, ActiveGWSDState, SceneMode, StoryFunction } from '../../gwsd-cards/types';
+import type { OrderId } from '../../../data/terminus/orders';
 
 // API Key and Endpoint from environment variables
 const apiKey = import.meta.env.VITE_AI_API_KEY || import.meta.env.VITE_GEMINI_API_KEY || "";
@@ -235,24 +236,24 @@ ${orderLines || '- No order hooks provided.'}
       const sceneId = scene.id || crypto.randomUUID();
       const safePressure = Math.max(1, Math.min(5, Number(scene.scenePressure) || 1));
 
-      const sceneModeMap: Record<string, TerminusSceneMode> = {
+      const sceneModeMap: Record<string, SceneMode> = {
         'Confrontation': 'confrontation',
         'Discovery': 'discovery',
         'Social': 'social',
         'Hazard': 'hazard',
         'Trap': 'hazard',
       };
-      const terminusSceneMode: TerminusSceneMode =
+      const terminusSceneMode: SceneMode =
         sceneModeMap[scene.sceneMode] ?? 'confrontation';
 
-      const orderKeyMap: Record<string, TerminusOrder> = {
+      const orderKeyMap: Record<string, OrderId> = {
         Seeker: 'seeker', Breaker: 'breaker', Warden: 'warden',
         Rival: 'rival', Broker: 'broker', Shade: 'shade',
       };
-      const orderTags: TerminusOrder[] = Object.entries(scene.orderHooks)
+      const orderTags: OrderId[] = Object.entries(scene.orderHooks)
         .filter(([, hook]) => hook.trim())
         .map(([order]) => orderKeyMap[order])
-        .filter((o): o is TerminusOrder => Boolean(o));
+        .filter((o): o is OrderId => Boolean(o));
 
       const makeCard = (state: ActiveGWSDState, text: string): ActiveGWSDCard => ({
         id: crypto.randomUUID(),
