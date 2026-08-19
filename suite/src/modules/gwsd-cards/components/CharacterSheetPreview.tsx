@@ -21,7 +21,7 @@ interface Props {
 const ORDER_ABILITIES: Record<string, Array<{ name: string; desc: string }>> = {
   seeker: [
     { name: 'Weak Point', desc: 'Scan target layout to discover a vulnerability, reducing their Avoid threshold by 1.' },
-    { name: 'Trace Source', desc: 'Verify the origin of any active occult pressure or structural simulation snags.' },
+    { name: 'Trace Source', desc: 'Verify the origin of any active occult pressure or structural boundary fractures.' },
     { name: 'Bring to Light', desc: 'Expose a hidden latent condition or hidden path within the active zone structure.' },
   ],
   breaker: [
@@ -46,7 +46,7 @@ const ORDER_ABILITIES: Record<string, Array<{ name: string; desc: string }>> = {
   ],
   shade: [
     { name: 'Umbral Slip', desc: 'Slip into shadows or snags in the environment, bypassing physical search actions.' },
-    { name: 'Vanish from Record', desc: 'Erase your presence from logs, archives, or local sensor grids completely.' },
+    { name: 'Vanish from Record', desc: 'Erase your presence from logs, archives, or guard manifests completely.' },
     { name: 'Silent Omission', desc: 'Perform a delicate kinetic or security action without making any sound or trigger.' },
   ],
 };
@@ -59,8 +59,8 @@ export default function CharacterSheetPreview({ character }: Props) {
 
   const originRegion = identity.origin || 'Black Ward Coast';
   const signatureItem = identity.signature || 'Notched brass compass';
-  const backgroundSentence = identity.background || 'A denizen shaped by the hidden machine, searching for fault lines.';
-  const currentObjective = character.notes?.[0] || 'Observe local simulation snags and locate the next breach.';
+  const backgroundSentence = identity.background || 'A responder shaped by the quiet wards, searching for boundary fault lines.';
+  const currentObjective = character.notes?.[0] || 'Observe local boundary fractures and locate the next breach.';
 
   // Standardize values for mapping classes
   const lineageNormalized = species.toLowerCase().replace(/\s+/g, '');
